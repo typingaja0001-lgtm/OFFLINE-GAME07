@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>SNAKE NEON - ARENA</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
+        
+        body { 
+            background: #050112; color: white; font-family: 'Orbitron', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; overflow: hidden; 
+        }
+
+        /* FRAME GAME NEON */
+        canvas { 
+            border: 5px solid #ff00ff; 
+            box-shadow: 0 0 30px #ff00ff, inset 0 0 15px #ff00ff; 
+            background: #000; 
+        }
+
+        .ui-layer { position: absolute; top: 30px; text-align: center; width: 100%; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
+        
+        /* OVERLAY WASTED */
+        #gameOver { 
+            display: none; position: absolute; inset: 0; 
+            background: rgba(5, 1, 18, 0.95); z-index: 100; 
+            flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .btn-action {
+            background: #00f2ff; color: black; padding: 12px 30px; 
+            margin: 10px; border-radius: 8px; font-weight: 900; 
+            cursor: pointer; transition: 0.3s; text-decoration: none;
+        }
+        .btn-action:hover { transform: scale(1.1); filter: brightness(1.2); }
+    </style>
+</head>
+<body>
+
+    <div class="ui-layer">
+        <h1 class="neon-cyan italic text-4xl">SNAKE NEON</h1>
+        <p class="text-gray-400">POINTS: <span id="scoreDisplay" style="color:white">0</span></p>
+    </div>
+
+    <canvas id="snakeGame" width="400" height="400"></canvas>
+
+    <div id="gameOver">
+        <h1 style="color:red; font-size: 60px; text-shadow: 0 0 20px red;">WASTED</h1>
+        <p class="text-gray-400 mb-4">SKOR ANDA TELAH DIKIRIM KE LEADERBOARD</p>
+        <div style="background: #111; border: 1px solid #ff00ff; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <p style="font-size: 10px; color: #ff00ff;">FINAL SCORE</p>
+            <p id="finalScore" style="font-size: 40px; color: white;">0</p>
+        </div>
+        <button onclick="location.reload()" class="btn-action">MAIN LAGI</button>
+        <a href="menu.html" class="btn-action" style="background:#ff00ff; color:white;">KE MENU UTAMA</a>
+    </div>
+
+    <script>
+        // 1. HUBUNGKAN KE DATABASE (SAMAKAN DENGAN MENU.HTML)
+        const firebaseConfig = {
+            apiKey: "ISI_API_KEY_BOSKU",
+            databaseURL: "https://yokbisayok-db-default-rtdb.firebaseio.com",
+            projectId: "yokbisayok-db",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Ambil nama user dari Login
+        const activeUser = localStorage.getItem('loginUser') || "GUEST_PLAYER";
+
+        // 2. LOGIKA GAME
+        const canvas = document.getElementById('snakeGame');
+        const ctx = canvas.getContext('2d');
+        const grid = 20;
+        let count = 0;
+        let score = 0;
+        let gameActive = true;
+
+        let snake = {
+            x: 160, y: 160, dx: grid, dy: 0,
+            cells: [], maxCells: 4
+        };
+        let apple = { x: 320, y: 320 };
+
+        function loop() {
+            if(!gameActive) return;
+            requestAnimationFrame(loop);
+
+            // Kecepatan Ular (Makin kecil angka, makin kencang)
+            if (++count < 7) return; 
+            count = 0;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            snake.x += snake.dx;
+            snake.y += snake.dy;
+
+            // Jika Nabrak Tembok
+            if (snake.x < 0 || snake.x >= canvas.width || snake.y < 0 || snake.y >= canvas.height) {
+                handleGameOver();
+            }
+
+            snake.cells.unshift({x: snake.x, y: snake.y});
+            if (snake.cells.length > snake.maxCells) snake.cells.pop();
+
+            // Gambar Apel (Neon Red)
+            ctx.shadowBlur = 15; ctx.shadowColor = "red";
+            ctx.fillStyle = 'red';
+            ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
+
+            // Gambar Ular (Neon Cyan & Purple)
+            snake.cells.forEach(function(cell, index) {
+                ctx.shadowBlur = 10;
+                if(index === 0) {
+                    ctx.fillStyle = '#00f2ff'; // Kepala Cyan
+                    ctx.shadowColor = "#00f2ff";
+                } else {
+                    ctx.fillStyle = '#ff00ff'; // Badan Ungu
+                    ctx.shadowColor = "#ff00ff";
+                }
+                
+                ctx.fillRect(cell.x, cell.y, grid-1, grid-1);
+
+                // Jika Makan Apel
+                if (cell.x === apple.x && cell.y === apple.y) {
+                    snake.maxCells++;
+                    score += 500; // Sekali makan 500 poin biar cepat naik rank
+                    document.getElementById('scoreDisplay').innerText = score;
+                    apple.x = Math.floor(Math.random() * 20) * grid;
+                    apple.y = Math.floor(Math.random() * 20) * grid;
+                }
+
+                // Jika Nabrak Buntut Sendiri
+                for (let i = index + 1; i < snake.cells.length; i++) {
+                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+                        handleGameOver();
+                    }
+                }
+            });
+        }
+
+        function handleGameOver() {
+            gameActive = false;
+            document.getElementById('gameOver').style.display = 'flex';
+            document.getElementById('finalScore').innerText = score;
+
+            // KIRIM SKOR KE FIREBASE LEADERBOARD
+            const ref = db.ref('leaderboard/' + activeUser.toLowerCase());
+            ref.once('value').then(snap => {
+                let data = snap.val();
+                let lastScore = data ? data.score : 0;
+                
+                // Update jika skor baru lebih tinggi
+                if (score > lastScore) {
+                    ref.set({ name: activeUser, score: score, lastPlay: "SNAKE" });
+                }
+            });
+        }
+
+        // Kontrol Panah Keyboard
+        document.addEventListener('keydown', function(e) {
+            if (e.which === 37 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+            else if (e.which === 38 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+            else if (e.which === 39 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
+            else if (e.which === 40 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+        });
+
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
