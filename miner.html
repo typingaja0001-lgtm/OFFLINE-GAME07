@@ -18,6 +18,20 @@
         .neon-text-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
         .neon-text-purple { color: #bc13fe; text-shadow: 0 0 10px #bc13fe; }
 
+        /* BACK BUTTON STYLE */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #bc13fe; transition: 0.3s;
+            z-index: 1000;
+        }
+        .btn-back:hover { 
+            background: #bc13fe; color: #fff; 
+            box-shadow: 0 0 20px #bc13fe; 
+        }
+
         /* GAME BOARD GRID */
         #game-board {
             display: grid;
@@ -28,7 +42,6 @@
             margin-top: 20px;
         }
 
-        /* TILE (KOTAK) STYLING */
         .tile {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -47,7 +60,6 @@
             transform: scale(1.05);
         }
 
-        /* REVEALED STATES */
         .tile.revealed.diamond {
             background: rgba(188, 19, 254, 0.1);
             border-color: #bc13fe;
@@ -69,7 +81,6 @@
             100% { transform: translate(1px, -1px); }
         }
 
-        /* GAMEOVER MODAL */
         #gameOverModal { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.95); z-index: 100; 
@@ -83,6 +94,10 @@
     </style>
 </head>
 <body>
+
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-arrow-left mr-2"></i> Abort Mission
+    </a>
 
     <div id="gameOverModal">
         <div class="modal-content">
@@ -98,7 +113,6 @@
     </div>
 
     <div class="w-full max-w-7xl flex flex-col md:flex-row gap-8 items-start">
-        
         <div class="w-full md:w-80 bg-black/40 border border-white/5 p-8 rounded-[25px] backdrop-blur-md">
             <div class="text-center mb-8">
                 <h1 class="orbitron text-3xl font-black italic neon-text-purple">NEON MINER</h1>
@@ -108,11 +122,11 @@
             <div class="space-y-6">
                 <div>
                     <label class="text-xs text-purple-400 uppercase font-bold tracking-widest">Bet Amount (IDR)</label>
-                    <input id="betInput" type="number" value="1000" min="100" step="100" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white">
+                    <input id="betInput" type="number" value="1000" min="100" step="100" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white outline-none focus:border-purple-500">
                 </div>
                 <div>
                     <label class="text-xs text-purple-400 uppercase font-bold tracking-widest">Number of Bombs (1-24)</label>
-                    <input id="bombInput" type="number" value="3" min="1" max="24" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white">
+                    <input id="bombInput" type="number" value="3" min="1" max="24" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white outline-none focus:border-purple-500">
                 </div>
                 
                 <div class="pt-6">
@@ -127,7 +141,6 @@
         </div>
 
         <div class="flex-1 w-full bg-black/40 border border-white/5 p-8 rounded-[25px] backdrop-blur-md">
-            
             <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-6">
                 <div>
                     <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Your Balance</p>
@@ -139,8 +152,7 @@
                 </div>
             </div>
 
-            <div id="game-board">
-                </div>
+            <div id="game-board"></div>
 
             <div id="nextInfo" class="mt-8 p-4 bg-white/5 border border-white/10 rounded-xl text-center hidden">
                 <p class="text-xs text-gray-400 uppercase">Profit on Next Diamond</p>
@@ -150,25 +162,20 @@
     </div>
 
     <script>
-        // --- DATABASE & SESSION CHECK ---
         const activeUser = localStorage.getItem("loginUser");
         if (!activeUser) {
-            alert("Akses Ilegal! Silakan Login.");
             window.location.href = "index.html";
         }
 
-        // Tampilkan Saldo
         let users = JSON.parse(localStorage.getItem("users") || "[]");
         let myData = users.find(x => x.user === activeUser);
         let balance = myData ? myData.saldo : 0;
         document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
 
-        // --- GAME LOGIC ---
         let betAmount = 0, numBombs = 0, currentMultiplier = 1.00;
         let board = [], revealedTiles = 0, gameActive = false;
         const totalTiles = 25;
 
-        // Generate Board
         function generateBoard(bombs) {
             board = Array(totalTiles).fill('diamond');
             let placedBombs = 0;
@@ -181,48 +188,39 @@
             }
         }
 
-        // Calculate Multiplier (Simulasi Perkalian Hadiah)
         function updateMultiplier() {
-            // Logika sederhana: Multiplier bertambah seiring jumlah diamond dibuka
-            const baseGain = 1.1 + (numBombs / 10); // Bomb makin banyak, untung makin besar
+            const baseGain = 1.1 + (numBombs / 10);
             currentMultiplier = Math.pow(baseGain, revealedTiles).toFixed(2);
             document.getElementById("multiplierDisplay").innerText = currentMultiplier;
 
-            // Hitung Profit Next
             const currentProfit = betAmount * currentMultiplier;
             const nextProfit = betAmount * Math.pow(baseGain, revealedTiles + 1);
             document.getElementById("nextProfitDisplay").innerText = Math.round(nextProfit - currentProfit).toLocaleString();
         }
 
-        // Start Game
         function startGame() {
             betAmount = parseInt(document.getElementById("betInput").value);
             numBombs = parseInt(document.getElementById("bombInput").value);
 
-            // Validasi input
-            if(betAmount < 100) return alert("Taruhan minimal IDR 100, Bosku!");
-            if(balance < betAmount) return alert("Saldo tidak cukup, Bosku! Silakan Top Up.");
-            if(numBombs < 1 || numBombs > 24) return alert("Jumlah Bom harus antara 1-24, Bosku!");
+            if(betAmount < 100) return alert("Minimal IDR 100!");
+            if(balance < betAmount) return alert("Saldo tidak cukup!");
+            if(numBombs < 1 || numBombs > 24) return alert("Bom (1-24)!");
 
-            // Potong Saldo
             balance -= betAmount;
             updateBalanceInStorage();
             document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
 
-            // Setup Board
             gameActive = true;
             revealedTiles = 0;
             generateBoard(numBombs);
             updateMultiplier();
 
-            // UI Update
             document.getElementById("startBtn").classList.add("hidden");
             document.getElementById("cashoutBtn").classList.remove("hidden");
             document.getElementById("nextInfo").classList.remove("hidden");
             document.getElementById("betInput").disabled = true;
             document.getElementById("bombInput").disabled = true;
 
-            // Render Tiles
             const boardDiv = document.getElementById("game-board");
             boardDiv.innerHTML = "";
             for(let i=0; i<totalTiles; i++) {
@@ -230,11 +228,10 @@
             }
         }
 
-        // Reveal Tile
         function revealTile(index) {
             if(!gameActive) return;
             const tile = document.querySelector(`[data-index="${index}"]`);
-            if(tile.classList.contains("revealed")) return; // Kotak sudah dibuka
+            if(tile.classList.contains("revealed")) return;
 
             const content = board[index];
             tile.classList.add("revealed", content);
@@ -242,54 +239,38 @@
             if(content === 'bomb') {
                 gameOver();
             } else {
-                // Diamond ditemukan
                 tile.innerHTML = '<i class="fas fa-gem"></i>';
                 revealedTiles++;
                 updateMultiplier();
-
-                // Cek apakah semua diamond sudah dibuka
-                if(revealedTiles === (totalTiles - numBombs)) {
-                    alert("Gila! Semua Diamond Terbuka! Luar Biasa Bosku!");
-                    cashOut();
-                }
+                if(revealedTiles === (totalTiles - numBombs)) cashOut();
             }
         }
 
-        // Game Over
         function gameOver() {
             gameActive = false;
-            // Tampilkan semua bom
             document.querySelectorAll(".tile").forEach((tile, i) => {
                 if(board[i] === 'bomb') {
                     tile.classList.add("revealed", "bomb");
                     tile.innerHTML = '<i class="fas fa-bomb"></i>';
                 }
             });
-
-            // UI Modal
             document.getElementById("lostBetDisplay").innerText = betAmount.toLocaleString();
             document.getElementById("gameOverModal").style.display = 'flex';
         }
 
-        // Cash Out
         function cashOut() {
-            if(!gameActive || revealedTiles === 0) return alert("Gagal Cashout, Bosku!");
-
+            if(!gameActive || revealedTiles === 0) return;
             const winnings = Math.round(betAmount * currentMultiplier);
             balance += winnings;
             updateBalanceInStorage();
-            document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
-
-            alert(`MANTAP BOSKU! Cashout Berhasil. Menang IDR ${winnings.toLocaleString()}!`);
-            location.reload(); // Refresh game
+            alert(`JACKPOT! Profit: IDR ${winnings.toLocaleString()}`);
+            location.reload();
         }
 
-        // Update Balance di LocalStorage
         function updateBalanceInStorage() {
             myData.saldo = balance;
             localStorage.setItem("users", JSON.stringify(users));
         }
-
     </script>
 </body>
 </html>
