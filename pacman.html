@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKBISAYOK - PAC-MAN NEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
+        body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        #game-container { position: relative; border: 4px solid #00f2ff; box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); background: #000; border-radius: 10px; }
+        canvas { display: block; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        .neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        
+        /* Panduan Style */
+        .how-to-play { margin-top: 25px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.2); padding: 20px; border-radius: 15px; width: 380px; }
+        .key-badge { background: #1a1a1a; border: 1px solid #ff00ff; color: #ff00ff; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-family: 'Orbitron'; }
+
+        /* MODAL GAME OVER */
+        #gameOverModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 0 50px #ff00ff; width: 320px; }
+    </style>
+</head>
+<body>
+
+    <div id="gameOverModal">
+        <div class="modal-content">
+            <h2 class="orbitron text-3xl neon-pink mb-2 italic">WASTED</h2>
+            <div class="mb-8">
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Total Score</p>
+                <p id="finalScoreDisplay" class="text-5xl neon-cyan orbitron">0</p>
+            </div>
+            <div class="flex flex-col gap-3">
+                <button onclick="location.reload()" class="w-full bg-white text-black py-3 rounded-lg font-black orbitron hover:bg-cyan-400 transition uppercase italic">MAIN LAGI</button>
+                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-lg hover:text-white hover:border-white transition uppercase text-[10px] orbitron">MENU UTAMA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6 flex gap-10">
+        <div class="text-center">
+            <p class="text-[10px] text-gray-500 uppercase orbitron tracking-tighter">Score</p>
+            <p id="pScore" class="text-3xl neon-cyan orbitron">0</p>
+        </div>
+        <div class="text-center">
+            <p class="text-[10px] text-gray-500 uppercase orbitron tracking-tighter">Lives</p>
+            <p id="pLives" class="text-3xl neon-pink orbitron">3</p>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="pacman" width="380" height="380"></canvas>
+    </div>
+
+    <div class="how-to-play">
+        <h3 class="orbitron text-[10px] neon-cyan mb-4 italic uppercase tracking-widest">
+            🕹️ Mission Briefing
+        </h3>
+        <ul class="text-[13px] space-y-3 text-gray-300">
+            <li class="flex justify-between items-center">
+                <span>Kontrol Arah</span>
+                <span class="key-badge">↑ ↓ ← →</span>
+            </li>
+            <li class="flex justify-between items-center">
+                <span>Makan Titik Pink</span>
+                <span class="text-white">+10 Score</span>
+            </li>
+            <li class="flex justify-between items-center text-pink-400">
+                <span>Hindari Ghost Neon</span>
+                <span class="text-white">-1 Life</span>
+            </li>
+            <li class="mt-4 pt-4 border-t border-white/5 text-[10px] leading-relaxed text-gray-500 italic uppercase">
+                *Habiskan semua titik untuk menang. Jika nyawa (Lives) menjadi 0, skor akan disimpan ke database global.
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('pacman');
+        const ctx = canvas.getContext('2d');
+        const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
+        const player = (localStorage.getItem('loginUser') || "USER").toUpperCase();
+
+        const size = 20;
+        let score = 0;
+        let lives = 3;
+        let gameActive = true;
+
+        const map = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
+            [2,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,2],
+            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
+            [2,2,2,2,0,2,2,1,2,2,2,1,2,2,0,2,2,2,2],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [2,2,2,1,0,1,2,2,2,2,2,2,2,1,0,1,2,2,2],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,1,0,0,0,0,0,2,0,0,0,0,0,1,0,0,1],
+            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        let pac = { x: 9 * size, y: 15 * size, dir: 0, nextDir: 0 };
+        let ghosts = [
+            { x: 9 * size, y: 8 * size, color: '#ff00ff', dir: 1 },
+            { x: 8 * size, y: 9 * size, color: '#00f2ff', dir: 2 },
+            { x: 10 * size, y: 9 * size, color: '#00ff00', dir: 3 }
+        ];
+
+        function draw() {
+            ctx.fillStyle = '#050112';
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+
+            // Draw Labirin
+            for(let y=0; y<map.length; y++) {
+                for(let x=0; x<map[y].length; x++) {
+                    if(map[y][x] === 1) {
+                        ctx.strokeStyle = '#00f2ff';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x*size+4, y*size+4, size-8, size-8);
+                    } else if(map[y][x] === 0) {
+                        ctx.fillStyle = '#ff00ff';
+                        ctx.beginPath();
+                        ctx.arc(x*size+size/2, y*size+size/2, 2, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            // Pacman
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(pac.x+size/2, pac.y+size/2, size/2-2, 0.2*Math.PI, 1.8*Math.PI);
+            ctx.lineTo(pac.x+size/2, pac.y+size/2);
+            ctx.fill();
+
+            // Ghosts
+            ghosts.forEach(g => {
+                ctx.fillStyle = g.color;
+                ctx.shadowBlur = 10; ctx.shadowColor = g.color;
+                ctx.fillRect(g.x+3, g.y+3, size-6, size-6);
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function move() {
+            if(!gameActive) return;
+
+            // Logika Gerak Pacman
+            let speed = 2;
+            if(pac.dir === 1) pac.x -= speed;
+            if(pac.dir === 2) pac.x += speed;
+            if(pac.dir === 3) pac.y -= speed;
+            if(pac.dir === 4) pac.y += speed;
+
+            // Deteksi Wall & Makan Dot
+            let gx = Math.floor((pac.x+size/2)/size);
+            let gy = Math.floor((pac.y+size/2)/size);
+            
+            if(map[gy][gx] === 0) {
+                map[gy][gx] = 2;
+                score += 10;
+                document.getElementById('pScore').innerText = score;
+            }
+            if(map[gy][gx] === 1) { // Nabrak tembok, balik dikit
+                if(pac.dir === 1) pac.x += speed;
+                if(pac.dir === 2) pac.x -= speed;
+                if(pac.dir === 3) pac.y += speed;
+                if(pac.dir === 4) pac.y -= speed;
+                pac.dir = 0;
+            }
+
+            // Hantu Kejar
+            ghosts.forEach(g => {
+                if(Math.random() < 0.02) g.dir = Math.floor(Math.random()*4)+1;
+                if(g.dir === 1) g.x -= 1;
+                if(g.dir === 2) g.x += 1;
+                if(g.dir === 3) g.y -= 1;
+                if(g.dir === 4) g.y += 1;
+
+                // Batas tembok hantu (sederhana)
+                if(g.x < 0 || g.x > canvas.width-size) g.dir = g.dir === 1 ? 2 : 1;
+                if(g.y < 0 || g.y > canvas.height-size) g.dir = g.dir === 3 ? 4 : 3;
+
+                // Nabrak Pacman
+                if(Math.abs(pac.x - g.x) < 12 && Math.abs(pac.y - g.y) < 12) {
+                    lives--;
+                    document.getElementById('pLives').innerText = lives;
+                    pac.x = 9*size; pac.y = 15*size; pac.dir = 0;
+                    if(lives <= 0) gameActive = false;
+                }
+            });
+        }
+
+        async function saveAndExit() {
+            try {
+                const res = await fetch(dbURL);
+                const data = await res.json();
+                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
+                if(userKey) {
+                    await fetch(`https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard/${userKey}.json`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ score: data[userKey].score + score })
+                    });
+                }
+            } catch (e) {}
+            window.location.href = 'menu.html';
+        }
+
+        function gameLoop() {
+            if(!gameActive) {
+                document.getElementById('finalScoreDisplay').innerText = score;
+                document.getElementById('gameOverModal').style.display = 'flex';
+                return;
+            }
+            move();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', e => {
+            if(e.keyCode === 37) pac.dir = 1;
+            if(e.keyCode === 39) pac.dir = 2;
+            if(e.keyCode === 38) pac.dir = 3;
+            if(e.keyCode === 40) pac.dir = 4;
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
