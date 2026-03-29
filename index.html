@@ -1,118 +1,163 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>YOKBISAYOK - OFFLINE ARCADE</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOKBISAYOK - NEON ARCADE HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
+        
+        body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* EFFECT NEON */
+        .neon-purple { border: 1px solid #bc13fe; box-shadow: 0 0 15px rgba(188, 19, 254, 0.4); }
+        .neon-cyan { border: 1px solid #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
+        .text-neon { text-shadow: 0 0 10px #00f2ff; color: #00f2ff; }
+        
+        /* FORM LOGIN */
+        .glass-box { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-radius: 20px; }
+        input { background: rgba(0,0,0,0.5) !important; border: 1px solid #334155 !important; color: white !important; }
+        input:focus { border-color: #00f2ff !important; box-shadow: 0 0 10px #00f2ff; outline: none; }
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-body { background:#020617; color:white; margin:0; font-family:'Rajdhani', sans-serif; }
-.orbitron { font-family: 'Orbitron', sans-serif; }
-
-/* NAVBAR & NEON */
-.header { background:rgba(0,0,0,0.8); border-bottom: 2px solid #bc13fe; box-shadow:0 0 15px #bc13fe; }
-.sidebar { background:rgba(15, 23, 42, 0.5); border-right: 1px solid rgba(0, 242, 255, 0.2); min-height:100vh; }
-
-/* KARTU GAME */
-.game-card {
-    background:#0f172a; border-radius:15px; overflow:hidden; transition:0.3s;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
-}
-.game-card:hover {
-    transform:translateY(-5px); border-color:#00f2ff;
-    box-shadow: 0 0 20px #00f2ff;
-}
-
-/* TOMBOL */
-.btn-neon { background:linear-gradient(90deg, #bc13fe, #00f2ff); color:black; font-weight:bold; transition:0.3s; }
-.btn-neon:hover { box-shadow:0 0 15px #00f2ff; transform:scale(1.05); }
-
-/* LIST SKOR */
-.score-item { background:rgba(0,0,0,0.4); padding:8px; border-left:3px solid #bc13fe; border-radius:4px; margin-bottom:5px; font-size:12px; }
-</style>
+        /* GAME CARD */
+        .game-card {
+            background: #0f172a; border-radius: 20px; overflow: hidden; transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer;
+        }
+        .game-card:hover { transform: translateY(-10px); border-color: #bc13fe; box-shadow: 0 0 25px #bc13fe; }
+        .game-icon { font-size: 50px; height: 120px; display: flex; align-items: center; justify-content: center; background: #020617; }
+    </style>
 </head>
+<body class="min-h-screen">
 
-<body>
+    <div id="authSection" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <h1 class="text-5xl font-black orbitron italic text-neon mb-10 tracking-tighter">YOKBISAYOK</h1>
+        
+        <div class="glass-box p-8 w-full max-w-md neon-purple">
+            <div id="loginForm">
+                <h2 class="text-xl font-bold orbitron mb-6 text-center">PLAYER LOGIN</h2>
+                <input type="text" id="loginUser" placeholder="Username" class="w-full p-3 rounded-lg mb-4">
+                <input type="password" id="loginPass" placeholder="Password" class="w-full p-3 rounded-lg mb-6">
+                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg font-bold orbitron hover:brightness-125 transition">MASUK GAME</button>
+                <p class="text-center mt-4 text-sm text-gray-400">Belum punya akun? <span onclick="toggleAuth()" class="text-cyan-400 cursor-pointer hover:underline">Daftar Sini</span></p>
+            </div>
 
-<div class="header flex justify-between items-center p-4 sticky top-0 z-50">
-    <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-black orbitron italic text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-400">YOKBISAYOK</h1>
-    </div>
-
-    <div id="login-section" class="flex gap-2">
-        <input id="u" type="text" placeholder="User" class="px-2 py-1 rounded bg-slate-900 border border-gray-700 text-xs w-24">
-        <input id="p" type="password" placeholder="Pass" class="px-2 py-1 rounded bg-slate-900 border border-gray-700 text-xs w-24">
-        <button onclick="login()" class="btn-neon px-4 py-1 rounded text-xs">MASUK</button>
-    </div>
-    
-    <div id="user-section" class="hidden flex items-center gap-4">
-        <div class="text-right">
-            <p id="nav-user" class="text-xs font-bold text-purple-400 orbitron">PLAYER</p>
-            <p id="nav-xp" class="text-[10px] text-cyan-400 font-bold">XP: 0</p>
-        </div>
-        <button onclick="logout()" class="text-red-500 text-xs font-bold hover:underline">KELUAR</button>
-    </div>
-</div>
-
-<div class="flex">
-    <div class="w-64 sidebar p-4 hidden md:block">
-        <p class="text-[10px] text-gray-500 orbitron mb-4">NAVIGASI ARCADE</p>
-        <div class="space-y-2">
-            <div class="p-2 text-cyan-400 font-bold hover:bg-slate-800 rounded cursor-pointer"><i class="fas fa-gamepad mr-2"></i> Semua Game</div>
-            <div class="p-2 text-gray-400 hover:text-white cursor-pointer"><i class="fas fa-trophy mr-2"></i> Papan Skor</div>
-            <div class="p-2 text-gray-400 hover:text-white cursor-pointer"><i class="fas fa-user-friends mr-2"></i> Komunitas</div>
-        </div>
-
-        <div class="mt-10">
-            <p class="text-[10px] text-purple-400 orbitron mb-3 italic">🏆 TOP LOCAL PLAYER</p>
-            <div id="scoreBox" class="space-y-1"></div>
+            <div id="registerForm" class="hidden">
+                <h2 class="text-xl font-bold orbitron mb-6 text-center text-cyan-400">DAFTAR BARU</h2>
+                <input type="text" id="regUser" placeholder="Username Baru" class="w-full p-3 rounded-lg mb-4">
+                <input type="password" id="regPass" placeholder="Password Baru" class="w-full p-3 rounded-lg mb-6">
+                <button onclick="handleRegister()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 p-3 rounded-lg font-bold orbitron hover:brightness-125 transition">BUAT AKUN</button>
+                <p class="text-center mt-4 text-sm text-gray-400">Sudah ada akun? <span onclick="toggleAuth()" class="text-purple-400 cursor-pointer hover:underline">Login Sini</span></p>
+            </div>
         </div>
     </div>
 
-    <div class="flex-1 p-6">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            
-            <div class="game-card" onclick="alert('Membuka Game Ular...')">
-                <div class="h-32 bg-slate-950 flex items-center justify-center border-b border-purple-900/50">
-                    <span class="text-6xl">🐍</span>
+    <div id="lobbySection" class="hidden">
+        <header class="p-6 flex justify-between items-center border-b border-white/10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
+            <h1 class="text-2xl font-black orbitron text-neon">YOKBISAYOK</h1>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p id="displayUser" class="font-bold orbitron text-purple-400">PLAYER</p>
+                    <p class="text-[10px] text-cyan-400 font-bold">LVL 1 - NOVICE</p>
                 </div>
-                <div class="p-4">
-                    <p class="text-[10px] text-purple-500 font-bold orbitron">CLASSIC</p>
-                    <h3 class="font-bold">Neon Snake</h3>
-                </div>
+                <button onclick="handleLogout()" class="bg-red-500/20 text-red-500 p-2 rounded-lg hover:bg-red-500 hover:text-white transition">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="p-8 max-w-6xl mx-auto">
+            <div class="mb-10 p-10 rounded-3xl neon-cyan bg-gradient-to-br from-slate-900 to-slate-950 flex flex-col items-center text-center">
+                <h2 class="text-4xl font-black orbitron mb-2">NEON OFFLINE ARCADE</h2>
+                <p class="text-gray-400 tracking-[4px]">PILIH GAME DAN CETAK SKOR TERTINGGI</p>
             </div>
 
-            <div class="game-card" onclick="alert('Membuka Game Tebak Angka...')">
-                <div class="h-32 bg-slate-950 flex items-center justify-center border-b border-purple-900/50">
-                    <span class="text-6xl">❓</span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="game-card" onclick="location.href='snake.html'">
+                    <div class="game-icon">🐍</div>
+                    <div class="p-4 border-t border-white/5">
+                        <p class="text-[10px] text-purple-400 font-bold orbitron">ARCADE</p>
+                        <h3 class="font-bold text-lg">Neon Snake</h3>
+                    </div>
                 </div>
-                <div class="p-4">
-                    <p class="text-[10px] text-purple-500 font-bold orbitron">BRAIN</p>
-                    <h3 class="font-bold">Magic Number</h3>
+
+                <div class="game-card" onclick="alert('Game segera hadir!')">
+                    <div class="game-icon">🃏</div>
+                    <div class="p-4 border-t border-white/5">
+                        <p class="text-[10px] text-purple-400 font-bold orbitron">PUZZLE</p>
+                        <h3 class="font-bold text-lg">Memory Match</h3>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="alert('Game segera hadir!')">
+                    <div class="game-icon">🎾</div>
+                    <div class="p-4 border-t border-white/5">
+                        <p class="text-[10px] text-purple-400 font-bold orbitron">ACTION</p>
+                        <h3 class="font-bold text-lg">Brick Neon</h3>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="alert('Game segera hadir!')">
+                    <div class="game-icon">❓</div>
+                    <div class="p-4 border-t border-white/5">
+                        <p class="text-[10px] text-purple-400 font-bold orbitron">LOGIC</p>
+                        <h3 class="font-bold text-lg">Magic Number</h3>
+                    </div>
                 </div>
             </div>
+        </main>
+    </div>
 
-            <div class="game-card" onclick="alert('Membuka Game Memori...')">
-                <div class="h-32 bg-slate-950 flex items-center justify-center border-b border-purple-900/50">
-                    <span class="text-6xl">🃏</span>
-                </div>
-                <div class="p-4">
-                    <p class="text-[10px] text-purple-500 font-bold orbitron">PUZZLE</p>
-                    <h3 class="font-bold">Memory Match</h3>
-                </div>
-            </div>
+    <script>
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        const currentUser = localStorage.getItem("loginUser");
 
-            <div class="game-card" onclick="alert('Membuka Game Pantul Bola...')">
-                <div class="h-32 bg-slate-950 flex items-center justify-center border-b border-purple-900/50">
-                    <span class="text-6xl">🎾</span>
-                </div>
-                <div class="p-4">
-                    <p class="text-[10px] text-purple-500 font-bold orbitron">ARCADE</p>
-                    <h3 class="font-bold">Brick Neon</h3>
-                </div>
-            </div>
+        // CEK STATUS LOGIN SAAT BUKA HALAMAN
+        window.onload = () => {
+            if (currentUser) {
+                document.getElementById("authSection").classList.add("hidden");
+                document.getElementById("lobbySection").classList.remove("hidden");
+                document.getElementById("displayUser").innerText = currentUser.toUpperCase();
+            }
+        };
 
-        </div>
+        function toggleAuth() {
+            document.getElementById("loginForm").classList.toggle("hidden");
+            document.getElementById("registerForm").classList.toggle("hidden");
+        }
+
+        function handleRegister() {
+            const u = document.getElementById("regUser").value;
+            const p = document.getElementById("regPass").value;
+            if(!u || !p) return alert("Isi username & password!");
+            if(users.find(x => x.user === u)) return alert("Username sudah terdaftar!");
+
+            users.push({user: u, pass: p, xp: 0});
+            localStorage.setItem("users", JSON.stringify(users));
+            alert("Pendaftaran Berhasil! Silakan Login.");
+            toggleAuth();
+        }
+
+        function handleLogin() {
+            const u = document.getElementById("loginUser").value;
+            const p = document.getElementById("loginPass").value;
+            const found = users.find(x => x.user === u && x.pass === p);
+
+            if(found) {
+                localStorage.setItem("loginUser", u);
+                location.reload();
+            } else {
+                alert("Username atau Password salah!");
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("loginUser");
+            location.reload();
+        }
+    </script>
+</body>
+</html>
