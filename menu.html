@@ -63,9 +63,20 @@
         const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // Daftar Game yang Tersedia
-        const games = ["SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", "GALAXY SHOOTER", "BRICK BREAKER"];
-        for(let i=7; i<=48; i++) { games.push("ARCADE GAME #" + i); }
+        // DAFTAR GAME LENGKAP
+        const games = [
+            "SNAKE RETRO", 
+            "TETRIS ULTRA", 
+            "PAC-MAN NEO", 
+            "SPACE INVADERS", 
+            "GALAXY SHOOTER", 
+            "BRICK BREAKER",
+            "NEON RACER",
+            "FLAPPY CYBER"
+        ];
+        
+        // Menambah dummy game untuk memperamai library sampai 48 slot
+        for(let i=9; i<=48; i++) { games.push("ARCADE GAME #" + i); }
         
         const grid = document.getElementById('arcadeGrid');
         
@@ -132,9 +143,9 @@
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
 
-        // --- KONEKSI SEMUA ARENA GAME (SUDAH AKTIF SEMUA) ---
+        // --- KONEKSI FINAL SEMUA FILE GAME ---
         function startGameAction() { 
-            const target = currentGameTarget.toUpperCase();
+            const target = currentGameTarget.toUpperCase().trim();
             
             if(target === "SNAKE RETRO") {
                 window.location.href = "snake.html"; 
@@ -148,8 +159,12 @@
                 window.location.href = "shooter.html"; 
             } else if(target === "BRICK BREAKER") {
                 window.location.href = "brick.html";
+            } else if(target === "NEON RACER") {
+                window.location.href = "racer.html";
+            } else if(target === "FLAPPY CYBER") {
+                window.location.href = "flappy.html";
             } else {
-                alert("Arena " + currentGameTarget + " segera hadir!"); 
+                alert("Arena " + target + " segera hadir di update berikutnya!"); 
             }
         }
 
