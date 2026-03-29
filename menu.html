@@ -59,15 +59,14 @@
     </main>
 
     <script>
-        // JALUR ANTI-RIBET (Langsung ke Database)
         const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
         const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // RENDER 48 GAME (Tampilan Utuh)
         const games = ["SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", "GALAXY SHOOTER", "BRICK BREAKER"];
         for(let i=7; i<=48; i++) { games.push("ARCADE GAME #" + i); }
         const grid = document.getElementById('arcadeGrid');
+        
         games.forEach(name => {
             grid.innerHTML += `
                 <div class="arcade-card">
@@ -79,7 +78,6 @@
                 </div>`;
         });
 
-        // FUNGSI AMBIL DATA TANPA API KEY
         async function getDatabase() {
             try {
                 const res = await fetch(dbURL + "?nocache=" + Date.now());
@@ -91,7 +89,6 @@
 
         let currentGameTarget = "";
 
-        // POPUP RANK 1-2-3 (AKTIF)
         async function showPopup(name) {
             currentGameTarget = name;
             document.getElementById('modalTitle').innerText = name;
@@ -115,17 +112,14 @@
             }
         }
 
-        // SYNC HEADER & LEADERBOARD (AKTIF)
         async function syncAll() {
             const players = await getDatabase();
             const list = document.getElementById('leaderList');
             const myHeaderScore = document.getElementById('myTotalScore');
 
-            // Update Skor Samping Nama
             const me = players.find(p => p.name.trim().toUpperCase() === activeUser.trim());
             myHeaderScore.innerText = me ? me.score.toLocaleString() : "0";
 
-            // Update Hall of Fame Bawah
             if(list) {
                 list.innerHTML = "";
                 players.slice(0, 12).forEach((p, idx) => {
@@ -135,9 +129,21 @@
         }
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
-        function startGameAction() { if(currentGameTarget === "SNAKE RETRO") window.location.href = "snake.html"; else alert("Akses Ditutup."); }
 
-        // SINKRONISASI OTOMATIS
+        // --- SEMUA GAME DIBUKA DI SINI ---
+        function startGameAction() { 
+            const target = currentGameTarget.toUpperCase();
+            if(target === "SNAKE RETRO") {
+                window.location.href = "snake.html"; 
+            } else if(target === "TETRIS ULTRA") {
+                window.location.href = "tetris.html";
+            } else if(target === "PAC-MAN NEO") {
+                window.location.href = "pacman.html"; // Pastikan file pacman.html sudah ada
+            } else {
+                alert("Arena " + currentGameTarget + " segera hadir!"); 
+            }
+        }
+
         syncAll();
         setInterval(syncAll, 5000);
     </script>
