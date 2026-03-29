@@ -2,123 +2,192 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>YOKBISAYOK - CYBER STRIKE</title>
+    <title>YOKBISAYOK - CYBER STRIKE OVERDRIVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
         body { 
-            background: #050112; color: white; font-family: 'Rajdhani', sans-serif; 
+            background: #020008; color: white; font-family: 'Rajdhani', sans-serif; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            min-height: 100vh; margin: 0; padding: 20px; overflow: hidden; cursor: crosshair;
+            min-height: 100vh; margin: 0; padding: 20px; overflow: hidden; cursor: none;
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        #game-container { 
-            position: relative; border: 4px solid #ef4444; 
-            box-shadow: 0 0 40px rgba(239, 68, 68, 0.3); 
-            background: radial-gradient(circle, #1a1a1a 0%, #000 100%); 
-            border-radius: 20px; overflow: hidden; 
+        
+        /* TOMBOL BACK */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #ef4444;
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #ef4444; transition: 0.3s;
+            z-index: 1000; text-decoration: none;
         }
+        .btn-back:hover { background: #ef4444; color: #fff; box-shadow: 0 0 20px #ef4444; }
+
+        #game-container { 
+            position: relative; border: 2px solid #ef4444; 
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.2); 
+            background: #000; border-radius: 20px; overflow: hidden; 
+        }
+
         #gameOverModal { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.95); z-index: 100; 
-            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
+            align-items: center; justify-content: center; backdrop-filter: blur(15px); 
         }
+
         .modal-content { 
             background: #0d0221; border: 3px solid #ef4444; padding: 40px; 
-            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ef4444; width: 340px; 
+            border-radius: 25px; text-align: center; box-shadow: 0 0 80px #ef4444; width: 360px; 
         }
-        .hud { position: absolute; top: 20px; left: 20px; pointer-events: none; }
+
+        .hud-stats {
+            position: absolute; top: 20px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between; pointer-events: none;
+        }
+        
+        canvas { display: block; }
     </style>
 </head>
 <body>
 
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-power-off mr-2"></i> ABORT MISSION
+    </a>
+
     <div id="gameOverModal">
         <div class="modal-content">
-            <h2 class="orbitron text-4xl text-red-500 mb-2 italic">MISSION FAILED</h2>
-            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest italic">Base Compromised</p>
+            <h2 class="orbitron text-4xl text-red-500 mb-2 italic">NEUTRALIZED</h2>
+            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest italic">Base Perimeter Compromised</p>
             <div class="mb-10">
-                <p class="text-gray-500 text-[10px] uppercase orbitron">Kill Count</p>
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Tactical Kill Score</p>
                 <p id="finalScoreDisplay" class="text-6xl text-red-500 orbitron">0</p>
             </div>
-            <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-red-500 transition uppercase italic text-lg">RE-DEPLOY</button>
-            <button onclick="window.location.href='menu.html'" class="mt-4 w-full text-gray-500 text-[10px] orbitron uppercase">Abort Mission</button>
+            <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-red-500 transition uppercase italic text-lg shadow-lg">RE-DEPLOY</button>
+            <button onclick="window.location.href='menu.html'" class="mt-6 w-full text-gray-500 text-[10px] orbitron uppercase tracking-[0.3em]">Exit to HQ</button>
         </div>
     </div>
 
     <div class="mb-4 text-center">
-        <p class="text-[10px] text-gray-500 uppercase orbitron">Tactical Score</p>
-        <p id="pScore" class="text-5xl text-red-500 orbitron">0</p>
+        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Sector Kill Count</p>
+        <p id="pScore" class="text-5xl text-red-600 orbitron">0</p>
     </div>
 
     <div id="game-container">
-        <div class="hud">
-            <p class="text-xs text-red-500 orbitron">HEALTH: <span id="healthDisplay">100%</span></p>
+        <div class="hud-stats">
+            <div>
+                <p class="text-[10px] text-red-500 orbitron">BASE INTEGRITY</p>
+                <div class="w-32 h-2 bg-red-900 rounded-full mt-1">
+                    <div id="hpBar" class="h-full bg-red-500 rounded-full transition-all" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] text-cyan-500 orbitron">AMMO CAPACITY</p>
+                <p id="ammoDisplay" class="text-2xl text-cyan-400 orbitron">12 / 12</p>
+            </div>
         </div>
-        <canvas id="strikeCanvas" width="600" height="400"></canvas>
+        <canvas id="strikeCanvas" width="700" height="450"></canvas>
     </div>
 
-    <div class="mt-6 p-4 bg-white/5 border border-red-500/20 rounded-xl w-[600px] flex justify-around items-center">
-        <div class="text-center">
-            <p class="text-[10px] text-gray-500 uppercase orbitron">Action</p>
-            <p class="text-sm">CLICK TO FIRE</p>
-        </div>
-        <div class="text-center">
-            <p class="text-[10px] text-gray-500 uppercase orbitron">Enemy</p>
-            <p class="text-sm text-red-400">NEON DRONES</p>
-        </div>
+    <div class="mt-6 text-center text-[10px] text-gray-500 orbitron uppercase tracking-widest space-y-2">
+        <p><span class="text-white border border-white/20 px-2 py-0.5 rounded">CLICK</span> TO SHOOT | <span class="text-white border border-white/20 px-2 py-0.5 rounded">R</span> TO RELOAD</p>
+        <p class="text-red-400 animate-pulse italic">Don't let them reach 0% integrity!</p>
     </div>
 
     <script>
         const canvas = document.getElementById('strikeCanvas');
         const ctx = canvas.getContext('2d');
-        const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
-        const player = (localStorage.getItem('loginUser') || "USER").toUpperCase();
+        const player = (localStorage.getItem('loginUser') || "GHOST").toUpperCase();
 
         let score = 0, health = 100, gameActive = true;
-        let enemies = [], particles = [], mouse = {x: 0, y: 0}, recoil = 0;
+        let ammo = 12, maxAmmo = 12, isReloading = false;
+        let enemies = [], particles = [], mouse = {x: 0, y: 0};
+        let shake = 0, recoil = 0;
 
+        // MOUSE POSITION
         canvas.addEventListener('mousemove', e => {
             const rect = canvas.getBoundingClientRect();
             mouse.x = e.clientX - rect.left;
             mouse.y = e.clientY - rect.top;
         });
 
-        canvas.addEventListener('mousedown', () => {
-            if(!gameActive) return;
-            recoil = 15; // Efek hentakan senjata
-            checkHit();
+        // SHOOT ACTION
+        window.addEventListener('mousedown', () => {
+            if(!gameActive || isReloading) return;
+            
+            if(ammo > 0) {
+                ammo--;
+                shake = 8; 
+                recoil = 15;
+                updateHUD();
+                checkHit();
+            } else {
+                shake = 3; // Empty click feel
+            }
         });
 
-        function createExplosion(x, y, color) {
-            for(let i=0; i<10; i++) {
+        // RELOAD ACTION
+        window.addEventListener('keydown', (e) => {
+            if(e.key.toLowerCase() === 'r' && ammo < maxAmmo && !isReloading) {
+                reload();
+            }
+        });
+
+        function reload() {
+            isReloading = true;
+            document.getElementById('ammoDisplay').innerText = "RELOADING...";
+            document.getElementById('ammoDisplay').classList.add('animate-pulse');
+            setTimeout(() => {
+                ammo = maxAmmo;
+                isReloading = false;
+                document.getElementById('ammoDisplay').classList.remove('animate-pulse');
+                updateHUD();
+            }, 1000);
+        }
+
+        function updateHUD() {
+            document.getElementById('ammoDisplay').innerText = `${ammo} / ${maxAmmo}`;
+            document.getElementById('pScore').innerText = score;
+            document.getElementById('hpBar').style.width = health + "%";
+            if(ammo === 0) document.getElementById('ammoDisplay').classList.add('text-red-500');
+            else document.getElementById('ammoDisplay').classList.remove('text-red-500');
+        }
+
+        function createExplosion(x, y, color, amount = 15) {
+            for(let i=0; i<amount; i++) {
                 particles.push({
                     x, y, 
-                    vx: (Math.random()-0.5)*10, 
-                    vy: (Math.random()-0.5)*10, 
+                    vx: (Math.random()-0.5)*12, 
+                    vy: (Math.random()-0.5)*12, 
                     life: 1, color
                 });
             }
         }
 
         function checkHit() {
+            let hit = false;
             enemies.forEach((en, i) => {
                 const dist = Math.hypot(en.x - mouse.x, en.y - mouse.y);
                 if(dist < en.r) {
-                    createExplosion(en.x, en.y, '#ff0000');
+                    createExplosion(en.x, en.y, '#ff4444', 20);
                     enemies.splice(i, 1);
                     score += 150;
-                    document.getElementById('pScore').innerText = score;
+                    hit = true;
+                    updateHUD();
                 }
             });
+            if(!hit) createExplosion(mouse.x, mouse.y, '#ffffff', 3); // Bullet hit wall
         }
 
         function spawnEnemy() {
-            if(Math.random() < 0.02 + (score/10000)) {
+            if(Math.random() < 0.025 + (score/20000)) {
                 enemies.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    r: 20 + Math.random()*20,
-                    timer: 100 - (score/500) // Musuh menyerang lebih cepat seiring waktu
+                    x: Math.random() * (canvas.width - 60) + 30,
+                    y: Math.random() * (canvas.height - 60) + 30,
+                    r: 25,
+                    timer: 100 - (score/400),
+                    maxTimer: 100 - (score/400)
                 });
             }
         }
@@ -127,78 +196,91 @@
             if(!gameActive) return;
             spawnEnemy();
 
+            if(shake > 0) shake *= 0.8;
             if(recoil > 0) recoil -= 2;
 
             enemies.forEach((en, i) => {
                 en.timer -= 1;
                 if(en.timer <= 0) {
-                    health -= 10;
-                    document.getElementById('healthDisplay').innerText = health + "%";
-                    createExplosion(en.x, en.y, '#ffffff');
+                    health -= 15;
+                    shake = 20;
+                    createExplosion(en.x, en.y, '#ff0000', 30);
                     enemies.splice(i, 1);
+                    updateHUD();
                     if(health <= 0) gameActive = false;
                 }
             });
 
             particles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy; p.life -= 0.02;
+                p.x += p.vx; p.y += p.vy; p.life -= 0.03;
                 if(p.life <= 0) particles.splice(i, 1);
             });
         }
 
         function draw() {
+            ctx.save();
+            // Screen Shake Effect
+            const sx = (Math.random()-0.5) * shake;
+            const sy = (Math.random()-0.5) * shake;
+            ctx.translate(sx, sy);
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Draw Grid (Cyber Atmosphere)
-            ctx.strokeStyle = '#222'; ctx.lineWidth = 1;
-            for(let i=0; i<canvas.width; i+=40) {
+            // Background Grid
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.05)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=50) {
                 ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
             }
 
-            // Draw Enemies (Realistic Drones)
+            // Enemies (Cyber Drones)
             enemies.forEach(en => {
                 ctx.save();
+                const pulse = Math.abs(Math.sin(Date.now()/200));
+                
+                // Timer Ring
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(255, 0, 0, ${pulse})`;
+                ctx.lineWidth = 3;
+                ctx.arc(en.x, en.y, en.r + 5, 0, (Math.PI*2) * (en.timer/en.maxTimer));
+                ctx.stroke();
+
+                // Drone Body
                 ctx.shadowBlur = 15; ctx.shadowColor = '#ff0000';
-                // Body
-                ctx.fillStyle = '#333';
+                ctx.fillStyle = '#1a1a1a';
                 ctx.beginPath(); ctx.arc(en.x, en.y, en.r, 0, Math.PI*2); ctx.fill();
-                // Core Light
-                ctx.fillStyle = `rgba(255, 0, 0, ${Math.abs(Math.sin(Date.now()/200))})`;
-                ctx.beginPath(); ctx.arc(en.x, en.y, en.r*0.4, 0, Math.PI*2); ctx.fill();
+                
+                // Drone Eye
+                ctx.fillStyle = '#ff0000';
+                ctx.beginPath(); ctx.arc(en.x, en.y, en.r * 0.3, 0, Math.PI*2); ctx.fill();
                 ctx.restore();
             });
 
-            // Draw Particles
+            // Particles
             particles.forEach(p => {
-                ctx.fillStyle = `rgba(255, 0, 0, ${p.life})`;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
                 ctx.fillRect(p.x, p.y, 3, 3);
             });
+            ctx.globalAlpha = 1.0;
 
-            // Draw Gun Crosshair (Realistic HUD)
+            // Crosshair
             ctx.save();
             ctx.translate(0, recoil);
-            ctx.strokeStyle = '#00f2ff'; ctx.lineWidth = 2;
+            ctx.strokeStyle = ammo === 0 ? '#ff0000' : '#00f2ff';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 10; ctx.shadowColor = ctx.strokeStyle;
+            
             ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, 15, 0, Math.PI*2);
-            ctx.moveTo(mouse.x - 20, mouse.y); ctx.lineTo(mouse.x + 20, mouse.y);
-            ctx.moveTo(mouse.x, mouse.y - 20); ctx.lineTo(mouse.x, mouse.y + 20);
+            ctx.arc(mouse.x, mouse.y, 20 + (recoil), 0, Math.PI*2);
+            ctx.moveTo(mouse.x - 30, mouse.y); ctx.lineTo(mouse.x - 10, mouse.y);
+            ctx.moveTo(mouse.x + 30, mouse.y); ctx.lineTo(mouse.x + 10, mouse.y);
+            ctx.moveTo(mouse.x, mouse.y - 30); ctx.lineTo(mouse.x, mouse.y - 10);
+            ctx.moveTo(mouse.x, mouse.y + 30); ctx.lineTo(mouse.x, mouse.y + 10);
             ctx.stroke();
             ctx.restore();
-        }
 
-        async function saveAndExit() {
-            try {
-                const res = await fetch(dbURL);
-                const data = await res.json();
-                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
-                if(userKey) {
-                    await fetch(`https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard/${userKey}.json`, {
-                        method: 'PATCH',
-                        body: JSON.stringify({ score: data[userKey].score + score })
-                    });
-                }
-            } catch (e) {}
-            window.location.href = 'menu.html';
+            ctx.restore();
         }
 
         function loop() {
@@ -207,7 +289,6 @@
             else {
                 document.getElementById('finalScoreDisplay').innerText = score;
                 document.getElementById('gameOverModal').style.display = 'flex';
-                saveAndExit();
             }
         }
         loop();
