@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOKBISAYOK - DRAGON SLAYER NEON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&display=swap');
+        
+        :root {
+            --cyan: #00f2ff;
+            --purple: #bc13fe;
+            --pink: #ff0055;
+            --fire: #ff5e00;
+        }
+
+        body { 
+            background: #02010a; color: white; font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+
+        /* NEON GLOW */
+        .glow-cyan { box-shadow: 0 0 20px var(--cyan); border: 2px solid var(--cyan); }
+        .text-neon { text-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan); }
+        .text-neon-purple { text-shadow: 0 0 10px var(--purple), 0 0 20px var(--purple); }
+        .text-neon-fire { text-shadow: 0 0 10px var(--fire), 0 0 20px var(--fire); }
+
+        /* GAME LAYOUT */
+        #game-area {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; position: relative;
+        }
+
+        .battle-stage {
+            width: 100%; max-width: 800px; height: 400px;
+            background: rgba(0,0,0,0.8); border-radius: 20px;
+            position: relative; overflow: hidden;
+            border: 2px solid #1a1a1a;
+        }
+
+        /* DRAGON & PLAYER */
+        #dragon {
+            position: absolute; top: 50px; right: 50px; text-align: center;
+            transition: 0.3s;
+        }
+        #player {
+            position: absolute; bottom: 50px; left: 50px; text-align: center;
+        }
+
+        .hp-bar-bg { width: 150px; height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin-top: 5px;}
+        #dragon-hp-bar { width: 100%; height: 100%; background: var(--pink); transition: 0.2s; }
+        #player-hp-bar { width: 100%; height: 100%; background: var(--cyan); transition: 0.2s; }
+
+        /* ANIMATIONS */
+        @keyframes dragonAttack { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-50px) scale(1.1); } }
+        .dragon-attacking { animation: dragonAttack 0.5s ease-in-out; }
+        
+        @keyframes damageShake { 0%, 100% { transform: translate(0); } 20%, 60% { transform: translate(-5px, 5px); } 40%, 80% { transform: translate(5px, -5px); } }
+        .damaged { animation: damageShake 0.3s ease-in-out; }
+
+        @keyframes fireBreath { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); color: var(--fire); text-shadow: 0 0 30px var(--fire); } 100% { opacity: 0; transform: scale(1); } }
+        #fire-effect { position: absolute; top: 100px; right: 150px; font-size: 5rem; opacity: 0; pointer-events: none; }
+        .breathing-fire { animation: fireBreath 0.6s ease-in-out; z-index: 10; }
+
+        /* BACK BUTTON */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(188, 19, 254, 0.1); border: 2px solid var(--purple);
+            color: var(--purple); padding: 10px 20px; border-radius: 10px;
+            font-family: 'Orbitron'; font-size: 12px; font-weight: bold;
+            box-shadow: 0 0 15px var(--purple); transition: 0.3s; z-index: 100;
+        }
+        .btn-back:hover { background: var(--purple); color: white; box-shadow: 0 0 25px var(--purple); transform: translateX(-5px); }
+
+        /* ACTION BUTTONS */
+        .action-btn {
+            background: transparent; border: 2px solid #333; color: #555;
+            font-family: 'Orbitron'; font-weight: bold; padding: 15px;
+            border-radius: 10px; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-active-cyan { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 15px var(--cyan); }
+        .btn-active-cyan:hover { background: var(--cyan); color: black; box-shadow: 0 0 25px var(--cyan); }
+        
+        .btn-active-purple { border-color: var(--purple); color: var(--purple); box-shadow: 0 0 15px var(--purple); }
+        .btn-active-purple:hover { background: var(--purple); color: white; box-shadow: 0 0 25px var(--purple); }
+
+        /* MODAL GAYA CYBER */
+        #gameOverModal, #howToModal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .modal-box {
+            background: #050112; border: 3px solid var(--purple); p: 40px; border-radius: 30px; text-align: center;
+            width: 90%; max-width: 500px; box-shadow: 0 0 60px var(--purple);
+        }
+    </style>
+</head>
+<body>
+
+    <a href="menu.html" class="btn-back">
+        <i class="fas fa-arrow-left mr-2"></i> ABORT MISSION
+    </a>
+
+    <header class="p-6 px-10 bg-black/80 backdrop-blur-md border-b-2 border-purple-600 sticky top-0 z-50 flex justify-between items-center shadow-[0_0_20px_rgba(188,19,254,0.3)]">
+        <div>
+            <h1 class="text-3xl font-black orbitron italic text-neon-fire tracking-tighter">DRAGON<span class="text-white">SLAYER</span></h1>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div class="text-right border-r-2 border-cyan-500 pr-6">
+                <p id="userNameDisplay" class="text-[10px] orbitron font-bold text-gray-400 uppercase tracking-widest">AGENT: PLAYER</p>
+                <div class="flex items-center gap-2 justify-end">
+                    <i class="fas fa-trophy text-yellow-400"></i>
+                    <p class="text-2xl font-black orbitron text-neon" id="gameScore">0</p>
+                </div>
+            </div>
+            <button onclick="showHowTo()" class="w-12 h-12 rounded-xl bg-cyan-600/20 text-cyan-400 hover:bg-cyan-600 hover:text-white transition-all flex items-center justify-center border border-cyan-600/50 shadow-[0_0_10px_var(--cyan)]">
+                <i class="fas fa-question text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <div id="game-area">
+        <div class="battle-stage glow-cyan">
+            <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-dotted.png')] opacity-30"></div>
+            
+            <i id="fire-effect" class="fas fa-fire text-neon-fire"></i>
+
+            <div id="dragon">
+                <i class="fas fa-dragon text-7xl text-neon-fire animate-pulse"></i>
+                <p class="orbitron text-xs text-gray-400 mt-2 uppercase tracking-widest">Void Drake</p>
+                <div class="hp-bar-bg"><div id="dragon-hp-bar"></div></div>
+                <p id="dragon-hp-text" class="text-[10px] orbitron text-pink-400">100 / 100 HP</p>
+            </div>
+
+            <div id="player">
+                <i class="fas fa-user-shield text-5xl text-neon"></i>
+                <p id="playerNameDisplay" class="orbitron text-xs text-white mt-2 uppercase tracking-widest">AGENT</p>
+                <div class="hp-bar-bg"><div id="player-hp-bar"></div></div>
+                <p id="player-hp-text" class="text-[10px] orbitron text-cyan-400">100 / 100 HP</p>
+            </div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-3 gap-6 w-full max-w-xl" id="controls">
+            <button onclick="playerAction('attack')" id="btn-attack" class="action-btn btn-active-cyan">
+                <i class="fas fa-swords text-2xl mb-2 block"></i> ATTACK
+            </button>
+            <button onclick="playerAction('defend')" id="btn-defend" class="action-btn btn-active-purple">
+                <i class="fas fa-shield-alt text-2xl mb-2 block"></i> DEFEND
+            </button>
+            <button onclick="playerAction('heal')" id="btn-heal" class="action-btn btn-active-cyan">
+                <i class="fas fa-heart text-2xl mb-2 block"></i> HEAL (3)
+            </button>
+        </div>
+
+        <div class="mt-6 w-full max-w-xl h-20 bg-black/50 border border-white/5 rounded-xl p-4 overflow-y-auto text-[11px] text-gray-500 font-mono shadow-inner" id="game-log">
+            > Neural connection established.<br>
+            > Waiting for Agent command...
+        </div>
+    </div>
+
+    <div id="howToModal">
+        <div class="modal-box text-left">
+            <h2 class="text-3xl font-black orbitron italic mb-6 text-center text-neon uppercase">CARA BERMAIN</h2>
+            <div class="space-y-4 text-gray-300 text-sm leading-relaxed font-mono">
+                <p><span class="text-cyan-400 font-bold">[ATTACK]</span>: Serang Naga. Berikan kerusakan 10-20 HP. Tapi hati-hati, Naga akan menyerang balik!</p>
+                <p><span class="text-purple-400 font-bold">[DEFEND]</span>: Masuk mode bertahan. Mengurangi kerusakan dari serangan Naga berikutnya sebesar 50%. Bertahan tidak memicu serangan balik Naga.</p>
+                <p><span class="text-cyan-400 font-bold">[HEAL]</span>: Pulihkan 20-30 HP kamu. Kamu hanya punya 3 slot pemulihan per pertempuran. Pemulihan tidak memicu serangan balik Naga.</p>
+                <p><span class="text-yellow-400 font-bold">[OBJECTIVE]</span>: Kalahkan Naga dengan menghabiskan HP-nya. Skor kamu akan bertambah setiap kali kamu menang. Jika HP kamu habis, permainan berakhir.</p>
+            </div>
+            <button onclick="closeModal('howTo')" class="w-full mt-10 bg-cyan-500 text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-white transition uppercase shadow-[0_0_20px_rgba(0,242,255,0.5)]">PAHAM, MASUK ARENA</button>
+        </div>
+    </div>
+
+    <div id="gameOverModal">
+        <div class="modal-box relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent animate-pulse"></div>
+            <div class="bg-red-600/20 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-red-500 shadow-[0_0_30px_rgba(255,0,0,0.5)]">
+                <i class="fas fa-skull-crossbones text-4xl text-white"></i>
+            </div>
+            <h2 class="text-5xl font-black orbitron italic mb-2 text-neon-fire uppercase">MISSION FAILED</h2>
+            <p class="text-[10px] orbitron text-cyan-400 tracking-[5px] mb-8">CONNECTION TERMINATED BY HOST</p>
+            
+            <div class="bg-black/40 rounded-2xl p-6 mb-10 border border-white/5">
+                <p class="orbitron text-xs text-gray-500 uppercase tracking-[4px] mb-2">Final Score Acquire</p>
+                <p id="finalScore" class="text-6xl font-black orbitron text-neon">0</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="resetGame()" class="w-full btn-play-ultra py-5 text-xl italic tracking-tighter bg-cyan-500 text-black rounded-xl orbitron font-black shadow-[0_0_20px_rgba(0,242,255,0.5)]">RE-ENGAGE</button>
+                <a href="menu.html" class="w-full bg-black border border-purple-500 text-purple-500 py-5 rounded-xl orbitron font-black text-xl hover:bg-purple-600 hover:text-white transition flex items-center justify-center uppercase">BACK TO HQ</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const activeUser = (localStorage.getItem('loginUser') || "GUEST").toUpperCase();
+        document.getElementById('userNameDisplay').innerText = "AGENT: " + activeUser;
+        document.getElementById('playerNameDisplay').innerText = activeUser;
+
+        // --- GAME STATE ---
+        let gameState = {
+            player: { hp: 100, maxHp: 100, heals: 3, defending: false },
+            dragon: { hp: 100, maxHp: 100 },
+            score: 0,
+            turn: 'player', // player, dragon
+            round: 1
+        };
+
+        const elements = {
+            dragon: document.getElementById('dragon'),
+            dragonHpBar: document.getElementById('dragon-hp-bar'),
+            dragonHpText: document.getElementById('dragon-hp-text'),
+            player: document.getElementById('player'),
+            playerHpBar: document.getElementById('player-hp-bar'),
+            playerHpText: document.getElementById('player-hp-text'),
+            score: document.getElementById('gameScore'),
+            log: document.getElementById('game-log'),
+            fire: document.getElementById('fire-effect'),
+            btnHeal: document.getElementById('btn-heal')
+        };
+
+        // --- CORE FUNCTIONS ---
+
+        function updateUI() {
+            // Dragon
+            const dragonHpPercent = (gameState.dragon.hp / gameState.dragon.maxHp) * 100;
+            elements.dragonHpBar.style.width = dragonHpPercent + '%';
+            elements.dragonHpText.innerText = `${gameState.dragon.hp} / ${gameState.dragon.maxHp} HP`;
+            
+            // Player
+            const playerHpPercent = (gameState.player.hp / gameState.player.maxHp) * 100;
+            elements.playerHpBar.style.width = playerHpPercent + '%';
+            elements.playerHpText.innerText = `${gameState.player.hp} / ${gameState.player.maxHp} HP`;
+            
+            // Stats
+            elements.score.innerText = gameState.score;
+            elements.btnHeal.innerText = `HEAL (${gameState.player.heals})`;
+
+            // Heal Button State
+            if(gameState.player.heals <= 0) {
+                elements.btnHeal.classList.remove('btn-active-cyan');
+                elements.btnHeal.disabled = true;
+                elements.btnHeal.style.opacity = 0.3;
+            } else {
+                elements.btnHeal.classList.add('btn-active-cyan');
+                elements.btnHeal.disabled = false;
+                elements.btnHeal.style.opacity = 1;
+            }
+        }
+
+        function addLog(message, type = 'system') {
+            const color = type === 'player' ? 'text-cyan-400' : type === 'dragon' ? 'text-pink-400' : 'text-gray-500';
+            elements.log.innerHTML += `<br><span class="${color}">> ${message}</span>`;
+            elements.log.scrollTop = elements.log.scrollHeight;
+        }
+
+        function animate(element, animationClass, duration) {
+            element.classList.add(animationClass);
+            setTimeout(() => element.classList.remove(animationClass), duration);
+        }
+
+        // --- GAME LOGIC ---
+
+        function playerAction(action) {
+            if (gameState.turn !== 'player') return;
+            gameState.turn = 'dragon'; // Switch turn immediately
+            gameState.player.defending = false; // Reset shield
+
+            if (action === 'attack') {
+                const damage = Math.floor(Math.random() * 11) + 10; // 10-20
+                gameState.dragon.hp -= damage;
+                if (gameState.dragon.hp < 0) gameState.dragon.hp = 0;
+                
+                addLog(`Agent menyerang Void Drake! Berhasil berikan ${damage} DMG.`, 'player');
+                animate(elements.dragon, 'damaged', 300);
+                
+                if (gameState.dragon.hp <= 0) {
+                    addLog('VOID DRAKE DIKALAHKAN!', 'system');
+                    gameState.score += 100 * gameState.round;
+                    updateUI();
+                    setTimeout(nextRound, 1000);
+                    return; // Stop dragon turn
+                }
+            } else if (action === 'defend') {
+                gameState.player.defending = true;
+                addLog('Agent mengaktifkan protokol pertahanan. DMG Naga akan berkurang 50%.', 'player');
+                // Defend doesnt trigger counter, go straight to dragon turn after setting state
+            } else if (action === 'heal') {
+                if(gameState.player.heals > 0) {
+                    const heal = Math.floor(Math.random() * 11) + 20; // 20-30
+                    gameState.player.hp += heal;
+                    if (gameState.player.hp > gameState.player.maxHp) gameState.player.hp = gameState.player.maxHp;
+                    gameState.player.heals--;
+                    addLog(`Agent melakukan pemulihan neural. Pulihkan ${heal} HP.`, 'player');
+                    // Heal doesnt trigger counter
+                } else {
+                    addLog('Slot pemulihan habis!', 'player');
+                    gameState.turn = 'player'; // Allow re-choosing
+                    return;
+                }
+            }
+            
+            updateUI();
+            
+            // If action triggers naga attack (currently just attack)
+            if (action === 'attack') {
+                setTimeout(dragonTurn, 800);
+            } else {
+                // Defend and Heal switch turn back to player immediately, 
+                // dragon only attacks after player attacks
+                gameState.turn = 'player';
+            }
+        }
+
+        function dragonTurn() {
+            if (gameState.dragon.hp <= 0) return;
+
+            animate(elements.dragon, 'dragon-attacking', 500);
+            animate(elements.fire, 'breathing-fire', 600);
+
+            setTimeout(() => {
+                let damage = Math.floor(Math.random() * 16) + 15; // 15-30
+                
+                if (gameState.player.defending) {
+                    damage = Math.floor(damage / 2);
+                    addLog('Pertahanan Agent menahan serangan Naga!', 'dragon');
+                }
+
+                gameState.player.hp -= damage;
+                if (gameState.player.hp < 0) gameState.player.hp = 0;
+
+                addLog(`Void Drake menyemburkan api! Agent terkena ${damage} DMG.`, 'dragon');
+                animate(elements.player, 'damaged', 300);
+                updateUI();
+
+                if (gameState.player.hp <= 0) {
+                    addLog('NEURAL CONNECTION LOST. MISSION FAILED.', 'dragon');
+                    gameOver();
+                } else {
+                    gameState.turn = 'player';
+                }
+            }, 300);
+        }
+
+        function nextRound() {
+            gameState.round++;
+            gameState.dragon.maxHp += 20;
+            gameState.dragon.hp = gameState.dragon.maxHp;
+            gameState.player.maxHp += 10;
+            gameState.player.hp = gameState.player.maxHp;
+            gameState.player.heals = 3;
+            gameState.turn = 'player';
+            
+            addLog(`> Memasuki Sektor ${gameState.round}. Void Drake Level Up. HP Agent dipulihkan.`, 'system');
+            updateUI();
+        }
+
+        function gameOver() {
+            document.getElementById('finalScore').innerText = gameState.score;
+            document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        function resetGame() {
+            gameState = {
+                player: { hp: 100, maxHp: 100, heals: 3, defending: false },
+                dragon: { hp: 100, maxHp: 100 },
+                score: 0,
+                turn: 'player',
+                round: 1
+            };
+            elements.log.innerHTML = `> Neural connection re-established.<br>> Memulai operasi Sektor 1...`;
+            document.getElementById('gameOverModal').style.display = 'none';
+            updateUI();
+        }
+
+        // --- MODAL FUNCTIONS ---
+        function showHowTo() { document.getElementById('howToModal').style.display = 'flex'; }
+        function closeModal(modalName) { 
+            if(modalName === 'howTo') document.getElementById('howToModal').style.display = 'none';
+        }
+
+        // --- START ---
+        updateUI();
+    </script>
+</body>
+</html>
