@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEON DRIFT - X-SPEED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
+        body { margin: 0; background: #050112; overflow: hidden; font-family: 'Orbitron', sans-serif; touch-action: none; }
+        canvas { display: block; filter: drop-shadow(0 0 10px #00f2ff); }
+        .ui { position: fixed; top: 20px; width: 100%; text-align: center; pointer-events: none; }
+        .speed-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 200px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; }
+        #fill { width: 0%; height: 100%; background: #ff0055; box-shadow: 0 0 15px #ff0055; transition: 0.1s; }
+    </style>
+</head>
+<body>
+
+    <div class="ui">
+        <p class="text-[10px] text-purple-500 tracking-[10px] animate-pulse">VELOCITY</p>
+        <h1 id="scoreDisplay" class="text-5xl text-white italic">0</h1>
+        <p class="text-[8px] text-cyan-400 mt-2">HOLD TO DRIFT LEFT/RIGHT</p>
+    </div>
+
+    <div class="speed-bar"><div id="fill"></div></div>
+
+    <canvas id="roadCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('roadCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth > 500 ? 450 : window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.margin = "0 auto";
+
+        let score = 0;
+        let gameActive = true;
+        let speed = 8;
+        let frame = 0;
+
+        const car = {
+            x: canvas.width / 2 - 20,
+            y: canvas.height - 120,
+            w: 40, h: 70,
+            targetX: canvas.width / 2 - 20,
+            color: '#00f2ff'
+        };
+
+        const enemies = [];
+        const lines = [];
+
+        // Inisialisasi Garis Jalan
+        for(let i=0; i<5; i++) lines.push({ y: i * (canvas.height/4) });
+
+        // Input Control
+        window.addEventListener('touchstart', (e) => handleInput(e.touches[0].clientX));
+        window.addEventListener('mousedown', (e) => handleInput(e.clientX));
+
+        function handleInput(clientX) {
+            if(!gameActive) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = clientX - rect.left;
+            car.targetX = mouseX - car.w/2;
+        }
+
+        function spawnEnemy() {
+            const lanes = [canvas.width*0.1, canvas.width*0.4, canvas.width*0.7];
+            const lane = lanes[Math.floor(Math.random() * lanes.length)];
+            enemies.push({
+                x: lane, y: -100, w: 40, h: 70,
+                color: '#ff0055', speed: speed + (Math.random() * 2)
+            });
+        }
+
+        function drawPlayer() {
+            ctx.shadowBlur = 20; ctx.shadowColor = car.color;
+            ctx.fillStyle = car.color;
+            // Body mobil
+            ctx.fillRect(car.x, car.y, car.w, car.h);
+            // Lampu depan
+            ctx.fillStyle = "white";
+            ctx.fillRect(car.x + 5, car.y, 5, 10);
+            ctx.fillRect(car.x + car.w - 10, car.y, 5, 10);
+        }
+
+        function update() {
+            if(!gameActive) return;
+
+            frame++;
+            if(frame % 60 === 0) {
+                score += 10;
+                document.getElementById('scoreDisplay').innerText = score;
+                speed += 0.1; // Makin lama makin cepat
+                document.getElementById('fill').style.width = (speed * 5) + "%";
+            }
+
+            // Smooth movement
+            car.x += (car.targetX - car.x) * 0.15;
+
+            // Batasi mobil di dalam jalan
+            if(car.x < 0) car.x = 0;
+            if(car.x > canvas.width - car.w) car.x = canvas.width - car.w;
+
+            // Gerakan Garis Jalan
+            lines.forEach(l => {
+                l.y += speed;
+                if(l.y > canvas.height) l.y = -100;
+            });
+
+            // Gerakan Musuh
+            if(frame % Math.floor(100/speed * 5) === 0) spawnEnemy();
+
+            enemies.forEach((en, index) => {
+                en.y += speed * 0.8;
+                if(en.y > canvas.height) enemies.splice(index, 1);
+
+                // Cek Tabrakan (Collision)
+                if (car.x < en.x + en.w && car.x + car.w > en.x &&
+                    car.y < en.y + en.h && car.y + car.h > en.y) {
+                    gameOver();
+                }
+            });
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050112';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Gambar Garis Jalan Neon
+            ctx.strokeStyle = '#bc13fe';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([40, 20]);
+            lines.forEach(l => {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width/3, l.y); ctx.lineTo(canvas.width/3, l.y + canvas.height);
+                ctx.moveTo(canvas.width*2/3, l.y); ctx.lineTo(canvas.width*2/3, l.y + canvas.height);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+
+            // Gambar Musuh
+            enemies.forEach(en => {
+                ctx.shadowBlur = 15; ctx.shadowColor = en.color;
+                ctx.fillStyle = en.color;
+                ctx.fillRect(en.x, en.y, en.w, en.h);
+            });
+
+            drawPlayer();
+        }
+
+        function gameOver() {
+            gameActive = false;
+            alert("CRASHED! SKOR KAMU: " + score);
+            window.location.href = "index.html";
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>
