@@ -14,14 +14,12 @@
         .neon-purple { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
         
-        /* CARD MEWAH */
         .arcade-card { 
             background: rgba(255, 255, 255, 0.03); border: 2px solid #ff00ff; border-radius: 15px; 
             padding: 20px; text-align: center; backdrop-filter: blur(10px); transition: 0.4s;
         }
         .arcade-card:hover { border-color: #00f2ff; transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); }
         
-        /* POPUP MODAL */
         #gameModal { 
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
             z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px);
@@ -40,7 +38,7 @@
             <i class="fas fa-gamepad text-5xl neon-cyan mb-4"></i>
             <h2 id="modalTitle" class="orbitron text-3xl neon-purple mb-6 uppercase">GAME NAME</h2>
             
-            <div id="popupRankList" class="mb-6"></div>
+            <div id="popupRankList" class="mb-6 min-h-[50px] flex flex-col justify-center"></div>
 
             <button onclick="startGameAction()" class="w-full bg-white text-black py-4 rounded-xl orbitron font-bold text-lg hover:bg-cyan-400 transition transform hover:scale-105">MASUK ARENA</button>
             <button onclick="closeModal()" class="mt-4 text-gray-500 text-xs uppercase orbitron tracking-widest">Batal</button>
@@ -73,6 +71,7 @@
     </main>
 
     <script>
+        // PASTIKAN API KEY INI BENAR BOSKU
         const firebaseConfig = { apiKey: "ISI_API_KEY_BOSKU", databaseURL: "https://yokbisayok-db-default-rtdb.firebaseio.com", projectId: "yokbisayok-db" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -99,28 +98,31 @@
         function showPopup(name) {
             currentGameTarget = name;
             document.getElementById('modalTitle').innerText = name;
-            
             const popupRankList = document.getElementById('popupRankList');
-            popupRankList.innerHTML = "<p class='text-[10px] text-gray-500 italic animate-pulse'>MEMANGGIL REKOR TERBAIK...</p>";
+            
+            // Animasi loading
+            popupRankList.innerHTML = "<p class='text-[10px] text-gray-500 italic animate-pulse'>SYNCING DATA...</p>";
 
+            // AMBIL DATA REAL-TIME
             db.ref('leaderboard').orderByChild('score').limitToLast(3).once('value', snap => {
                 popupRankList.innerHTML = "";
                 let players = [];
                 snap.forEach(c => { players.push(c.val()); });
                 players.reverse();
 
-                players.forEach((p, idx) => {
-                    let color = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : "#cd7f32");
-                    let icon = idx === 0 ? "👑" : (idx === 1 ? "🥈" : "🥉");
-                    
-                    popupRankList.innerHTML += `
-                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${color}44;">
-                            <span style="color:${color}; font-size:11px; font-weight:bold;">${icon} ${p.name.toUpperCase()}</span>
-                            <span class="orbitron" style="color:white; font-size:13px;">${p.score.toLocaleString()}</span>
-                        </div>`;
-                });
-                
-                if(players.length === 0) popupRankList.innerHTML = "<p class='text-[10px] text-gray-600 uppercase'>Belum ada rekor</p>";
+                if (players.length > 0) {
+                    players.forEach((p, idx) => {
+                        let color = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : "#cd7f32");
+                        let icon = idx === 0 ? "👑" : (idx === 1 ? "🥈" : "🥉");
+                        popupRankList.innerHTML += `
+                            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${color}44;">
+                                <span style="color:${color}; font-size:11px; font-weight:bold;">${icon} ${p.name.toUpperCase()}</span>
+                                <span class="orbitron" style="color:white; font-size:13px;">${p.score.toLocaleString()}</span>
+                            </div>`;
+                    });
+                } else {
+                    popupRankList.innerHTML = "<p class='text-[10px] text-gray-600 uppercase'>NO RECORDS YET</p>";
+                }
             });
 
             document.getElementById('gameModal').style.display = 'flex';
@@ -142,7 +144,6 @@
                     document.getElementById('myTotalScore').innerText = c.val().score.toLocaleString();
                 }
             });
-            
             list.innerHTML = "";
             data.reverse().slice(0, 12).forEach((p, idx) => {
                 list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center"><span class="orbitron font-bold text-purple-500">${idx+1}</span><p class="text-xs orbitron uppercase text-white">${p.name}</p><p class="text-xs orbitron neon-cyan">${p.score.toLocaleString()}</p></div>`;
