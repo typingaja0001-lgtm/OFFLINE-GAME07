@@ -3,164 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON DRIFT - X-SPEED</title>
+    <title>NEON DRIFT - MOUSE CONTROL</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
-        body { margin: 0; background: #050112; overflow: hidden; font-family: 'Orbitron', sans-serif; touch-action: none; }
-        canvas { display: block; filter: drop-shadow(0 0 10px #00f2ff); }
-        .ui { position: fixed; top: 20px; width: 100%; text-align: center; pointer-events: none; }
-        .speed-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 200px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; }
-        #fill { width: 0%; height: 100%; background: #ff0055; box-shadow: 0 0 15px #ff0055; transition: 0.1s; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        body { margin: 0; background: #02010a; overflow: hidden; font-family: 'Orbitron', sans-serif; touch-action: none; color: white; cursor: crosshair; }
+        canvas { display: block; margin: 0 auto; filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.3)); }
+        
+        /* UI OVERLAY */
+        .overlay { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+        .btn-abort { pointer-events: auto; border: 1px solid #ff0055; background: rgba(255,0,85,0.1); padding: 8px 15px; border-radius: 4px; color: #ff0055; font-size: 10px; backdrop-filter: blur(5px); text-decoration: none; }
+        
+        /* MODAL GAME OVER */
+        #gameOverModal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+            pointer-events: auto;
+        }
+        .modal-box {
+            background: #050112; border: 2px solid #ff0055; padding: 40px; 
+            border-radius: 20px; text-align: center; box-shadow: 0 0 50px #ff0055;
+            width: 90%; max-width: 400px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="ui">
-        <p class="text-[10px] text-purple-500 tracking-[10px] animate-pulse">VELOCITY</p>
-        <h1 id="scoreDisplay" class="text-5xl text-white italic">0</h1>
-        <p class="text-[8px] text-cyan-400 mt-2">HOLD TO DRIFT LEFT/RIGHT</p>
+    <div class="overlay p-6 flex justify-between items-start">
+        <a href="menu.html" class="btn-abort uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition">
+            <i class="fas fa-arrow-left mr-2"></i> BACK TO MENU
+        </a>
+        <div class="text-right">
+            <p class="text-[9px] text-cyan-400 tracking-[4px]">SCORE</p>
+            <h1 id="scoreDisplay" class="text-4xl font-black italic drop-shadow-[0_0_10px_#00f2ff]">0</h1>
+        </div>
     </div>
 
-    <div class="speed-bar"><div id="fill"></div></div>
+    <canvas id="driftCanvas"></canvas>
 
-    <canvas id="roadCanvas"></canvas>
+    <div id="gameOverModal">
+        <div class="modal-box">
+            <h1 class="text-5xl font-black italic text-red-500 mb-2 uppercase tracking-tighter">WASTED</h1>
+            <p class="text-gray-500 text-[10px] tracking-[5px] mb-8 italic">ENGINE FAILURE DETECTED</p>
+            
+            <div class="bg-white/5 p-4 rounded-lg mb-8 border-l-4 border-cyan-500 text-left">
+                <p class="text-[8px] text-gray-500 uppercase tracking-widest">Recorded Score</p>
+                <p id="finalScore" class="text-4xl font-black text-white">0</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="restartGame()" class="w-full bg-white text-black py-4 font-black tracking-widest hover:bg-cyan-400 transition uppercase text-sm">
+                    RETRY MISSION
+                </button>
+                <button onclick="window.location.href='menu.html'" class="w-full border border-red-600/50 text-red-500 py-3 font-bold hover:bg-red-600 hover:text-white transition text-[10px] tracking-widest">
+                    RETURN TO MENU
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('roadCanvas');
+        const canvas = document.getElementById('driftCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth > 500 ? 450 : window.innerWidth;
-        canvas.height = window.innerHeight;
-        canvas.style.margin = "0 auto";
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const modal = document.getElementById('gameOverModal');
 
-        let score = 0;
-        let gameActive = true;
-        let speed = 8;
-        let frame = 0;
+        function resize() {
+            canvas.width = window.innerWidth > 600 ? 500 : window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize(); window.onresize = resize;
 
-        const car = {
-            x: canvas.width / 2 - 20,
-            y: canvas.height - 120,
-            w: 40, h: 70,
-            targetX: canvas.width / 2 - 20,
+        let score = 0, speed = 8, gameActive = true, frame = 0;
+
+        const player = {
+            x: canvas.width / 2 - 22,
+            y: canvas.height - 150,
+            w: 44, h: 75,
+            targetX: canvas.width / 2 - 22,
             color: '#00f2ff'
         };
 
         const enemies = [];
         const lines = [];
+        for(let i=0; i<6; i++) lines.push({ y: i * (canvas.height/5) });
 
-        // Inisialisasi Garis Jalan
-        for(let i=0; i<5; i++) lines.push({ y: i * (canvas.height/4) });
-
-        // Input Control
-        window.addEventListener('touchstart', (e) => handleInput(e.touches[0].clientX));
-        window.addEventListener('mousedown', (e) => handleInput(e.clientX));
-
-        function handleInput(clientX) {
+        // MOUSE & TOUCH ONLY
+        const moveHandler = (clientX) => {
             if(!gameActive) return;
             const rect = canvas.getBoundingClientRect();
-            const mouseX = clientX - rect.left;
-            car.targetX = mouseX - car.w/2;
-        }
+            player.targetX = (clientX - rect.left) - player.w/2;
+        };
+
+        window.addEventListener('mousemove', (e) => moveHandler(e.clientX));
+        window.addEventListener('touchmove', (e) => moveHandler(e.touches[0].clientX));
 
         function spawnEnemy() {
-            const lanes = [canvas.width*0.1, canvas.width*0.4, canvas.width*0.7];
-            const lane = lanes[Math.floor(Math.random() * lanes.length)];
+            const lane = Math.floor(Math.random() * 3);
+            const laneWidth = canvas.width / 3;
             enemies.push({
-                x: lane, y: -100, w: 40, h: 70,
-                color: '#ff0055', speed: speed + (Math.random() * 2)
+                x: (lane * laneWidth) + (laneWidth/2) - 22,
+                y: -100, w: 44, h: 75,
+                color: '#ff0055', speedBoost: 0.5 + Math.random() * 0.3
             });
         }
 
-        function drawPlayer() {
-            ctx.shadowBlur = 20; ctx.shadowColor = car.color;
-            ctx.fillStyle = car.color;
-            // Body mobil
-            ctx.fillRect(car.x, car.y, car.w, car.h);
-            // Lampu depan
-            ctx.fillStyle = "white";
-            ctx.fillRect(car.x + 5, car.y, 5, 10);
-            ctx.fillRect(car.x + car.w - 10, car.y, 5, 10);
+        function restartGame() {
+            score = 0; speed = 8; frame = 0; enemies.length = 0;
+            gameActive = true; modal.style.display = 'none';
+            player.x = canvas.width / 2 - 22; player.targetX = player.x;
+            requestAnimationFrame(draw);
         }
 
         function update() {
             if(!gameActive) return;
-
             frame++;
-            if(frame % 60 === 0) {
+
+            // Smooth Drift
+            player.x += (player.targetX - player.x) * 0.12;
+            player.x = Math.max(10, Math.min(canvas.width - player.w - 10, player.x));
+
+            if(frame % 30 === 0) {
                 score += 10;
-                document.getElementById('scoreDisplay').innerText = score;
-                speed += 0.1; // Makin lama makin cepat
-                document.getElementById('fill').style.width = (speed * 5) + "%";
+                scoreDisplay.innerText = score;
+                if(speed < 25) speed += 0.08;
             }
 
-            // Smooth movement
-            car.x += (car.targetX - car.x) * 0.15;
+            lines.forEach(l => { l.y += speed; if(l.y > canvas.height) l.y = -100; });
+            if(frame % Math.floor(100 / (speed/5)) === 0) spawnEnemy();
 
-            // Batasi mobil di dalam jalan
-            if(car.x < 0) car.x = 0;
-            if(car.x > canvas.width - car.w) car.x = canvas.width - car.w;
-
-            // Gerakan Garis Jalan
-            lines.forEach(l => {
-                l.y += speed;
-                if(l.y > canvas.height) l.y = -100;
-            });
-
-            // Gerakan Musuh
-            if(frame % Math.floor(100/speed * 5) === 0) spawnEnemy();
-
-            enemies.forEach((en, index) => {
-                en.y += speed * 0.8;
-                if(en.y > canvas.height) enemies.splice(index, 1);
-
-                // Cek Tabrakan (Collision)
-                if (car.x < en.x + en.w && car.x + car.w > en.x &&
-                    car.y < en.y + en.h && car.y + car.h > en.y) {
-                    gameOver();
+            enemies.forEach((en, i) => {
+                en.y += speed * en.speedBoost;
+                if(en.y > canvas.height) enemies.splice(i, 1);
+                
+                // Hitbox presisi
+                if (player.x < en.x + en.w - 10 && player.x + player.w - 10 > en.x &&
+                    player.y < en.y + en.h - 10 && player.y + player.h - 10 > en.y) {
+                    gameActive = false;
+                    document.getElementById('finalScore').innerText = score;
+                    modal.style.display = 'flex';
                 }
             });
         }
 
         function draw() {
-            ctx.fillStyle = '#050112';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Gambar Garis Jalan Neon
-            ctx.strokeStyle = '#bc13fe';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([40, 20]);
+            ctx.fillStyle = '#02010a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Neon Road Lines
+            ctx.strokeStyle = 'rgba(188, 19, 254, 0.2)'; ctx.lineWidth = 2;
             lines.forEach(l => {
-                ctx.beginPath();
+                ctx.beginPath(); ctx.setLineDash([30, 15]);
                 ctx.moveTo(canvas.width/3, l.y); ctx.lineTo(canvas.width/3, l.y + canvas.height);
                 ctx.moveTo(canvas.width*2/3, l.y); ctx.lineTo(canvas.width*2/3, l.y + canvas.height);
                 ctx.stroke();
             });
-            ctx.setLineDash([]);
 
-            // Gambar Musuh
+            // Enemies
             enemies.forEach(en => {
                 ctx.shadowBlur = 15; ctx.shadowColor = en.color;
-                ctx.fillStyle = en.color;
-                ctx.fillRect(en.x, en.y, en.w, en.h);
+                ctx.fillStyle = en.color; ctx.fillRect(en.x, en.y, en.w, en.h);
             });
 
-            drawPlayer();
-        }
+            // Player Mobil
+            ctx.shadowBlur = 20; ctx.shadowColor = player.color;
+            ctx.fillStyle = player.color; ctx.fillRect(player.x, player.y, player.w, player.h);
+            
+            // Lights
+            ctx.shadowBlur = 0; ctx.fillStyle = 'white'; 
+            ctx.fillRect(player.x+5, player.y+5, 8, 4); ctx.fillRect(player.x+player.w-13, player.y+5, 8, 4);
 
-        function gameOver() {
-            gameActive = false;
-            alert("CRASHED! SKOR KAMU: " + score);
-            window.location.href = "index.html";
-        }
-
-        function loop() {
             update();
-            draw();
-            requestAnimationFrame(loop);
+            if(gameActive) requestAnimationFrame(draw);
         }
 
-        loop();
+        draw();
     </script>
 </body>
 </html>
