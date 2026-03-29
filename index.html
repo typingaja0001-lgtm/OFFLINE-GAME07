@@ -12,100 +12,77 @@
         body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; overflow: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         
-        /* AUTH POPUP (GLASSMORPHISM) */
-        .auth-overlay {
-            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.7);
-            backdrop-filter: blur(12px); z-index: 100;
+        /* BACKGROUND GAME GRID (HIDUP & RAMAI) */
+        .bg-grid {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
+            padding: 20px; filter: blur(3px) brightness(0.4); pointer-events: none;
+            position: absolute; inset: 0; z-index: 1;
+        }
+
+        /* AUTH POPUP (GLASSMORPHISM MEWAH) */
+        .auth-container {
+            position: relative; z-index: 10; height: 100vh;
             display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, transparent 20%, #020617 90%);
         }
-        .glass-box {
-            background: rgba(15, 23, 42, 0.95); border: 2px solid #bc13fe;
-            box-shadow: 0 0 50px rgba(188, 19, 254, 0.4); width: 100%; max-width: 420px;
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9); border: 2px solid #bc13fe;
+            box-shadow: 0 0 60px rgba(188, 19, 254, 0.4); width: 100%; max-width: 440px;
             padding: 50px; border-radius: 40px; position: relative;
+            backdrop-filter: blur(15px);
         }
 
-        /* BACKGROUND GAME GRID (PREVIEW) */
-        .bg-grid-preview { opacity: 0.4; pointer-events: none; }
-        
-        .preview-card {
-            background: #0f172a; border-radius: 15px; overflow: hidden; height: 180px;
-            border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
-        }
-        .preview-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
-
-        /* INPUT & NEON BUTTON */
-        .input-cyber { background: #000 !important; border: 1px solid #334155 !important; color: #00f2ff !important; font-size: 14px; text-align: center; }
+        /* INPUT STYLE */
+        .input-cyber { background: #000 !important; border: 1px solid #334155 !important; color: #00f2ff !important; font-family: 'Orbitron', sans-serif; font-size: 14px; text-align: center; }
         .input-cyber:focus { border-color: #00f2ff !important; box-shadow: 0 0 15px #00f2ff; outline: none; }
-        .neon-btn { background: linear-gradient(90deg, #00f2ff, #bc13fe); font-weight: 900; transition: 0.4s; }
-        .neon-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px #bc13fe; }
+        
+        .btn-neon { background: linear-gradient(90deg, #00f2ff, #bc13fe); font-weight: 900; transition: 0.3s; box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
+        .btn-neon:hover { transform: translateY(-3px); box-shadow: 0 0 40px #00f2ff; }
+
+        .game-thumb { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <div id="authContainer" class="auth-overlay">
-        <div class="glass-box text-center">
-            <h1 class="text-6xl font-black orbitron italic text-cyan-400 mb-2 tracking-tighter">YOKBISAYOK</h1>
-            <p class="text-[10px] tracking-[5px] text-purple-400 font-bold uppercase mb-10">Neon Arcade System v3.0</p>
+    <div id="gameBg" class="bg-grid"></div>
+
+    <div class="auth-container">
+        <div class="glass-card text-center">
+            <h1 class="text-6xl font-black orbitron italic text-cyan-400 mb-2 italic tracking-tighter">YOKBISAYOK</h1>
+            <p class="text-[10px] tracking-[6px] text-purple-400 font-bold uppercase mb-10">NEON ARCADE SYSTEM V3.0</p>
 
             <div id="loginForm" class="space-y-5">
                 <input type="text" id="lUser" placeholder="ENTER USERNAME" class="input-cyber w-full p-4 rounded-2xl">
                 <input type="password" id="lPass" placeholder="ENTER PASSWORD" class="input-cyber w-full p-4 rounded-2xl">
-                <button onclick="doLogin()" class="neon-btn w-full p-4 rounded-2xl orbitron text-xs">ACCESS ARCADE</button>
-                <p class="mt-6 text-xs text-gray-500">Belum ada akun? <span onclick="toggleAuth()" class="text-purple-400 cursor-pointer font-bold">Daftar Sekarang</span></p>
+                <button onclick="doLogin()" class="btn-neon w-full p-4 rounded-2xl orbitron text-xs">ACCESS ARCADE</button>
+                <p class="mt-8 text-xs text-gray-400">Belum ada akun? <span onclick="toggle()" class="text-purple-400 cursor-pointer font-bold hover:underline">Daftar Sekarang</span></p>
             </div>
 
-            <div id="registerForm" class="hidden space-y-5">
+            <div id="regForm" class="hidden space-y-5">
                 <input type="text" id="rUser" placeholder="NEW USERNAME" class="input-cyber w-full p-4 rounded-2xl">
                 <input type="password" id="rPass" placeholder="NEW PASSWORD" class="input-cyber w-full p-4 rounded-2xl">
-                <button onclick="doRegister()" class="neon-btn w-full p-4 rounded-2xl orbitron text-xs">CREATE ACCOUNT</button>
-                <p class="mt-6 text-xs text-gray-500">Sudah member? <span onclick="toggleAuth()" class="text-cyan-400 cursor-pointer font-bold">Login Sini</span></p>
+                <button onclick="doRegister()" class="btn-neon w-full p-4 rounded-2xl orbitron text-xs text-black">CREATE ACCOUNT</button>
+                <p class="mt-8 text-xs text-gray-400">Sudah jadi member? <span onclick="toggle()" class="text-cyan-400 cursor-pointer font-bold hover:underline">Masuk Sini</span></p>
             </div>
-        </div>
-    </div>
-
-    <div class="bg-grid-preview p-10">
-        <div class="mb-10 flex justify-between">
-            <div class="h-10 w-40 bg-slate-800 rounded-lg"></div>
-            <div class="h-10 w-10 bg-slate-800 rounded-full"></div>
-        </div>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            <script>
-                const grid = document.currentScript.parentElement;
-                for(let i=1; i<=18; i++) {
-                    grid.innerHTML += `
-                        <div class="preview-card">
-                            <img src="https://picsum.photos/400/300?random=${i}" class="preview-img">
-                            <div class="absolute bottom-0 p-3 w-full bg-black/60">
-                                <div class="h-2 w-20 bg-cyan-500/50 rounded"></div>
-                            </div>
-                        </div>
-                    `;
-                }
-            </script>
         </div>
     </div>
 
 <script>
-    // SISTEM DATA & REDIRECT
-    function toggleAuth() {
-        document.getElementById("loginForm").classList.toggle("hidden");
-        document.getElementById("registerForm").classList.toggle("hidden");
+    // 1. GENERATE BACKGROUND GAME AGAR TERLIHAT RAMAI
+    const bg = document.getElementById("gameBg");
+    // Gunakan kata kunci game untuk gambar yang relevan
+    const keywords = ['racing', 'gaming', 'retro', 'cyberpunk', 'snake', 'shooter', 'galaxy', 'neon', 'joystick', 'console'];
+    
+    for(let i=0; i<30; i++) {
+        const key = keywords[Math.floor(Math.random() * keywords.length)];
+        bg.innerHTML += `<img src="https://source.unsplash.com/400x300/?${key},arcade&sig=${i}" class="game-thumb">`;
     }
 
-    function doLogin() {
-        const u = document.getElementById("lUser").value;
-        const p = document.getElementById("lPass").value;
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        const found = users.find(x => x.user === u && x.pass === p);
-        
-        if(found) {
-            localStorage.setItem("loginUser", u);
-            // PENTING: Redirect ke loading.html buatan Bosku
-            window.location.href = "loading.html?game=menu";
-        } else {
-            alert("Username atau Password Salah!");
-        }
+    // 2. LOGIKA AUTH
+    function toggle() {
+        document.getElementById("loginForm").classList.toggle("hidden");
+        document.getElementById("regForm").classList.toggle("hidden");
     }
 
     function doRegister() {
@@ -116,7 +93,22 @@
         users.push({user: u, pass: p});
         localStorage.setItem("users", JSON.stringify(users));
         alert("Pendaftaran Berhasil! Silakan Login.");
-        toggleAuth();
+        toggle();
+    }
+
+    function doLogin() {
+        const u = document.getElementById("lUser").value;
+        const p = document.getElementById("lPass").value;
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        const found = users.find(x => x.user === u && x.pass === p);
+        
+        if(found) {
+            localStorage.setItem("loginUser", u);
+            // Redirect ke loading buatan Bosku
+            window.location.href = "loading.html?game=menu";
+        } else {
+            alert("Akses Ditolak! Cek Username/Password.");
+        }
     }
 </script>
 </body>
