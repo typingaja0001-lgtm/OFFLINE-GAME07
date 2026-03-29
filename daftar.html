@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>YOKBISAYOK - Daftar Akun Neon</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
+
+body {
+  background: #020617;
+  color: white;
+  font-family: 'Rajdhani', sans-serif;
+  margin: 0;
+}
+
+/* BOX DAFTAR DENGAN GLOW UNGU & BIRU */
+.box {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(188, 19, 254, 0.3);
+  box-shadow: 0 0 30px rgba(188, 19, 254, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* EFEK NEON PADA JUDUL (UNGU) */
+.neon-title {
+  color: #bc13fe;
+  text-shadow: 0 0 10px #bc13fe, 0 0 20px #bc13fe;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+/* INPUT FIELD NEON BIRU */
+input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid #333 !important;
+  color: white !important;
+  transition: 0.3s;
+}
+
+input::placeholder {
+  color: #555;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00f2ff !important;
+  box-shadow: 0 0 12px rgba(0, 242, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* TOMBOL DAFTAR NEON UNGU */
+.btn-daftar {
+  background: #bc13fe;
+  color: white;
+  font-weight: bold;
+  transition: 0.3s;
+  box-shadow: 0 0 15px rgba(188, 19, 254, 0.5);
+}
+
+.btn-daftar:hover {
+  background: #d65cfc;
+  box-shadow: 0 0 25px rgba(188, 19, 254, 0.8);
+  transform: translateY(-2px);
+}
+
+/* TOMBOL KEMBALI NEON BIRU */
+.btn-kembali {
+  background: transparent;
+  border: 1px solid #00f2ff;
+  color: #00f2ff;
+  transition: 0.3s;
+}
+
+.btn-kembali:hover {
+  background: #00f2ff;
+  color: black;
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
+}
+
+/* CAPTCHA AREA */
+.captcha-box {
+  background: rgba(0, 242, 255, 0.05);
+  border: 1px dashed #00f2ff;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+#captchaText {
+  color: #00f2ff;
+  text-shadow: 0 0 10px #00f2ff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="flex justify-center items-center min-h-screen p-4 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-black to-black">
+
+<div class="box p-8 rounded-2xl w-full max-w-md border-t-4 border-t-cyan-500">
+
+<h2 class="text-3xl text-center neon-title mb-6">DAFTAR AKUN</h2>
+
+<div class="space-y-4">
+    <div>
+        <label class="text-xs text-purple-400 ml-1 uppercase font-bold">User ID</label>
+        <input id="user" type="text" placeholder="Buat ID akun..." class="w-full p-3 rounded-lg">
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+        <div>
+            <label class="text-xs text-purple-400 ml-1 uppercase font-bold">Password</label>
+            <input id="pass" type="password" placeholder="Password" class="w-full p-3 rounded-lg">
+        </div>
+        <div>
+            <label class="text-xs text-purple-400 ml-1 uppercase font-bold">Ulangi</label>
+            <input id="confirm" type="password" placeholder="Konfirmasi" class="w-full p-3 rounded-lg">
+        </div>
+    </div>
+
+    <div>
+        <label class="text-xs text-purple-400 ml-1 uppercase font-bold">No. Telepon</label>
+        <input id="phone" type="text" placeholder="08xxxxxxxxxx" class="w-full p-3 rounded-lg">
+    </div>
+
+    <div>
+        <label class="text-xs text-purple-400 ml-1 uppercase font-bold">Email</label>
+        <input id="email" type="email" placeholder="contoh@mail.com" class="w-full p-3 rounded-lg">
+    </div>
+
+    <div class="captcha-box text-center">
+        <div class="text-[10px] text-cyan-400 mb-1 uppercase tracking-widest font-bold">Security Check</div>
+        <span id="captchaText" class="text-2xl font-bold italic"></span>
+        <input id="captchaInput" type="text" placeholder="Hasil jumlah..." class="w-full mt-3 p-2 rounded-lg text-center">
+    </div>
+
+    <div class="pt-4 space-y-3">
+        <button onclick="daftar()" class="w-full btn-daftar py-3 rounded-xl uppercase tracking-wider">
+            DAFTAR SEKARANG
+        </button>
+
+        <button onclick="kembali()" class="w-full btn-kembali py-2 rounded-xl text-sm uppercase font-bold">
+            KEMBALI KE LOGIN
+        </button>
+    </div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+let captchaResult = 0;
+
+// GENERATE CAPTCHA
+function generateCaptcha(){
+  let a = Math.floor(Math.random()*10);
+  let b = Math.floor(Math.random()*10);
+  captchaResult = a + b;
+  document.getElementById("captchaText").innerText = a + " + " + b + " = ?";
+}
+
+generateCaptcha();
+
+// VALIDASI EMAIL
+function validEmail(email){
+  return email.includes("@") && email.includes(".");
+}
+
+// DAFTAR
+function daftar(){
+  let user = document.getElementById("user").value.trim();
+  let pass = document.getElementById("pass").value;
+  let confirm = document.getElementById("confirm").value;
+  let phone = document.getElementById("phone").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let cap = document.getElementById("captchaInput").value;
+
+  if(!user || !pass || !confirm || !phone || !email){
+    alert("Semua data wajib diisi Bosku!");
+    return;
+  }
+
+  if(pass !== confirm){
+    alert("Password tidak sama Bosku!");
+    return;
+  }
+
+  if(!validEmail(email)){
+    alert("Emailnya yang benar Bosku!");
+    return;
+  }
+
+  if(parseInt(cap) !== captchaResult){
+    alert("Captcha salah Bosku!");
+    generateCaptcha();
+    return;
+  }
+
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+
+  if(users.find(x => x.user === user)){
+    alert("User ID sudah ada yang punya Bosku!");
+    return;
+  }
+
+  // SIMPAN KE LOCALSTORAGE
+  users.push({
+    user: user,
+    pass: pass,
+    phone: phone,
+    email: email,
+    saldo: 0
+  });
+
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Mantap Bosku! Daftar berhasil. Gas Login!");
+  window.location.href = "index.html";
+}
+
+// KEMBALI
+function kembali(){
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
