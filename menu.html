@@ -3,146 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - FINAL MASTERPIECE</title>
+    <title>YOKBISAYOK - ULTIMATE ARCADE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap');
         
         body { 
-            background: #02040a; color: white; font-family: 'Rajdhani', sans-serif;
-            background-image: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #02040a 100%);
+            background: #050112; color: white; font-family: 'Rajdhani', sans-serif;
+            background-image: linear-gradient(rgba(18, 10, 41, 0.9), rgba(5, 1, 18, 0.95)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            overflow-x: hidden;
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* THEME PURPLE DOMINANT (MENCOLOK) */
-        .neon-purple { color: #bc13fe; text-shadow: 0 0 15px #bc13fe, 0 0 30px #bc13fe; }
-        .neon-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        /* NEON GLOWS (TEBAL SEPERTI GAMBAR) */
+        .neon-text-purple { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
+        .neon-text-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
         
-        /* CARD SYSTEM MIRIP GAMBAR */
-        .game-card {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #bc13fe; /* Default Ungu */
-            border-radius: 12px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
-        }
-        .game-card:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 35px rgba(188, 19, 254, 0.8);
-            border-color: #00f2ff; /* Berubah Biru saat Hover */
+        /* SIDEBAR NAV (MIRIP GAMBAR) */
+        .sidebar-nav {
+            background: rgba(0, 0, 0, 0.6);
+            border-right: 2px solid #00f2ff;
+            box-shadow: 5px 0 15px rgba(0, 242, 255, 0.2);
         }
 
-        /* LEADERBOARD PANEL */
-        .leader-sidebar {
-            background: rgba(13, 2, 33, 0.95);
-            border-left: 3px solid #bc13fe;
-            box-shadow: -10px 0 30px rgba(188, 19, 254, 0.2);
+        /* ARCADE CARD SYSTEM */
+        .arcade-card {
+            background: #000; border: 2px solid #ff00ff; border-radius: 8px;
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .arcade-card:hover { 
+            transform: scale(1.05); border-color: #00f2ff;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); 
+        }
+        .play-btn {
+            background: #00f2ff; color: #000; font-family: 'Orbitron';
+            font-size: 8px; font-weight: 900; padding: 4px 0; width: 100%;
+            display: block; text-align: center;
         }
 
         /* BANNER */
-        .hero-banner {
-            background: linear-gradient(90deg, #1a0b2e 0%, #000 50%, #1a0b2e 100%);
-            border: 1px solid #bc13fe;
-            box-shadow: inset 0 0 50px rgba(188, 19, 254, 0.2);
+        .main-banner {
+            background: linear-gradient(to right, #000, rgba(255, 0, 255, 0.1), #000);
+            border: 2px solid #00f2ff55;
+            position: relative;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <nav class="p-4 px-10 bg-black/80 border-b border-purple-500/50 flex justify-between items-center sticky top-0 z-[100]">
-        <div class="flex items-center gap-2">
-            <h1 class="text-3xl font-black orbitron italic neon-purple">YOKBISAYOK</h1>
-        </div>
-        <div class="flex items-center gap-6">
+    <header class="p-4 px-8 flex justify-between items-center bg-black border-b-2 border-cyan-500">
+        <h1 class="text-3xl font-black orbitron italic neon-text-cyan">YOKBISAYOK</h1>
+        <div class="flex items-center gap-4">
             <div class="text-right">
-                <p id="pName" class="text-sm font-black orbitron neon-blue uppercase">PLAYER_AAN</p>
-                <p class="text-[9px] text-purple-400 font-bold tracking-[3px]">MEMBER ELITE</p>
+                <p class="text-[10px] text-purple-400 font-bold uppercase">Neon Coins</p>
+                <p class="text-sm orbitron font-bold">14,500 NC</p>
             </div>
-            <button onclick="logout()" class="text-red-500 text-2xl hover:scale-125 transition"><i class="fas fa-power-off"></i></button>
+            <button onclick="logout()" class="bg-red-600 px-4 py-1 rounded text-xs orbitron font-bold shadow-[0_0_10px_red]">LOGOUT</button>
         </div>
-    </nav>
+    </header>
 
-    <div class="flex flex-1 flex-col lg:flex-row">
-        <main class="flex-1 p-8">
-            <div class="hero-banner p-10 rounded-3xl mb-12 text-center md:text-left">
-                <h2 class="text-5xl font-black orbitron italic mb-3">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
-                <p class="text-gray-400 text-sm tracking-widest uppercase">48+ Games Offline • Episode 2026</p>
-                <div class="mt-6 h-1 w-40 bg-gradient-to-r from-purple-600 to-cyan-500"></div>
+    <div class="flex flex-1">
+        <aside class="w-20 lg:w-32 sidebar-nav flex flex-col items-center py-10 gap-10 sticky top-[72px] h-[calc(100vh-72px)]">
+            <div class="text-center group cursor-pointer">
+                <i class="fas fa-swords text-2xl mb-2 text-purple-500 group-hover:neon-text-purple"></i>
+                <p class="text-[8px] orbitron font-bold">ACTION</p>
+            </div>
+            <div class="text-center group cursor-pointer">
+                <i class="fas fa-chess text-2xl mb-2 text-cyan-500 group-hover:neon-text-cyan"></i>
+                <p class="text-[8px] orbitron font-bold">STRATEGY</p>
+            </div>
+            <div class="text-center group cursor-pointer">
+                <i class="fas fa-car text-2xl mb-2 text-purple-500 group-hover:neon-text-purple"></i>
+                <p class="text-[8px] orbitron font-bold">RACING</p>
+            </div>
+            <div class="text-center group cursor-pointer">
+                <i class="fas fa-puzzle-piece text-2xl mb-2 text-cyan-500 group-hover:neon-text-cyan"></i>
+                <p class="text-[8px] orbitron font-bold">PUZZLE</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+            
+            <div class="main-banner p-8 rounded-2xl mb-10 flex items-center justify-between border-2 border-purple-500/50 shadow-[inset_0_0_30px_rgba(255,0,255,0.2)]">
+                <div>
+                    <h2 class="text-5xl font-black orbitron italic text-white leading-none">
+                        PC <span class="neon-text-purple">ULTRA</span> LIBRARY
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-4 tracking-widest font-bold">TERSEDIA 48+ GAME OFFLINE HIGH PERFORMANCE V10.0</p>
+                </div>
+                <div class="hidden lg:block">
+                    <i class="fas fa-gamepad text-[100px] opacity-10"></i>
+                </div>
             </div>
 
-            <div id="gridContainer" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6">
+            <h3 class="orbitron text-cyan-400 text-sm font-bold mb-6 flex items-center gap-3 italic">
+                <span class="h-[2px] w-10 bg-cyan-400"></span> NEW RELEASES <span class="h-[2px] w-full bg-gray-800"></span>
+            </h3>
+
+            <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-16">
+                </div>
+
+            <h3 class="orbitron text-purple-400 text-sm font-bold mb-6 flex items-center gap-3 italic">
+                <span class="h-[2px] w-10 bg-purple-400"></span> TOP PLAYERS <span class="h-[2px] w-full bg-gray-800"></span>
+            </h3>
+            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 </div>
         </main>
-
-        <aside class="w-full lg:w-96 p-8 leader-sidebar">
-            <h3 class="text-2xl font-black orbitron neon-purple mb-8 uppercase text-center border-b border-purple-500/30 pb-4">
-                <i class="fas fa-crown mr-2"></i> Hall of Fame
-            </h3>
-            <div id="leaderList" class="space-y-5">
-                </div>
-        </aside>
     </div>
 
     <script>
-        const assetGames = [
-            { n: "CYBER RACE", c: "Arcade", i: "https://wallpapercave.com/wp/wp7158145.jpg" },
-            { n: "VALORANT", c: "Shooter", i: "https://wallpapercave.com/wp/wp5870377.jpg" },
-            { n: "ELDEAN RING", c: "RPG", i: "https://wallpapercave.com/wp/wp10495376.jpg" },
-            { n: "MORTAL KOMBAT", c: "Fight", i: "https://wallpapercave.com/wp/wp4337227.jpg" },
-            { n: "NFS UNBOUND", c: "Racing", i: "https://wallpapercave.com/wp/wp4504107.jpg" },
-            { n: "GHOST RUNNER", c: "Speed", i: "https://wallpapercave.com/wp/wp7429107.jpg" }
+        const gameData = [
+            { n: "CYBER-RACER X", i: "https://wallpapercave.com/wp/wp7158145.jpg" },
+            { n: "GALACTIC DEFENDER", i: "https://wallpapercave.com/wp/wp5870377.jpg" },
+            { n: "PUZZLE MASTER", i: "https://wallpapercave.com/wp/wp10319208.jpg" },
+            { n: "PIXEL PUNCHER", i: "https://wallpapercave.com/wp/wp7429107.jpg" }
         ];
 
-        // RENDER 48 GAMES
-        const grid = document.getElementById('gridContainer');
-        for(let i=1; i<=48; i++) {
-            const data = assetGames[i % assetGames.length];
+        // RENDER 48 CARDS
+        const grid = document.getElementById('arcadeGrid');
+        for(let i=0; i<48; i++) {
+            const g = gameData[i % gameData.length];
             grid.innerHTML += `
-                <div class="game-card p-2" onclick="playGame('${data.n}')">
-                    <img src="${data.i}" class="w-full h-28 object-cover rounded-lg border-b border-purple-500/30">
-                    <div class="p-2 text-center">
-                        <p class="text-[8px] text-cyan-400 font-bold orbitron uppercase tracking-tighter">${data.c}</p>
-                        <h4 class="text-[10px] font-black orbitron text-white truncate uppercase">${data.n} #${i}</h4>
-                        <div class="mt-3 bg-purple-900/40 rounded py-1 border border-purple-500/20">
-                            <span class="text-[9px] font-black text-purple-300">PLAY NOW</span>
-                        </div>
+                <div class="arcade-card">
+                    <img src="${g.i}" class="w-full h-20 object-cover opacity-80">
+                    <div class="p-2 bg-black">
+                        <h4 class="text-[8px] font-black orbitron truncate text-white mb-2 uppercase">${g.n}</h4>
+                        <button onclick="playGame('${g.n}')" class="play-btn">PLAY NOW</button>
                     </div>
                 </div>
             `;
         }
 
-        // LEADERBOARD DATA (HIGH SCORE)
-        const leaders = [
-            { name: "Aan", game: "Cyber Race", score: "99.950", color: "#bc13fe" },
-            { name: "Budi", game: "Valorant", score: "88.200", color: "#00f2ff" },
-            { name: "Sakti", game: "Eldean Ring", score: "75.400", color: "#00f2ff" },
-            { name: "Raja", game: "NFS Unbound", score: "62.100", color: "#00f2ff" },
-            { name: "Zidan", game: "Ghost Runner", score: "45.000", color: "#00f2ff" }
+        // LEADERBOARD RENDER
+        const scores = [
+            { name: "AAN", game: "Cyber Racer X", score: "145,000" },
+            { name: "BUDI", game: "Galactic Def", score: "92,400" },
+            { name: "SAKTI", game: "Puzzle Master", score: "88,100" }
         ];
 
-        const list = document.getElementById('leaderList');
-        leaders.forEach((l, idx) => {
-            list.innerHTML += `
-                <div class="flex items-center gap-4 p-4 rounded-xl bg-purple-900/10 border border-purple-500/20 shadow-lg">
-                    <span class="text-3xl font-black italic orbitron ${idx==0?'text-yellow-500':'text-gray-600'}">${idx+1}</span>
-                    <div class="flex-1">
-                        <p class="text-sm font-black orbitron uppercase" style="color:${l.color}">${l.name}</p>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${l.game}</p>
+        const lBoard = document.getElementById('leaderList');
+        scores.forEach(s => {
+            lBoard.innerHTML += `
+                <div class="bg-black border border-purple-500/30 p-4 rounded-lg flex justify-between items-center shadow-[0_0_10px_rgba(255,0,255,0.1)]">
+                    <div>
+                        <p class="text-xs font-black orbitron neon-text-purple">${s.name}</p>
+                        <p class="text-[8px] text-gray-500 uppercase">${s.game}</p>
                     </div>
-                    <div class="text-right border-l border-purple-500/20 pl-4">
-                        <p class="text-sm font-black orbitron text-white">${l.score}</p>
-                        <p class="text-[8px] text-purple-400 font-bold">PTS</p>
+                    <div class="text-right">
+                        <p class="text-xs font-black orbitron text-white">${s.score}</p>
+                        <p class="text-[8px] text-cyan-400 font-bold">HIGH SCORE</p>
                     </div>
                 </div>
             `;
         });
 
-        // LOAD USER
-        document.getElementById('pName').innerText = "PLAYER_" + (localStorage.getItem('loginUser') || "GUEST").toUpperCase();
-
-        function playGame(name) { alert("Menyiapkan Server untuk " + name + "..."); }
-        function logout() { localStorage.clear(); window.location.href = "index.html"; }
+        function playGame(n) { alert("Memuat Game: " + n); }
+        function logout() { window.location.href = "index.html"; }
     </script>
 </body>
 </html>
