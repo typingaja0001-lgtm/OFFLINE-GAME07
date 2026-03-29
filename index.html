@@ -3,115 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - TOP 100+ GAME OFFLINE 2026</title>
+    <title>YOKBISAYOK - PC OFFLINE ARCADE 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
         
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Rajdhani', sans-serif; background: #020617; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Orbitron', sans-serif; background: #020617; }
 
-        /* HERO BANNER BACKGROUND */
-        .hero-banner {
+        /* NEON BACKGROUND EFFECT */
+        .hero-pc {
             position: absolute; inset: 0;
-            background: linear-gradient(rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.9)), 
-                        url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop');
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.4), #020617), 
+                        url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
             background-size: cover; background-position: center;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; transition: 0.8s filter ease;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* CHARACTER IMAGES (FLOATING EFFECT) */
-        .char-img {
-            position: absolute; width: 300px; pointer-events: none; z-index: 2;
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); animation: float 6s infinite ease-in-out;
-        }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        /* TEXT STYLING */
-        .main-title {
-            font-size: 8rem; font-weight: 900; line-height: 0.8; letter-spacing: -5px;
-            background: linear-gradient(to bottom, #fff 40%, #fbbf24 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        /* GLITCH NEON TEXT */
+        .neon-title {
+            font-size: 7rem; font-weight: 900; line-height: 0.9;
+            color: #fff;
+            text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff, 0 0 40px #bc13fe;
+            animation: glow 2s infinite alternate;
+            text-transform: uppercase; font-style: italic;
         }
 
-        /* AUTH MODAL */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(15px); z-index: 100; display: none;
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
+            to { text-shadow: 0 0 20px #bc13fe, 0 0 40px #bc13fe, 0 0 60px #bc13fe; }
+        }
+
+        /* NEON BUTTON */
+        .btn-neon-play {
+            background: transparent;
+            border: 4px solid #00f2ff;
+            color: #00f2ff;
+            padding: 20px 80px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            border-radius: 0; /* Kotak biar kesan PC-nya dapet */
+            cursor: pointer;
+            box-shadow: 0 0 15px #00f2ff, inset 0 0 15px #00f2ff;
+            transition: 0.3s;
+            margin-top: 40px;
+            text-transform: uppercase;
+        }
+
+        .btn-neon-play:hover {
+            background: #00f2ff;
+            color: #000;
+            box-shadow: 0 0 50px #00f2ff;
+            transform: scale(1.05);
+        }
+
+        /* MODAL NEON */
+        .modal-neon {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px); z-index: 100; display: none;
             align-items: center; justify-content: center;
         }
-        .glass-box {
-            background: rgba(15, 23, 42, 0.9); border: 2px solid #fbbf24;
-            padding: 40px; border-radius: 30px; width: 100%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(251, 191, 36, 0.3);
+
+        .neon-card {
+            background: #000; border: 2px solid #bc13fe;
+            padding: 50px; width: 100%; max-width: 450px;
+            box-shadow: 0 0 30px #bc13fe;
         }
 
-        .btn-start {
-            background: linear-gradient(45deg, #fbbf24, #f59e0b);
-            padding: 20px 60px; border-radius: 50px; font-weight: 900;
-            font-size: 1.5rem; border: none; cursor: pointer; color: #000;
-            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4); transition: 0.3s;
+        .input-neon {
+            background: #000; border: 1px solid #00f2ff;
+            color: #00f2ff; padding: 15px; width: 100%;
+            outline: none; transition: 0.3s;
         }
-        .btn-start:hover { transform: scale(1.1); box-shadow: 0 0 50px #fbbf24; }
+
+        .input-neon:focus { box-shadow: 0 0 15px #00f2ff; }
     </style>
 </head>
 <body>
 
-    <div id="hero" class="hero-banner">
-        <img src="https://www.pngarts.com/files/3/Warrior-PNG-High-Quality-Image.png" class="char-img left-10 top-20 opacity-80 hidden lg:block" style="width: 400px;">
-        <img src="https://www.pngarts.com/files/11/Archer-PNG-Transparent-Image.png" class="char-img right-10 bottom-10 hidden lg:block" style="width: 350px;">
-
-        <div class="z-10 px-4">
-            <h2 class="orbitron text-white text-3xl font-black italic mb-2 tracking-widest">100+ KOLEKSI</h2>
-            <h1 class="main-title orbitron italic mb-4">GAME OFFLINE<br>TERBARU 2026</h1>
-            <p class="text-white/70 text-xl font-bold mb-10 tracking-[10px] uppercase">Android & iOS • Episode 7</p>
+    <div id="hero" class="hero-pc">
+        <div class="text-center z-10">
+            <p class="text-cyan-400 font-bold tracking-[15px] mb-4">SYSTEM ONLINE: TERMINAL 01</p>
+            <h1 class="neon-title">TOP 100+ PC<br>OFFLINE GAMES</h1>
+            <p class="text-white/60 text-2xl font-bold mt-4 tracking-widest uppercase">High Performance • 4K Ultra Graphics</p>
             
-            <button onclick="openAuth()" class="btn-start orbitron">MULAI BERMAIN</button>
+            <button onclick="openAuth()" class="btn-neon-play">MULAI BERMAIN</button>
         </div>
     </div>
 
-    <div id="authModal" class="modal-overlay">
-        <div class="glass-box text-center">
+    <div id="authModal" class="modal-neon">
+        <div class="neon-card text-center">
             <div id="loginForm">
-                <h3 class="orbitron text-2xl font-black text-white mb-8">PLAYER LOGIN</h3>
-                <div class="space-y-4">
-                    <input type="text" id="lUser" placeholder="USERNAME" class="w-full p-4 bg-black border border-white/10 rounded-xl text-white outline-none focus:border-yellow-500">
-                    <input type="password" id="lPass" placeholder="PASSWORD" class="w-full p-4 bg-black border border-white/10 rounded-xl text-white outline-none focus:border-yellow-500">
+                <h3 class="text-3xl font-black text-cyan-400 mb-8 tracking-tighter">USER AUTHENTICATION</h3>
+                <div class="space-y-6">
+                    <input type="text" id="lUser" placeholder="IDENTITAS USER" class="input-neon">
+                    <input type="password" id="lPass" placeholder="KODE AKSES" class="input-cyber input-neon">
                 </div>
-                <button onclick="doLogin()" class="w-full mt-6 bg-yellow-500 p-4 rounded-xl font-black orbitron">MASUK SEKARANG</button>
-                <p class="mt-6 text-sm text-gray-500">Belum punya akun? <span onclick="toggleTab()" class="text-yellow-500 cursor-pointer font-bold">Daftar Sini</span></p>
+                <button onclick="doLogin()" class="w-full mt-8 bg-cyan-500 p-4 font-black text-black hover:bg-white transition">LOGIN KE SISTEM</button>
+                <p class="mt-8 text-xs text-gray-500 uppercase">Akses Ditolak? <span onclick="toggleTab()" class="text-purple-500 cursor-pointer font-bold">Daftar Akun Baru</span></p>
             </div>
 
             <div id="regForm" class="hidden">
-                <h3 class="orbitron text-2xl font-black text-white mb-8">DAFTAR AKUN</h3>
-                <div class="space-y-4">
-                    <input type="text" id="rUser" placeholder="BUAT USERNAME" class="w-full p-4 bg-black border border-white/10 rounded-xl text-white outline-none focus:border-yellow-500">
-                    <input type="password" id="rPass" placeholder="BUAT PASSWORD" class="w-full p-4 bg-black border border-white/10 rounded-xl text-white outline-none focus:border-yellow-500">
+                <h3 class="text-3xl font-black text-purple-500 mb-8 tracking-tighter">CREATE NEW ACCOUNT</h3>
+                <div class="space-y-6">
+                    <input type="text" id="rUser" placeholder="USERNAME BARU" class="input-neon">
+                    <input type="password" id="rPass" placeholder="PASSWORD BARU" class="input-neon">
                 </div>
-                <button onclick="doRegister()" class="w-full mt-6 bg-yellow-500 p-4 rounded-xl font-black orbitron text-black">BUAT AKUN BARU</button>
-                <p class="mt-6 text-sm text-gray-500">Sudah ada akun? <span onclick="toggleTab()" class="text-yellow-500 cursor-pointer font-bold">Login Sini</span></p>
+                <button onclick="doRegister()" class="w-full mt-8 bg-purple-600 p-4 font-black text-white hover:bg-white hover:text-black transition">DAFTARKAN IDENTITAS</button>
+                <p class="mt-8 text-xs text-gray-500 uppercase">Sudah Terdaftar? <span onclick="toggleTab()" class="text-cyan-400 cursor-pointer font-bold">Kembali ke Login</span></p>
             </div>
-            <button onclick="closeAuth()" class="mt-4 text-gray-600 text-xs hover:text-white transition">BATALKAN</button>
+            <button onclick="closeAuth()" class="mt-6 text-gray-700 text-[10px] hover:text-red-500 tracking-widest">CANCEL_SESSION</button>
         </div>
     </div>
 
     <script>
         const modal = document.getElementById("authModal");
-        const hero = document.getElementById("hero");
-
-        function openAuth() {
-            modal.style.display = "flex";
-            hero.style.filter = "blur(10px) grayscale(1)";
-        }
-
-        function closeAuth() {
-            modal.style.display = "none";
-            hero.style.filter = "none";
-        }
-
+        function openAuth() { modal.style.display = "flex"; }
+        function closeAuth() { modal.style.display = "none"; }
         function toggleTab() {
             document.getElementById("loginForm").classList.toggle("hidden");
             document.getElementById("regForm").classList.toggle("hidden");
@@ -121,11 +129,11 @@
         function doRegister() {
             const u = document.getElementById("rUser").value;
             const p = document.getElementById("rPass").value;
-            if(!u || !p) return alert("Isi data Bosku!");
+            if(!u || !p) return alert("System Error: Data tidak lengkap!");
             let users = JSON.parse(localStorage.getItem("users") || "[]");
             users.push({user: u, pass: p});
             localStorage.setItem("users", JSON.stringify(users));
-            alert("Berhasil Daftar! Silakan Login.");
+            alert("Sistem: Registrasi Berhasil!");
             toggleTab();
         }
 
@@ -137,16 +145,10 @@
             
             if(found) {
                 localStorage.setItem("loginUser", u);
-                // Redirect ke loading.html sesuai alur Bosku
                 window.location.href = "loading.html?game=menu";
             } else {
-                alert("Username atau Password salah!");
+                alert("Sistem: Akses Ditolak! Kredensial Salah.");
             }
-        }
-
-        // Cek jika sudah login
-        if(localStorage.getItem("loginUser")) {
-            window.location.href = "menu.html";
         }
     </script>
 </body>
