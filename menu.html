@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - INDIVIDUAL RECORDS</title>
+    <title>YOKBISAYOK - ULTIMATE ARENA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -13,66 +13,65 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap');
         body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .neon-purple { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
-        .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
-        .arcade-card { background: #000; border: 2px solid #ff00ff; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .arcade-card:hover { border-color: #00f2ff; box-shadow: 0 0 20px #00f2ff; }
+        .neon-purple { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
         
-        /* MODAL */
-        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; }
+        /* CARD GAME */
+        .arcade-card { background: #000; border: 2px solid #ff00ff; border-radius: 12px; overflow: hidden; transition: 0.3s; }
+        .arcade-card:hover { transform: translateY(-5px); border-color: #00f2ff; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
+        
+        /* POPUP */
+        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 50px #ff00ff55; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen">
 
-    <div id="gameModal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="mb-4"><i class="fas fa-medal text-5xl text-yellow-500"></i></div>
-            <h2 id="modalGameTitle" class="orbitron text-xl neon-cyan mb-1 uppercase italic">GAME NAME</h2>
-            <p class="text-[10px] text-gray-500 tracking-widest mb-6 uppercase">Current Record Holder</p>
-            
-            <div class="bg-black/50 border border-purple-500/50 p-6 rounded-xl mb-8">
-                <p id="topPlayerName" class="orbitron text-xl neon-purple uppercase">NO RECORD</p>
-                <p id="topPlayerScore" class="text-4xl font-black text-white mt-2">0</p>
-                <p class="text-[9px] text-cyan-400 font-bold uppercase">Points in this game</p>
+    <div id="gameModal">
+        <div class="modal-content">
+            <i class="fas fa-crown text-5xl text-yellow-500 mb-4"></i>
+            <h2 id="modalGameTitle" class="orbitron text-2xl neon-cyan mb-2 uppercase italic">GAME NAME</h2>
+            <div class="bg-black/50 border border-purple-500/50 p-6 rounded-xl mb-6">
+                <p class="text-[10px] text-gray-400 tracking-[3px] uppercase mb-2">Record Holder</p>
+                <p id="topPlayerName" class="orbitron text-xl neon-purple uppercase">NO DATA</p>
+                <p id="topPlayerScore" class="text-4xl font-black text-white mt-1">0</p>
+                <p class="text-[9px] text-cyan-400 font-bold uppercase">Points</p>
             </div>
-            <button onclick="closeModal()" class="w-full bg-purple-600 py-3 rounded-lg orbitron font-bold">LANJUT BERMAIN</button>
+            <button onclick="closeModal()" class="w-full bg-cyan-600 hover:bg-white hover:text-black py-3 rounded-lg orbitron font-bold transition uppercase">Mulai Main</button>
         </div>
     </div>
 
-    <header class="p-4 px-8 flex justify-between items-center bg-black border-b-2 border-cyan-500 sticky top-0 z-50">
-        <h1 class="text-3xl font-black orbitron italic neon-cyan italic">YOKBISAYOK</h1>
-        <div class="flex items-center gap-6">
-            <div class="text-right pr-6 border-r border-gray-800">
-                <p id="userNameDisplay" class="text-sm orbitron font-bold neon-purple uppercase">---</p>
-                <p class="text-[9px] text-gray-500 font-bold uppercase">Active Player</p>
-            </div>
+    <header class="p-4 px-10 flex justify-between items-center bg-black border-b-2 border-cyan-500 sticky top-0 z-[100]">
+        <h1 class="text-3xl font-black orbitron italic neon-cyan">YOKBISAYOK</h1>
+        <div class="flex items-center gap-8">
             <div class="text-right">
-                <p id="myTotalScore" class="text-xl orbitron font-bold neon-cyan">0</p>
-                <p class="text-[9px] text-purple-400 font-bold uppercase">Your Total Points</p>
+                <p id="userNameDisplay" class="text-sm orbitron font-bold neon-purple uppercase italic">---</p>
+                <p class="text-[9px] text-gray-500 font-bold uppercase">Player Active</p>
             </div>
-            <button onclick="logout()" class="text-red-500 text-xl"><i class="fas fa-power-off"></i></button>
+            <div class="text-center bg-purple-900/20 px-4 py-1 rounded border border-purple-500/30">
+                <p id="myTotalScore" class="text-xl orbitron font-bold neon-cyan">0</p>
+                <p class="text-[8px] text-purple-400 font-bold uppercase">Your Score</p>
+            </div>
+            <button onclick="logout()" class="text-red-500 text-2xl"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
-    <div class="flex flex-1">
-        <aside class="w-20 bg-black/50 border-r border-cyan-500 flex flex-col items-center py-10 gap-10">
-            <i class="fas fa-gamepad text-xl text-purple-500"></i>
-            <i class="fas fa-trophy text-xl text-cyan-500"></i>
-        </aside>
+    <main class="p-10">
+        <h2 class="text-5xl font-black orbitron italic mb-10 text-white uppercase">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
+        
+        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 mb-20"></div>
 
-        <main class="flex-1 p-8">
-            <h2 class="text-4xl font-black orbitron italic mb-8 uppercase">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
-            
-            <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-20"></div>
-
-            <h3 class="orbitron text-purple-400 text-sm font-bold mb-6 italic uppercase">Global Hall of Fame</h3>
-            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </main>
-    </div>
+        <div class="border-t-2 border-purple-900/50 pt-10">
+            <h3 class="orbitron text-purple-400 text-xl font-bold mb-8 italic uppercase flex items-center gap-4">
+                <i class="fas fa-trophy"></i> Global Leaderboard
+            </h3>
+            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+        </div>
+    </main>
 
     <script>
-        // 1. FIREBASE CONFIG
+        // 1. FIREBASE CONFIG (PASTIKAN ISI INI DENGAN BENAR)
         const firebaseConfig = {
             apiKey: "ISI_API_KEY_BOSKU",
             databaseURL: "https://yokbisayok-db-default-rtdb.firebaseio.com",
@@ -81,70 +80,85 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const activeUser = localStorage.getItem('loginUser') || "GUEST";
+        const activeUser = localStorage.getItem('loginUser') || "PLAYER_ONE";
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // 2. RENDER GRID 48 GAMES
+        // 2. RENDER 48 GAMES DENGAN TOMBOL PLAY & NAMA JELAS
         const grid = document.getElementById('arcadeGrid');
         for(let i=1; i<=48; i++) {
-            const gameId = `GAME_${i}`;
+            const gameTitle = `GAME ARCADE #${i}`;
             grid.innerHTML += `
-                <div class="arcade-card p-2" onclick="handlePlay('${gameId}')">
-                    <div class="h-16 bg-gray-900 rounded mb-2 flex items-center justify-center">
-                        <i class="fas fa-rocket text-gray-800"></i>
+                <div class="arcade-card">
+                    <div class="h-24 bg-gray-900 flex items-center justify-center">
+                        <i class="fas fa-gamepad text-gray-800 text-4xl"></i>
                     </div>
-                    <p class="text-[7px] orbitron text-center text-white uppercase">${gameId.replace('_',' ')}</p>
+                    <div class="p-4 bg-black/80">
+                        <h4 class="text-xs font-black orbitron text-white mb-3 uppercase truncate">${gameTitle}</h4>
+                        <button onclick="handlePlay('${gameTitle}')" class="w-full bg-cyan-600 hover:bg-white hover:text-black py-2 rounded text-[10px] font-black orbitron transition uppercase">
+                            <i class="fas fa-play mr-1"></i> Play Now
+                        </button>
+                    </div>
                 </div>
             `;
         }
 
-        // 3. FUNGSI PLAY & UPDATE SKOR (INDIVIDUAL & GLOBAL)
+        // 3. LOGIC PLAY & POPUP
         function handlePlay(gameId) {
-            const globalRef = db.ref('leaderboard/' + activeUser.toLowerCase());
-            const gameRef = db.ref('game_records/' + gameId);
+            const userRef = db.ref('leaderboard/' + activeUser.toLowerCase());
+            const gameRecordRef = db.ref('game_records/' + gameId.replace(/ /g, "_"));
 
-            // Update Global Score (Total semua game)
-            globalRef.once('value').then(snap => {
+            // Tambah skor total user
+            userRef.once('value').then(snap => {
                 let data = snap.val();
-                globalRef.set({ name: activeUser, score: (data ? data.score + 100 : 100) });
+                userRef.set({ name: activeUser, score: (data ? data.score + 100 : 100) });
             });
 
-            // Update & Ambil Rekor Tertinggi KHUSUS Game ini
-            gameRef.once('value').then(snap => {
+            // Ambil data rekor di game ini
+            gameRecordRef.once('value').then(snap => {
                 let record = snap.val();
-                let myScoreInThisGame = record && record.name === activeUser ? record.score + 100 : 100;
-
-                // Jika skor kita lebih tinggi dari rekor lama, update!
-                if (!record || myScoreInThisGame > record.score) {
-                    gameRef.set({ name: activeUser, score: myScoreInThisGame });
+                
+                // Jika kita menang rekor baru atau data kosong
+                if(!record || record.score < 100) {
+                    gameRecordRef.set({ name: activeUser, score: 100 });
                 }
 
-                // Tampilkan Pop-up Rekor Tertinggi Game ini
-                document.getElementById('modalGameTitle').innerText = gameId.replace('_',' ');
-                document.getElementById('topPlayerName').innerText = (record ? record.name : activeUser);
-                document.getElementById('topPlayerScore').innerText = (record ? record.score : myScoreInThisGame).toLocaleString();
+                // Tampilkan Popup
+                document.getElementById('modalGameTitle').innerText = gameId;
+                document.getElementById('topPlayerName').innerText = record ? record.name : activeUser;
+                document.getElementById('topPlayerScore').innerText = record ? record.score : "100";
                 document.getElementById('gameModal').style.display = "flex";
             });
         }
 
-        // 4. LISTENER DATA REAL-TIME
+        // 4. LISTENER LEADERBOARD (UPDATE OTOMATIS)
         db.ref('leaderboard').orderByChild('score').on('value', snap => {
             const list = document.getElementById('leaderList');
-            list.innerHTML = "";
             let players = [];
             snap.forEach(c => { 
-                let p = c.val();
-                players.push(p);
-                if(p.name.toLowerCase() === activeUser.toLowerCase()) 
-                    document.getElementById('myTotalScore').innerText = p.score.toLocaleString();
+                let p = childData = c.val();
+                players.push(childData);
+                if(childData.name.toLowerCase() === activeUser.toLowerCase()) {
+                    document.getElementById('myTotalScore').innerText = childData.score.toLocaleString();
+                }
             });
-            players.reverse().slice(0, 10).forEach((p, i) => {
+
+            list.innerHTML = "";
+            players.reverse().slice(0, 9).forEach((p, i) => {
                 list.innerHTML += `
-                    <div class="bg-black border border-purple-500/20 p-3 rounded flex justify-between items-center">
-                        <span class="orbitron text-xs text-gray-500">${i+1}</span>
-                        <p class="text-[10px] font-black orbitron uppercase ${i<3 ? 'neon-purple':'text-white'}">${p.name}</p>
-                        <p class="text-[10px] orbitron text-white">${p.score.toLocaleString()}</p>
-                    </div>`;
+                    <div class="bg-black border border-purple-500/30 p-5 rounded-xl flex justify-between items-center shadow-lg">
+                        <div class="flex items-center gap-4">
+                            <span class="orbitron text-xl font-black ${i<3 ? 'neon-purple':'text-gray-700'}">${i+1}</span>
+                            <div>
+                                <p class="text-sm font-black orbitron uppercase text-white">${p.name}</p>
+                                <p class="text-[8px] text-cyan-400 font-bold uppercase tracking-widest italic">Rank ${i+1}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-black orbitron neon-cyan">${p.score.toLocaleString()}</p>
+                            <p class="text-[8px] text-gray-500 font-bold uppercase">Total Points</p>
+                        </div>
+                    </div>
+                `;
             });
         });
 
