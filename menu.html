@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - ULTIMATE ARENA</title>
+    <title>YOKBISAYOK - ARENA FIX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -16,62 +16,78 @@
         .neon-purple { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
         
+        /* CSS POPUP - DIPAKSA MUNCUL */
+        #gameModal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 9999; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(15px);
+        }
+        .modal-active { display: flex !important; }
+
         /* CARD GAME */
-        .arcade-card { background: #000; border: 2px solid #ff00ff; border-radius: 12px; overflow: hidden; transition: 0.3s; }
-        .arcade-card:hover { transform: translateY(-5px); border-color: #00f2ff; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
-        
-        /* POPUP */
-        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 50px #ff00ff55; }
+        .arcade-card { 
+            background: #111; 
+            border: 2px solid #ff00ff; 
+            border-radius: 10px; 
+            padding: 10px;
+            text-align: center;
+        }
+        .play-btn {
+            background: #00f2ff;
+            color: black;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            padding: 8px;
+            width: 100%;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 10px;
+            display: block;
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="gameModal">
-        <div class="modal-content">
+        <div class="bg-[#0d0221] border-2 border-[#ff00ff] p-10 rounded-2xl text-center max-w-sm w-full shadow-[0_0_50px_#ff00ff]">
             <i class="fas fa-crown text-5xl text-yellow-500 mb-4"></i>
-            <h2 id="modalGameTitle" class="orbitron text-2xl neon-cyan mb-2 uppercase italic">GAME NAME</h2>
-            <div class="bg-black/50 border border-purple-500/50 p-6 rounded-xl mb-6">
-                <p class="text-[10px] text-gray-400 tracking-[3px] uppercase mb-2">Record Holder</p>
+            <h2 id="modalGameTitle" class="orbitron text-2xl neon-cyan mb-2">GAME NAME</h2>
+            <div class="bg-black p-4 rounded-xl border border-purple-500/50 mb-6">
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest">Top Player</p>
                 <p id="topPlayerName" class="orbitron text-xl neon-purple uppercase">NO DATA</p>
-                <p id="topPlayerScore" class="text-4xl font-black text-white mt-1">0</p>
-                <p class="text-[9px] text-cyan-400 font-bold uppercase">Points</p>
+                <p id="topPlayerScore" class="text-3xl font-black text-white mt-1">0</p>
             </div>
-            <button onclick="closeModal()" class="w-full bg-cyan-600 hover:bg-white hover:text-black py-3 rounded-lg orbitron font-bold transition uppercase">Mulai Main</button>
+            <button onclick="closeModal()" class="w-full bg-white text-black py-3 rounded-lg orbitron font-bold">START SESSION</button>
         </div>
     </div>
 
-    <header class="p-4 px-10 flex justify-between items-center bg-black border-b-2 border-cyan-500 sticky top-0 z-[100]">
+    <header class="p-4 px-10 flex justify-between items-center bg-black border-b-2 border-cyan-500">
         <h1 class="text-3xl font-black orbitron italic neon-cyan">YOKBISAYOK</h1>
-        <div class="flex items-center gap-8">
+        <div class="flex items-center gap-10">
             <div class="text-right">
-                <p id="userNameDisplay" class="text-sm orbitron font-bold neon-purple uppercase italic">---</p>
-                <p class="text-[9px] text-gray-500 font-bold uppercase">Player Active</p>
-            </div>
-            <div class="text-center bg-purple-900/20 px-4 py-1 rounded border border-purple-500/30">
+                <p id="userNameDisplay" class="text-sm orbitron font-bold neon-purple uppercase">---</p>
                 <p id="myTotalScore" class="text-xl orbitron font-bold neon-cyan">0</p>
-                <p class="text-[8px] text-purple-400 font-bold uppercase">Your Score</p>
             </div>
             <button onclick="logout()" class="text-red-500 text-2xl"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
     <main class="p-10">
-        <h2 class="text-5xl font-black orbitron italic mb-10 text-white uppercase">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
+        <h2 class="text-4xl font-black orbitron italic mb-10 text-white uppercase italic">PC ULTRA LIBRARY</h2>
         
-        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 mb-20"></div>
+        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-20"></div>
 
-        <div class="border-t-2 border-purple-900/50 pt-10">
-            <h3 class="orbitron text-purple-400 text-xl font-bold mb-8 italic uppercase flex items-center gap-4">
-                <i class="fas fa-trophy"></i> Global Leaderboard
-            </h3>
-            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </div>
+        <h3 class="orbitron text-purple-400 text-lg mb-6 italic">GLOBAL LEADERBOARD</h3>
+        <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </main>
 
     <script>
-        // 1. FIREBASE CONFIG (PASTIKAN ISI INI DENGAN BENAR)
+        // 1. FIREBASE (GANTI DENGAN KODE ASLI BOSKU)
         const firebaseConfig = {
             apiKey: "ISI_API_KEY_BOSKU",
             databaseURL: "https://yokbisayok-db-default-rtdb.firebaseio.com",
@@ -80,89 +96,69 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const activeUser = localStorage.getItem('loginUser') || "PLAYER_ONE";
+        const activeUser = localStorage.getItem('loginUser') || "USER";
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // 2. RENDER 48 GAMES DENGAN TOMBOL PLAY & NAMA JELAS
+        // 2. RENDER GAME DENGAN TEKS PUTIH TERANG
         const grid = document.getElementById('arcadeGrid');
         for(let i=1; i<=48; i++) {
-            const gameTitle = `GAME ARCADE #${i}`;
+            const gameName = `ARCADE GAME #${i}`;
             grid.innerHTML += `
                 <div class="arcade-card">
-                    <div class="h-24 bg-gray-900 flex items-center justify-center">
-                        <i class="fas fa-gamepad text-gray-800 text-4xl"></i>
-                    </div>
-                    <div class="p-4 bg-black/80">
-                        <h4 class="text-xs font-black orbitron text-white mb-3 uppercase truncate">${gameTitle}</h4>
-                        <button onclick="handlePlay('${gameTitle}')" class="w-full bg-cyan-600 hover:bg-white hover:text-black py-2 rounded text-[10px] font-black orbitron transition uppercase">
-                            <i class="fas fa-play mr-1"></i> Play Now
-                        </button>
-                    </div>
+                    <i class="fas fa-gamepad text-4xl text-gray-700 mb-2"></i>
+                    <p class="text-[11px] font-black orbitron text-white uppercase block mb-2">${gameName}</p>
+                    <button onclick="handlePlay('${gameName}')" class="play-btn">PLAY NOW</button>
                 </div>
             `;
         }
 
-        // 3. LOGIC PLAY & POPUP
-        function handlePlay(gameId) {
+        // 3. FUNGSI PLAY & MODAL
+        function handlePlay(gName) {
+            const modal = document.getElementById('gameModal');
             const userRef = db.ref('leaderboard/' + activeUser.toLowerCase());
-            const gameRecordRef = db.ref('game_records/' + gameId.replace(/ /g, "_"));
+            const gameRef = db.ref('game_records/' + gName.replace(/ /g, "_"));
 
-            // Tambah skor total user
+            // Tambah Skor User
             userRef.once('value').then(snap => {
-                let data = snap.val();
-                userRef.set({ name: activeUser, score: (data ? data.score + 100 : 100) });
+                let score = snap.val() ? snap.val().score + 500 : 500;
+                userRef.set({ name: activeUser, score: score });
             });
 
-            // Ambil data rekor di game ini
-            gameRecordRef.once('value').then(snap => {
-                let record = snap.val();
+            // Cek Rekor Game
+            gameRef.once('value').then(snap => {
+                let rec = snap.val();
+                document.getElementById('modalGameTitle').innerText = gName;
+                document.getElementById('topPlayerName').innerText = rec ? rec.name : activeUser;
+                document.getElementById('topPlayerScore').innerText = rec ? rec.score : "500";
                 
-                // Jika kita menang rekor baru atau data kosong
-                if(!record || record.score < 100) {
-                    gameRecordRef.set({ name: activeUser, score: 100 });
-                }
-
-                // Tampilkan Popup
-                document.getElementById('modalGameTitle').innerText = gameId;
-                document.getElementById('topPlayerName').innerText = record ? record.name : activeUser;
-                document.getElementById('topPlayerScore').innerText = record ? record.score : "100";
-                document.getElementById('gameModal').style.display = "flex";
+                // Munculkan Pop-up
+                modal.classList.add('modal-active');
             });
         }
 
-        // 4. LISTENER LEADERBOARD (UPDATE OTOMATIS)
+        // 4. LEADERBOARD LISTENER
         db.ref('leaderboard').orderByChild('score').on('value', snap => {
             const list = document.getElementById('leaderList');
-            let players = [];
+            let data = [];
             snap.forEach(c => { 
-                let p = childData = c.val();
-                players.push(childData);
-                if(childData.name.toLowerCase() === activeUser.toLowerCase()) {
-                    document.getElementById('myTotalScore').innerText = childData.score.toLocaleString();
+                let p = c.val();
+                data.push(p);
+                if(p.name.toLowerCase() === activeUser.toLowerCase()) {
+                    document.getElementById('myTotalScore').innerText = p.score.toLocaleString();
                 }
             });
-
             list.innerHTML = "";
-            players.reverse().slice(0, 9).forEach((p, i) => {
+            data.reverse().slice(0, 10).forEach((p, idx) => {
                 list.innerHTML += `
-                    <div class="bg-black border border-purple-500/30 p-5 rounded-xl flex justify-between items-center shadow-lg">
-                        <div class="flex items-center gap-4">
-                            <span class="orbitron text-xl font-black ${i<3 ? 'neon-purple':'text-gray-700'}">${i+1}</span>
-                            <div>
-                                <p class="text-sm font-black orbitron uppercase text-white">${p.name}</p>
-                                <p class="text-[8px] text-cyan-400 font-bold uppercase tracking-widest italic">Rank ${i+1}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-lg font-black orbitron neon-cyan">${p.score.toLocaleString()}</p>
-                            <p class="text-[8px] text-gray-500 font-bold uppercase">Total Points</p>
-                        </div>
-                    </div>
-                `;
+                    <div class="bg-black border border-purple-500/50 p-4 rounded-lg flex justify-between items-center">
+                        <span class="orbitron font-bold text-purple-500">${idx+1}</span>
+                        <p class="text-xs orbitron uppercase text-white">${p.name}</p>
+                        <p class="text-xs orbitron neon-cyan">${p.score.toLocaleString()}</p>
+                    </div>`;
             });
         });
 
-        function closeModal() { document.getElementById('gameModal').style.display = "none"; }
+        function closeModal() { document.getElementById('gameModal').classList.remove('modal-active'); }
         function logout() { localStorage.clear(); window.location.href = "index.html"; }
     </script>
 </body>
