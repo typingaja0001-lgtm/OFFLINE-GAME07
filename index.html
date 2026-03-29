@@ -11,165 +11,127 @@
         
         body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .neon-text { text-shadow: 0 0 15px #00f2ff; color: #00f2ff; }
-
-        /* MODAL LOGIN/DAFTAR */
+        
+        /* AUTH STYLE (GLASSMORPHISM POPUP) */
         .auth-overlay {
-            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center;
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(10px); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
         }
-        .glass-card {
+        .glass-box {
             background: rgba(15, 23, 42, 0.9); border: 1px solid #bc13fe;
             box-shadow: 0 0 40px rgba(188, 19, 254, 0.3); width: 100%; max-width: 400px;
-            padding: 2.5rem; border-radius: 30px; position: relative;
+            padding: 40px; border-radius: 30px; position: relative;
         }
 
-        /* BACKGROUND GAME GRID (UNREACHABLE BEFORE LOGIN) */
-        .bg-grid-blur { filter: blur(4px) grayscale(0.5); pointer-events: none; opacity: 0.6; }
+        /* GAME GRID BACKGROUND (PREVIEW) */
+        .bg-grid-preview { filter: blur(5px); opacity: 0.5; pointer-events: none; }
 
-        /* INPUT STYLE */
-        .input-cyber {
-            background: #000 !important; border: 1px solid #334155 !important;
-            color: #00f2ff !important; font-family: 'Orbitron', sans-serif; font-size: 12px;
-        }
-        .input-cyber:focus { border-color: #bc13fe !important; box-shadow: 0 0 10px #bc13fe; outline: none; }
-
-        /* GAME CARD MINIMAL */
+        /* INPUT & BUTTON */
+        .input-cyber { background: #000 !important; border: 1px solid #334155 !important; color: white !important; font-size: 12px; }
+        .input-cyber:focus { border-color: #00f2ff !important; box-shadow: 0 0 10px #00f2ff; outline: none; }
+        
+        /* PREVIEW CARD */
         .preview-card {
-            background: #0f172a; border-radius: 15px; overflow: hidden; height: 180px;
+            background: #0f172a; border-radius: 12px; overflow: hidden; height: 160px;
             border: 1px solid rgba(255, 255, 255, 0.05); position: relative;
         }
-        .preview-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
-        .preview-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px; background: linear-gradient(transparent, #000); }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); }
+        .preview-text { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px; background: linear-gradient(transparent, #000); }
     </style>
 </head>
 <body>
 
     <div id="authContainer" class="auth-overlay">
-        <div class="glass-card">
-            <div class="text-center mb-8">
-                <h1 class="text-4xl font-black orbitron neon-text italic tracking-tighter">YOKBISAYOK</h1>
-                <p class="text-[10px] tracking-[4px] text-purple-400 font-bold uppercase mt-2">Access Granted to Members Only</p>
+        <div class="glass-box text-center">
+            <h1 class="text-5xl font-black orbitron italic neon-cyan mb-8 tracking-tighter italic shadow-[0_0_15px_#00f2ff]">YOKBISAYOK</h1>
+            <p class="text-[10px] tracking-[4px] text-purple-400 font-bold uppercase mt-2">Access Granted to Members Only</p>
+
+            <div id="loginForm" class="mt-8 space-y-4">
+                <input type="text" id="lUser" placeholder="USERNAME" class="input-cyber w-full p-4 rounded-xl text-center">
+                <input type="password" id="lPass" placeholder="PASSWORD" class="input-cyber w-full p-4 rounded-xl text-center">
+                <button onclick="doLogin()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 p-4 rounded-xl font-bold orbitron text-sm hover:scale-105 transition shadow-lg shadow-cyan-500/20">ENTER ARCADE</button>
+                <p class="text-center mt-6 text-xs text-gray-500">Belum punya akses? <span onclick="toggleAuth()" class="text-purple-400 cursor-pointer hover:underline">Daftar Sekarang</span></p>
             </div>
 
-            <div id="loginBox">
-                <div class="space-y-4">
-                    <input type="text" id="lUser" placeholder="USERNAME" class="input-cyber w-full p-4 rounded-xl">
-                    <input type="password" id="lPass" placeholder="PASSWORD" class="input-cyber w-full p-4 rounded-xl">
-                </div>
-                <button onclick="doLogin()" class="w-full mt-6 bg-gradient-to-r from-cyan-600 to-blue-600 p-4 rounded-xl font-black orbitron text-sm hover:scale-105 transition">ENTER ARCADE</button>
-                <p class="text-center mt-6 text-xs text-gray-400">Belum punya akses? <span onclick="switchTab('reg')" class="text-purple-400 cursor-pointer font-bold">Daftar Sekarang</span></p>
-            </div>
-
-            <div id="regBox" class="hidden">
-                <div class="space-y-4">
-                    <input type="text" id="rUser" placeholder="NEW USERNAME" class="input-cyber w-full p-4 rounded-xl">
-                    <input type="password" id="rPass" placeholder="NEW PASSWORD" class="input-cyber w-full p-4 rounded-xl">
-                </div>
-                <button onclick="doRegister()" class="w-full mt-6 bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-xl font-black orbitron text-sm hover:scale-105 transition">CREATE ACCOUNT</button>
-                <p class="text-center mt-6 text-xs text-gray-400">Sudah ada akun? <span onclick="switchTab('login')" class="text-cyan-400 cursor-pointer font-bold">Login Sini</span></p>
+            <div id="registerForm" class="hidden mt-8 space-y-4">
+                <input type="text" id="rUser" placeholder="NEW USERNAME" class="input-cyber w-full p-4 rounded-xl text-center">
+                <input type="password" id="rPass" placeholder="NEW PASSWORD" class="input-cyber w-full p-4 rounded-xl text-center">
+                <button onclick="doRegister()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-xl font-bold orbitron text-sm hover:scale-105 transition shadow-lg shadow-purple-500/20">CREATE ACCOUNT</button>
+                <p class="text-center mt-6 text-xs text-gray-500">Sudah terdaftar? <span onclick="toggleAuth()" class="text-cyan-400 cursor-pointer hover:underline">Masuk</span></p>
             </div>
         </div>
     </div>
 
-    <div class="bg-grid-blur p-8">
+    <div class="bg-grid-preview p-8">
         <header class="flex justify-between items-center mb-10">
             <h2 class="text-2xl font-black orbitron italic">YOKBISAYOK</h2>
             <div class="flex gap-4">
-                <div class="w-8 h-8 rounded-full bg-slate-800"></div>
-                <div class="w-24 h-4 bg-slate-800 rounded-full mt-2"></div>
+                <div class="w-10 h-10 rounded-xl bg-slate-800"></div>
+                <div class="w-24 h-4 bg-slate-800 rounded-full mt-3"></div>
             </div>
         </header>
 
-        <div class="mb-10 text-center">
-            <h3 class="text-5xl font-black orbitron mb-4">100+ PREMIUM GAMES</h3>
+        <div class="mb-12 text-center">
+            <h3 class="text-5xl font-black orbitron mb-4">ARCADE <span class="text-cyan-400">OFFLINE</span> 100+ GAMES</h3>
             <p class="text-gray-500 tracking-widest uppercase text-xs">Login to unlock full experience</p>
         </div>
 
-        <div id="previewGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <div class="preview-card">
+                <img src="https://source.unsplash.com/400x300/?gaming,snake,neon" class="preview-img">
+                <div class="preview-text"><p class="text-[10px] font-bold orbitron truncate text-cyan-400">Neon Snake</p></div>
+            </div>
+            <div class="preview-card">
+                <img src="https://source.unsplash.com/400x300/?gaming,motorcycle,neon" class="preview-img">
+                <div class="preview-text"><p class="text-[10px] font-bold orbitron truncate text-cyan-400">Cyber Moto</p></div>
+            </div>
+            <div class="preview-card">
+                <img src="https://source.unsplash.com/400x300/?gaming,breakout,neon" class="preview-img">
+                <div class="preview-text"><p class="text-[10px] font-bold orbitron truncate text-cyan-400">Brick Break</p></div>
+            </div>
             </div>
     </div>
 
-    <script>
-        // DATA GAME UNTUK PREVIEW (Sama dengan menu.html)
-        const previewGames = [
-            { name: "Neon Snake", img: "snake" },
-            { name: "Cyber Moto", img: "motorcycle" },
-            { name: "Brick Break", img: "breakout" },
-            { name: "Space War", img: "galaxy" },
-            { name: "Memory Pro", img: "brain" },
-            { name: "Tetris Neo", img: "blocks" },
-            { name: "Boxing Glow", img: "boxing" },
-            { name: "Penalty Kick", img: "soccer" },
-            { name: "Dino Run", img: "dinosaur" },
-            { name: "Neon Tank", img: "tank" },
-            { name: "Sudoku Lite", img: "numbers" },
-            { name: "Fast Drift", img: "racing" },
-            { name: "Ping Pong", img: "pingpong" },
-            { name: "Tic Tac Toe", img: "neon" },
-            { name: "Gold Miner", img: "gold" },
-            { name: "Cyber Archer", img: "archery" },
-            { name: "Jewel Match", img: "jewels" },
-            { name: "Neon Jump", img: "jumping" }
-        ];
+<script>
+    // SISTEM LOGIN & DAFTAR
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
 
-        const grid = document.getElementById("previewGrid");
-        previewGames.forEach(g => {
-            const card = document.createElement("div");
-            card.className = "preview-card";
-            const imgUrl = `https://source.unsplash.com/300x300/?gaming,${g.img}`;
-            card.innerHTML = `
-                <img src="${imgUrl}" class="preview-img">
-                <div class="preview-info">
-                    <p class="text-[10px] font-bold orbitron truncate">${g.name}</p>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
+    function toggleAuth() {
+        document.getElementById("loginForm").classList.toggle("hidden");
+        document.getElementById("registerForm").classList.toggle("hidden");
+    }
 
-        // AUTH LOGIC
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
+    function doRegister() {
+        const u = document.getElementById("rUser").value;
+        const p = document.getElementById("rPass").value;
+        if(!u || !p) return alert("Isi data Bosku!");
+        if(users.find(x => x.user === u)) return alert("Username sudah terpakai!");
+        
+        users.push({user: u, pass: p});
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Pendaftaran Berhasil! Silakan Login.");
+        toggleAuth();
+    }
 
-        function switchTab(type) {
-            if(type === 'reg') {
-                document.getElementById("loginBox").classList.add("hidden");
-                document.getElementById("regBox").classList.remove("hidden");
-            } else {
-                document.getElementById("regBox").classList.add("hidden");
-                document.getElementById("loginBox").classList.remove("hidden");
-            }
+    function doLogin() {
+        const u = document.getElementById("lUser").value;
+        const p = document.getElementById("lPass").value;
+        const found = users.find(x => x.user === u && x.pass === p);
+        
+        if(found) {
+            localStorage.setItem("loginUser", u);
+            // PINDAH KE HALAMAN LOADING SEBELUM KE MENU UTAMA
+            window.location.href = "loading.html?game=menu";
+        } else {
+            alert("Akses Ditolak! Cek Username/Password.");
         }
+    }
 
-        function doRegister() {
-            const u = document.getElementById("rUser").value;
-            const p = document.getElementById("rPass").value;
-            if(!u || !p) return alert("Isi semua data Bosku!");
-            if(users.find(x => x.user === u)) return alert("Username sudah terpakai!");
-            
-            users.push({user: u, pass: p});
-            localStorage.setItem("users", JSON.stringify(users));
-            alert("Pendaftaran Berhasil! Silakan Login.");
-            switchTab('login');
-        }
-
-        function doLogin() {
-            const u = document.getElementById("lUser").value;
-            const p = document.getElementById("lPass").value;
-            const found = users.find(x => x.user === u && x.pass === p);
-            
-            if(found) {
-                localStorage.setItem("loginUser", u);
-                // SETELAH LOGIN, PINDAH KE MENU.HTML
-                window.location.href = "menu.html";
-            } else {
-                alert("Akses Ditolak! Cek Username/Password.");
-            }
-        }
-
-        // AUTO-REDIRECT JIKA SUDAH LOGIN
-        if(localStorage.getItem("loginUser")) {
-            window.location.href = "menu.html";
-        }
-    </script>
+    // AUTO-REDIRECT JIKA SUDAH LOGIN
+    if(localStorage.getItem("loginUser")) {
+        window.location.href = "menu.html";
+    }
+</script>
 </body>
 </html>
