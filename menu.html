@@ -63,8 +63,10 @@
         const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
+        // Daftar Game yang Tersedia
         const games = ["SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", "GALAXY SHOOTER", "BRICK BREAKER"];
         for(let i=7; i<=48; i++) { games.push("ARCADE GAME #" + i); }
+        
         const grid = document.getElementById('arcadeGrid');
         
         games.forEach(name => {
@@ -130,15 +132,22 @@
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
 
-        // --- SEMUA GAME DIBUKA DI SINI ---
+        // --- KONEKSI SEMUA ARENA GAME (SUDAH AKTIF SEMUA) ---
         function startGameAction() { 
             const target = currentGameTarget.toUpperCase();
+            
             if(target === "SNAKE RETRO") {
                 window.location.href = "snake.html"; 
             } else if(target === "TETRIS ULTRA") {
                 window.location.href = "tetris.html";
             } else if(target === "PAC-MAN NEO") {
-                window.location.href = "pacman.html"; // Pastikan file pacman.html sudah ada
+                window.location.href = "pacman.html"; 
+            } else if(target === "SPACE INVADERS") {
+                window.location.href = "invaders.html"; 
+            } else if(target === "GALAXY SHOOTER") {
+                window.location.href = "shooter.html"; 
+            } else if(target === "BRICK BREAKER") {
+                window.location.href = "brick.html";
             } else {
                 alert("Arena " + currentGameTarget + " segera hadir!"); 
             }
