@@ -3,128 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - MEGA NEON ARCADE</title>
+    <title>YOKBISAYOK - V12 ULTRA LIVING NEON</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap');
         
         body { 
-            background: #020617; color: white; font-family: 'Rajdhani', sans-serif; 
-            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            background: #010409 !important; 
+            color: white; 
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
         }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* NEON GLOW EFFECTS */
-        .neon-text-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
-        .neon-text-purple { color: #bc13fe; text-shadow: 0 0 10px #bc13fe, 0 0 20px #bc13fe; }
+        /* EFEK CAHAYA HIDUP (ANIMASI) */
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+        }
 
-        /* KARTU GAME ARCADE */
+        .neon-blue { color: #00f2ff; text-shadow: 0 0 15px #00f2ff, 0 0 30px rgba(0, 242, 255, 0.5); }
+        .neon-purple { color: #bc13fe; text-shadow: 0 0 15px #bc13fe, 0 0 30px rgba(188, 19, 254, 0.5); }
+
+        /* KARTU GAME VERSI HIDUP */
         .game-card {
-            background: #000; border-radius: 12px; overflow: hidden; 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid #1e293b; cursor: pointer; position: relative;
+            background: #0d1117; 
+            border: 2px solid #30363d; 
+            border-radius: 18px; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* EFEK HOVER UNGU (Ganjil) */
-        .card-purple:hover { 
-            transform: scale(1.08); border-color: #bc13fe; 
-            box-shadow: 0 0 25px rgba(188, 19, 254, 0.6); 
-        }
-        /* EFEK HOVER BIRU (Genap) */
+        /* HOVER: BIRU MENYALA */
         .card-blue:hover { 
-            transform: scale(1.08); border-color: #00f2ff; 
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.6); 
+            border-color: #00f2ff; 
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.6); 
+            transform: scale(1.07) translateY(-15px);
         }
 
-        .game-img { width: 100%; height: 120px; object-fit: cover; filter: brightness(0.8); transition: 0.3s; }
-        .game-card:hover .game-img { filter: brightness(1.1); }
+        /* HOVER: UNGU MENYALA */
+        .card-purple:hover { 
+            border-color: #bc13fe; 
+            box-shadow: 0 0 50px rgba(188, 19, 254, 0.6); 
+            transform: scale(1.07) translateY(-15px);
+        }
 
-        /* CUSTOM SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #bc13fe; border-radius: 10px; }
+        /* IMAGE STYLING: HIGH CONTRAST */
+        .game-img { 
+            width: 100%; height: 160px; object-fit: cover; 
+            filter: saturate(1.5) brightness(1.1); /* Membuat warna gambar lebih 'hidup' */
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* BANNER GAHAR MIRIP REFERENSI */
+        .hero-banner {
+            background: linear-gradient(135deg, #0d1117 0%, #000 100%);
+            border: 2px solid #00f2ff;
+            animation: glowPulse 3s infinite;
+        }
     </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="p-0 m-0">
 
-    <nav class="p-4 px-10 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-cyan-500/20 sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <h1 class="text-2xl font-black orbitron italic neon-text-blue">YOKBISAYOK</h1>
-        </div>
+    <nav class="p-6 flex justify-between items-center bg-black/95 border-b-2 border-cyan-500 sticky top-0 z-[100] shadow-[0_5px_20px_rgba(0,0,0,0.8)]">
+        <h1 class="text-4xl font-black orbitron italic neon-blue">YOKBISAYOK</h1>
         <div class="flex items-center gap-6">
             <div class="text-right">
-                <p id="userName" class="text-xs font-black orbitron text-white">PLAYER_ONE</p>
-                <p class="text-[9px] text-purple-400 tracking-widest uppercase">Member Elite</p>
+                <span class="block text-lg orbitron font-bold neon-purple uppercase">AAN</span>
+                <span class="text-[10px] tracking-[4px] text-cyan-400">RANK: ELITE MEMBER</span>
             </div>
-            <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition text-xl"><i class="fas fa-power-off"></i></button>
+            <button onclick="logout()" class="text-3xl text-red-500 hover:scale-125 transition"><i class="fas fa-power-off"></i></button>
         </div>
     </nav>
 
-    <main class="p-8 max-w-[1600px] mx-auto">
+    <main class="max-w-[1700px] mx-auto p-10">
         
-        <div class="mb-12 p-12 rounded-[2rem] bg-slate-900 border border-white/5 relative overflow-hidden shadow-2xl">
-            <div class="relative z-10">
-                <h2 class="text-5xl font-black orbitron italic mb-3">PC <span class="neon-text-purple">ULTRA</span> LIBRARY</h2>
-                <p class="text-gray-400 text-sm max-w-lg uppercase tracking-wider">Tersedia 48+ Game Offline High Performance v10.0</p>
+        <div class="hero-banner p-14 rounded-[40px] mb-16 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div class="md:w-2/3">
+                <h2 class="text-7xl font-black orbitron italic mb-4 leading-tight">
+                    PC <span class="neon-purple">ULTRA</span> <br> <span class="neon-blue">LIBRARY</span> 2026
+                </h2>
+                <p class="text-gray-300 text-lg uppercase tracking-widest font-bold">50+ Game Offline Premium • High Performance</p>
+                <button class="mt-10 bg-gradient-to-r from-cyan-500 to-blue-600 text-black px-16 py-4 rounded-2xl text-lg font-black orbitron shadow-[0_0_20px_#00f2ff] hover:scale-110 transition">MULAI MAIN</button>
             </div>
-            <i class="fas fa-gamepad absolute -right-10 -bottom-10 text-[250px] text-white/5 rotate-12"></i>
+            <div class="md:w-1/3 hidden md:block">
+                 <i class="fas fa-rocket text-[150px] neon-blue animate-bounce"></i>
+            </div>
         </div>
 
-        <div class="relative mb-16 max-w-2xl mx-auto">
-            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-cyan-400"></i>
-            <input type="text" placeholder="Cari Game di Database..." class="w-full bg-black border-2 border-purple-500/30 p-4 pl-14 rounded-2xl focus:border-purple-500 outline-none transition text-sm orbitron text-white">
+        <div class="relative mb-20 max-w-4xl mx-auto">
+            <i class="fas fa-gamepad absolute left-6 top-1/2 -translate-y-1/2 text-3xl text-cyan-500"></i>
+            <input type="text" placeholder="CARI JUDUL GAME ANDA..." class="w-full bg-black border-4 border-purple-500/50 p-6 pl-20 rounded-3xl focus:border-cyan-400 outline-none transition text-xl orbitron text-white shadow-2xl">
         </div>
 
-        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div id="gameGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
             </div>
 
     </main>
 
     <script>
-        // Data Game Dasar
-        const baseGames = [
-            { name: "Cyber Snake", cat: "Arcade", img: "https://images.pexels.com/photos/163036/mario-luigi-yoshi-figures-163036.jpeg?auto=compress&w=300" },
-            { name: "Moto Racer", cat: "Racing", img: "https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&w=300" },
-            { name: "Starfield", cat: "Shooter", img: "https://images.pexels.com/photos/1205301/pexels-photo-1205301.jpeg?auto=compress&w=300" },
-            { name: "Dead Zone", cat: "Action", img: "https://images.pexels.com/photos/15174526/pexels-photo-15174526/free-photo-of-zombie-in-forest.jpeg?auto=compress&w=300" },
-            { name: "Night Drift", cat: "Racing", img: "https://images.pexels.com/photos/3136673/pexels-photo-3136673.jpeg?auto=compress&w=300" },
-            { name: "War Tank", cat: "War", img: "https://images.pexels.com/photos/7010344/pexels-photo-7010344.jpeg?auto=compress&w=300" },
-            { name: "Pro Chess", cat: "Strategy", img: "https://images.pexels.com/photos/1015568/pexels-photo-1015568.jpeg?auto=compress&w=300" },
-            { name: "UFC Fight", cat: "Fighting", img: "https://images.pexels.com/photos/4761779/pexels-photo-4761779.jpeg?auto=compress&w=300" }
+        // DATA GAMBAR GAME YANG WARNANYA 'HIDUP' (KARAKTER GAME)
+        const assetGames = [
+            { n: "CYBERPUNK", c: "Action", i: "https://wallpapercave.com/wp/wp7158145.jpg" },
+            { n: "GHOST RUNNER", c: "Speed", i: "https://wallpapercave.com/wp/wp7429107.jpg" },
+            { n: "VALORANT", c: "Shooter", i: "https://wallpapercave.com/wp/wp5870377.jpg" },
+            { n: "GOD OF WAR", c: "Adventure", i: "https://wallpapercave.com/wp/wp10319208.jpg" },
+            { n: "ELDEAN RING", c: "RPG", i: "https://wallpapercave.com/wp/wp10495376.jpg" },
+            { n: "NEED FOR SPEED", c: "Racing", i: "https://wallpapercave.com/wp/wp4504107.jpg" },
+            { n: "MORTAL KOMBAT", c: "Fighting", i: "https://wallpapercave.com/wp/wp4337227.jpg" },
+            { n: "SPIDERMAN", c: "Hero", i: "https://wallpapercave.com/wp/wp7239019.jpg" }
         ];
 
-        // Loop untuk membuat 48 Game (8 dasar x 6 kali)
-        let totalGames = [];
-        for (let i = 0; i < 6; i++) {
-            baseGames.forEach(g => totalGames.push({...g}));
-        }
-
-        const grid = document.getElementById("menuGrid");
-        totalGames.forEach((g, index) => {
-            const isEven = index % 2 === 0;
-            const colorClass = isEven ? "card-blue" : "card-purple";
-            const textColor = isEven ? "text-cyan-400" : "text-purple-400";
+        const grid = document.getElementById("gameGrid");
+        
+        // Loop 60 Game
+        for (let x = 1; x <= 60; x++) {
+            const data = assetGames[x % assetGames.length];
+            const isPurple = x % 2 === 0;
+            const styleClass = isPurple ? "card-purple" : "card-blue";
+            const textClass = isPurple ? "neon-purple" : "neon-blue";
 
             grid.innerHTML += `
-                <div class="game-card ${colorClass}" onclick="location.href='loading.html'">
-                    <img src="${g.img}" class="game-img" loading="lazy">
-                    <div class="p-3 text-center bg-black/40">
-                        <p class="text-[8px] ${textColor} font-bold orbitron mb-0.5">${g.cat}</p>
-                        <h4 class="font-bold text-[10px] truncate uppercase orbitron text-white">${g.name} ${index + 1}</h4>
-                        <div class="mt-2 flex justify-center items-center gap-1">
-                            <div class="h-0.5 w-8 bg-slate-700"></div>
-                            <span class="text-[7px] text-yellow-500 font-bold italic">V10.0</span>
-                            <div class="h-0.5 w-8 bg-slate-700"></div>
+                <div class="game-card ${styleClass}" onclick="alert('Loading ${data.n}...')">
+                    <img src="${data.i}" class="game-img" onerror="this.src='https://via.placeholder.com/400x200/000000/00f2ff?text=GAME+IMAGE'">
+                    <div class="p-5">
+                        <p class="text-[10px] font-black orbitron ${textClass} mb-1 tracking-widest">${data.c} PC</p>
+                        <h4 class="text-sm font-black orbitron text-white uppercase">${data.n} #${x}</h4>
+                        <div class="mt-4 flex items-center justify-between">
+                            <span class="text-[10px] text-gray-500">v12.0 ELITE</span>
+                            <div class="flex text-yellow-500 text-[10px] gap-1">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
-        });
+        }
 
-        const user = localStorage.getItem("loginUser") || "AAN";
-        document.getElementById("userName").innerText = user.toUpperCase();
-
-        function logout() { localStorage.removeItem("loginUser"); window.location.href = "index.html"; }
+        function logout() { window.location.href = "index.html"; }
     </script>
 </body>
 </html>
