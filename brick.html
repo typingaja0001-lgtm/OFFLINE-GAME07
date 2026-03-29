@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKBISAYOK - BRICK BREAKER FINAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
+        body { 
+            background: #050112; color: white; font-family: 'Rajdhani', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; margin: 0; padding: 20px; overflow-x: hidden;
+        }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        #game-container { 
+            position: relative; border: 4px solid #ff00ff; 
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); 
+            background: #000; border-radius: 15px; overflow: hidden;
+        }
+
+        canvas { display: block; }
+
+        .neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+
+        /* MODAL GAME OVER */
+        #gameOverModal { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.95); z-index: 100; 
+            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
+        }
+        .modal-content { 
+            background: #0d0221; border: 3px solid #ff00ff; padding: 40px; 
+            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ff00ff; width: 340px; 
+        }
+
+        /* PANDUAN STYLE */
+        .how-to-play { 
+            margin-top: 25px; background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 0, 255, 0.3); padding: 20px; 
+            border-radius: 15px; width: 400px; 
+        }
+        .key-badge { 
+            background: #1a1a1a; border: 1px solid #ff00ff; color: #ff00ff; 
+            padding: 2px 10px; border-radius: 6px; font-size: 11px; font-family: 'Orbitron'; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gameOverModal">
+        <div class="modal-content">
+            <h2 id="statusTitle" class="orbitron text-4xl neon-pink mb-2 italic">WASTED</h2>
+            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest">Gravity Protocol Active</p>
+            <div class="mb-10">
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Total Score</p>
+                <p id="finalScoreDisplay" class="text-6xl neon-cyan orbitron">0</p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg">RETRY ARENA</button>
+                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-xl hover:text-white hover:border-white transition uppercase text-[10px] orbitron">MENU UTAMA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6 text-center">
+        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Breaker Points</p>
+        <p id="pScore" class="text-5xl neon-pink orbitron">0</p>
+    </div>
+
+    <div id="game-container">
+        <canvas id="brickCanvas" width="400" height="450"></canvas>
+    </div>
+
+    <div class="how-to-play">
+        <h3 class="orbitron text-[10px] neon-cyan mb-4 italic uppercase tracking-widest text-center">
+            🕹️ DEFLECTOR PROTOCOL 🕹️
+        </h3>
+        <div class="grid grid-cols-2 gap-4 text-[13px] text-gray-300">
+            <div class="space-y-2">
+                <p class="flex justify-between items-center"><span>Gerak:</span> <span><span class="key-badge">←</span> <span class="key-badge">→</span></span></p>
+                <p class="flex justify-between items-center"><span>Misi:</span> <span class="text-white font-bold italic">CLEAN UP</span></p>
+            </div>
+            <div class="space-y-2 border-l border-white/10 pl-4">
+                <p class="flex justify-between items-center"><span>Per Balok:</span> <span class="neon-pink font-bold">+25 pts</span></p>
+                <p class="flex justify-between items-center text-red-500 italic font-bold"><span>Speed:</span> <span>LEVEL UP</span></p>
+            </div>
+        </div>
+        <p class="mt-4 pt-4 border-t border-white/5 text-[9px] text-center text-pink-500 uppercase font-bold">
+            💡 INFO: Pantulkan bola agar tidak jatuh! Setiap pantulan ke papan akan menambah kecepatan bola sebesar 5%.
+        </p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('brickCanvas');
+        const ctx = canvas.getContext('2d');
+        const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
+        const player = (localStorage.getItem('loginUser') || "USER").toUpperCase();
+
+        let score = 0;
+        let gameActive = true;
+        let rightPressed = false;
+        let leftPressed = false;
+
+        // Ball & Paddle Config
+        let ballRadius = 8;
+        let x = canvas.width/2;
+        let y = canvas.height-30;
+        let dx = 3.5;
+        let dy = -3.5;
+        const paddleHeight = 12;
+        const paddleWidth = 85;
+        let paddleX = (canvas.width-paddleWidth)/2;
+
+        // Bricks Layout
+        const brickRowCount = 5;
+        const brickColumnCount = 5;
+        const brickWidth = 65;
+        const brickHeight = 20;
+        const brickPadding = 10;
+        const brickOffsetTop = 40;
+        const brickOffsetLeft = 20;
+
+        let bricks = [];
+        for(let c=0; c<brickColumnCount; c++) {
+            bricks[c] = [];
+            for(let r=0; r<brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1 };
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if(e.key == "Right" || e.key == "ArrowRight") rightPressed = true;
+            else if(e.key == "Left" || e.key == "ArrowLeft") leftPressed = true;
+        });
+        document.addEventListener("keyup", (e) => {
+            if(e.key == "Right" || e.key == "ArrowRight") rightPressed = false;
+            else if(e.key == "Left" || e.key == "ArrowLeft") leftPressed = false;
+        });
+
+        function collisionDetection() {
+            for(let c=0; c<brickColumnCount; c++) {
+                for(let r=0; r<brickRowCount; r++) {
+                    let b = bricks[c][r];
+                    if(b.status == 1) {
+                        if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                            dy = -dy;
+                            b.status = 0;
+                            score += 25;
+                            document.getElementById('pScore').innerText = score;
+                            if(score == brickRowCount*brickColumnCount*25) {
+                                document.getElementById('statusTitle').innerText = "CLEARED";
+                                document.getElementById('statusTitle').style.color = "#00f2ff";
+                                gameActive = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+            ctx.fillStyle = "#00f2ff";
+            ctx.shadowBlur = 10; ctx.shadowColor = "#00f2ff";
+            ctx.fill();
+            ctx.closePath();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height-paddleHeight-10, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#ff00ff";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for(let c=0; c<brickColumnCount; c++) {
+                for(let r=0; r<brickRowCount; r++) {
+                    if(bricks[c][r].status == 1) {
+                        let brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+                        let brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = r % 2 === 0 ? "#ff00ff" : "#331166";
+                        ctx.strokeStyle = "#ff00ff";
+                        ctx.stroke();
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        function draw() {
+            if(!gameActive) {
+                document.getElementById('finalScoreDisplay').innerText = score;
+                document.getElementById('gameOverModal').style.display = 'flex';
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            collisionDetection();
+
+            if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) dx = -dx;
+            if(y + dy < ballRadius) dy = -dy;
+            else if(y + dy > canvas.height-ballRadius-10) {
+                if(x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                    dx *= 1.05; // Speed Up
+                    dy *= 1.05;
+                } else {
+                    gameActive = false;
+                }
+            }
+
+            if(rightPressed && paddleX < canvas.width-paddleWidth) paddleX += 7;
+            else if(leftPressed && paddleX > 0) paddleX -= 7;
+
+            x += dx;
+            y += dy;
+            requestAnimationFrame(draw);
+        }
+
+        async function saveAndExit() {
+            try {
+                const res = await fetch(dbURL);
+                const data = await res.json();
+                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
+                if(userKey) {
+                    await fetch(`https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard/${userKey}.json`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ score: data[userKey].score + score })
+                    });
+                }
+            } catch (e) {}
+            window.location.href = 'menu.html';
+        }
+
+        draw();
+    </script>
+</body>
+</html>
