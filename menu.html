@@ -2,82 +2,54 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOKBISAYOK - ARENA SUPREME ULTIMATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap');
-        
-        :root {
-            --neon-blue: #00f2ff;
-            --neon-purple: #bc13fe;
-        }
-
-        body { 
-            background: radial-gradient(circle at center, #0d0221 0%, #050112 100%); 
-            color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; 
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap');
+        body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .neon-purple { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple); }
-        .neon-cyan { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
-
-        /* HEADER GLASSMORPHISM */
-        header {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(15px);
-            border-bottom: 2px solid var(--neon-blue);
-            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.2);
-        }
-
-        /* ARCADE CARDS UPGRADE */
+        .neon-purple { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
+        
+        /* THEMATIC CARDS WITH RICH SVGS */
         .arcade-card { 
-            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(188, 19, 254, 0.3);
-            border-radius: 20px; padding: 20px; text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.03); 
+            border: 2px solid rgba(255, 0, 255, 0.3); 
+            border-radius: 20px; padding: 20px; text-align: center; 
+            backdrop-filter: blur(10px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             position: relative; overflow: hidden;
         }
-
-        .arcade-card.ready { border-color: var(--neon-purple); }
+        .arcade-card.ready { border-color: #ff00ff; cursor: pointer; }
         
+        /* Ready card hover state */
         .arcade-card.ready:hover { 
-            border-color: var(--neon-blue);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
-            background: rgba(0, 242, 255, 0.05);
+            border-color: #00f2ff; 
+            transform: scale(1.08) translateY(-10px); 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.4); 
+            background: rgba(0, 0, 0, 0.8);
         }
 
-        .arcade-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(188, 19, 254, 0.1) 0%, transparent 70%);
-            pointer-events: none;
+        /* Thumbnails placeholder for SVGs */
+        .h-28 { 
+            height: 112px;
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(0, 0, 0, 0.6); rounded-xl mb-4 border border-white/5;
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05);
         }
-
-        /* BUTTONS */
-        .btn-play {
-            background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
-            padding: 8px 0; border-radius: 8px; font-weight: 900; transition: 0.3s;
-            text-transform: uppercase; font-size: 10px; letter-spacing: 2px;
-        }
-
-        .arcade-card:hover .btn-play {
-            background: var(--neon-blue); color: black; box-shadow: 0 0 15px var(--neon-blue);
-        }
-
-        /* MODAL */
-        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-box { 
-            background: #0d0221; border: 2px solid var(--neon-blue); padding: 40px; 
-            border-radius: 30px; text-align: center; width: 90%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);
-        }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 5px; }
+        
+        /* Locked card style */
+        .arcade-card.locked { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
+        .locked-graphic { font-size: 32px; color: #555; }
+        
+        /* MODAL POPUP */
+        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-box { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 60px rgba(255, 0, 255, 0.4); }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #050112; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #ff00ff; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -85,43 +57,40 @@
     <div id="gameModal">
         <div class="modal-box">
             <div class="flex justify-center mb-6">
-                <div class="bg-cyan-500 p-4 rounded-full shadow-[0_0_20px_#00f2ff] animate-pulse">
-                    <i class="fas fa-play text-2xl text-black"></i>
+                <div class="bg-cyan-400 p-3 rounded-2xl shadow-[0_0_20px_#00f2ff]">
+                    <i class="fas fa-play text-3xl text-black"></i>
                 </div>
             </div>
-            <h2 id="modalTitle" class="orbitron text-3xl neon-cyan mb-8 uppercase italic font-black">GAME NAME</h2>
-            <div id="popupRankList" class="mb-10 flex flex-col gap-3"></div>
-            <button onclick="startGameAction()" class="w-full bg-white text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-cyan-400 transition uppercase tracking-widest shadow-[0_5px_0_#aaa]">MASUK ARENA</button>
-            <button onclick="closeModal()" class="mt-8 text-gray-500 text-xs orbitron uppercase tracking-[0.3em] block w-full hover:text-red-500 transition">BATAL</button>
+            <h2 id="modalTitle" class="orbitron text-3xl neon-purple mb-8 uppercase italic font-bold">GAME NAME</h2>
+            <div id="popupRankList" class="mb-10 min-h-[60px] flex flex-col gap-3"></div>
+            <button onclick="startGameAction()" class="w-full bg-white text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-cyan-400 transition uppercase tracking-tighter shadow-[0_5px_0_#ccc]">MASUK ARENA</button>
+            <button onclick="closeModal()" class="mt-8 text-gray-500 text-xs orbitron uppercase tracking-[0.2em] block w-full hover:text-white transition">BATAL</button>
         </div>
     </div>
 
-    <header class="p-6 px-12 flex justify-between items-center sticky top-0 z-50">
-        <h1 class="text-3xl font-black orbitron italic neon-cyan tracking-tighter">YOKBISAYOK<span class="text-white">.OS</span></h1>
-        <div class="flex items-center gap-8">
-            <div class="bg-white/5 px-6 py-2 rounded-full border border-white/10 flex items-center gap-4">
-                <i class="fas fa-user-circle text-purple-500"></i>
-                <div class="text-left">
-                    <p id="userNameDisplay" class="text-[10px] orbitron font-bold neon-purple uppercase leading-none">---</p>
-                    <p id="myTotalScore" class="text-lg orbitron font-bold neon-cyan leading-none">0</p>
-                </div>
+    <header class="p-6 px-12 flex justify-between items-center bg-black/90 border-b-2 border-cyan-500 sticky top-0 z-50 backdrop-blur-md">
+        <h1 class="text-3xl font-black orbitron italic neon-cyan">YOKBISAYOK</h1>
+        <div class="flex items-center gap-10">
+            <div class="text-right">
+                <p id="userNameDisplay" class="text-[10px] orbitron font-bold neon-purple uppercase tracking-widest">---</p>
+                <p id="myTotalScore" class="text-2xl orbitron font-bold neon-cyan">0</p>
             </div>
-            <button onclick="localStorage.clear(); window.location.href='index.html'" class="text-red-500 text-2xl hover:scale-125 transition"><i class="fas fa-power-off"></i></button>
+            <button onclick="localStorage.clear(); window.location.href='index.html'" class="text-red-500 text-2xl hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto p-8">
-        <div class="mb-16 text-center md:text-left">
-            <h2 class="text-6xl font-black orbitron text-white uppercase italic leading-none">ARENA <span class="neon-purple">SUPREME</span></h2>
-            <p class="text-[11px] text-cyan-500 tracking-[8px] mt-4 font-bold uppercase animate-pulse">SYSTEM STATUS: ALL GAMES OPERATIONAL</p>
+    <main class="p-12">
+        <div class="mb-12">
+            <h2 class="text-5xl font-black orbitron italic text-white uppercase italic">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
+            <p class="text-[10px] text-gray-500 tracking-[5px] mt-2 font-bold uppercase">DATABASE REALTIME AKTIF • 9 READY GAMES</p>
         </div>
         
-        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-6 mb-24"></div>
+        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-24"></div>
 
-        <h3 class="orbitron text-white text-xl mb-10 italic flex items-center gap-6">
-            <i class="fas fa-trophy text-yellow-500"></i> TOP OPERATORS <span class="h-[1px] flex-1 bg-gradient-to-r from-purple-500 to-transparent"></span>
+        <h3 class="orbitron text-purple-400 text-xl mb-8 italic flex items-center gap-4">
+            <span class="h-[1px] w-12 bg-purple-500"></span> HALL OF FAME <span class="h-[1px] flex-1 bg-gray-800"></span>
         </h3>
-        <div id="leaderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
     </main>
 
     <script>
@@ -129,37 +98,45 @@
         const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // DAFTAR GAME LENGKAP (Sudah diperbaiki komanya Bosku)
+        // DAFTAR GAME YANG SUDAH JADI
         const readyGames = [
             "SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", 
             "GALAXY SHOOTER", "BRICK BREAKER", "NEON RACER", "FLAPPY CYBER", "CYBER STRIKE"
         ];
         
-        const icons = {
-            "SNAKE RETRO": "fa-snake", "TETRIS ULTRA": "fa-th-large", "PAC-MAN NEO": "fa-ghost",
-            "SPACE INVADERS": "fa-space-shuttle", "GALAXY SHOOTER": "fa-rocket", "BRICK BREAKER": "fa-border-all",
-            "NEON RACER": "fa-car-side", "FLAPPY CYBER": "fa-dove", "CYBER STRIKE": "fa-crosshairs"
+        // THEMATIC ILLUSTRATIVE SVGS FOR EACH READY GAME
+        const thematicSvgs = {
+            "SNAKE RETRO": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M10 10 h10 v10 h10 v10 h-10 v10 h10 v10 h20 v-10 h10 v-10 h-10 v-10 h10 v-10 h-20 Z" fill="#ff00ff"/><path d="M10 10 h10 v10 h10 v10 h-10 v10 h10 v10 h20 v-10 h10 v-10 h-10 v-10 h10 v-10 h-20 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "TETRIS ULTRA": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><rect x="10" y="10" width="15" height="15" fill="#ff0000"/><rect x="10" y="25" width="15" height="15" fill="#00ff00"/><rect x="10" y="40" width="15" height="15" fill="#0000ff"/><rect x="25" y="10" width="15" height="15" fill="#ffff00"/><path d="M10 10 h30 v45 h-30 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "PAC-MAN NEO": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M10 50 A40 40 0 1 1 90 50 A40 40 0 1 1 10 50 Z" fill="#ff00ff"/><circle cx="50" cy="30" r="5" fill="#000"/><path d="M10 50 A40 40 0 1 1 90 50 A40 40 0 1 1 10 50 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "SPACE INVADERS": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M20 20 h10 v10 h-10 Z M40 20 h10 v10 h-10 Z M60 20 h10 v10 h-10 Z M80 20 h10 v10 h-10 Z" fill="#ff00ff"/><path d="M10 50 h80 v10 h-10 v10 h-10 v10 h-10 v-10 h-10 v-10 h-10 Z" fill="#ff00ff"/><path d="M10 50 h80 v10 h-10 v10 h-10 v10 h-10 v-10 h-10 v-10 h-10 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "GALAXY SHOOTER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M50 10 L60 40 L90 40 L70 60 L80 90 L50 70 L20 90 L30 60 L10 40 L40 40 Z" fill="#ff00ff"/><path d="M50 10 L60 40 L90 40 L70 60 L80 90 L50 70 L20 90 L30 60 L10 40 L40 40 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "BRICK BREAKER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><rect x="10" y="10" width="10" height="10" fill="#ff0000"/><rect x="20" y="10" width="10" height="10" fill="#00ff00"/><rect x="30" y="10" width="10" height="10" fill="#0000ff"/><rect x="10" y="20" width="10" height="10" fill="#ffff00"/><rect x="10" y="80" width="30" height="5" fill="#fff"/><circle cx="20" cy="70" r="3" fill="#ff00ff"/><path d="M10 10 h30 v75 h-30 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "NEON RACER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><path d="M10 80 h80 L70 40 L30 40 Z" fill="#00f2ff"/><circle cx="30" cy="70" r="8" fill="#ff00ff"/><circle cx="70" cy="70" r="8" fill="#ff00ff"/><path d="M10 80 h80 L70 40 L30 40 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+            "FLAPPY CYBER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><path d="M10 50 L30 30 L50 50 L30 70 Z" fill="#ff00ff"/><path d="M60 10 A40 40 0 1 1 90 50" fill="none" stroke="#00f2ff" stroke-width="3" stroke-linecap="round"/></svg>`,
+            "CYBER STRIKE": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><circle cx="50" cy="50" r="40" fill="none" stroke="#ff00ff" stroke-width="3"/><path d="M50 10 v80 M10 50 h80" fill="none" stroke="#00f2ff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="#fff"/></svg>`
         };
 
         const grid = document.getElementById('arcadeGrid');
         
-        // Buat 48 slot
-        for(let i=0; i<48; i++) {
-            let name = readyGames[i] || "SECURE_GAME #" + (i+1);
-            let isReady = i < readyGames.length;
-            
+        // Gabungkan Game Ready dengan Slot Kosong (Total 48)
+        let allGames = [...readyGames];
+        for(let i=allGames.length + 1; i<=48; i++) { allGames.push("LOCKED GAME #" + i); }
+
+        allGames.forEach((name, idx) => {
+            const isReady = readyGames.includes(name);
             grid.innerHTML += `
-                <div class="arcade-card ${isReady ? 'ready' : 'opacity-30'}">
-                    <div class="h-20 flex items-center justify-center bg-black/60 rounded-xl mb-4 border border-white/5 relative">
-                        <i class="fas ${isReady ? icons[name] : 'fa-lock'} text-3xl ${isReady ? 'neon-cyan' : 'text-gray-700'}"></i>
-                        ${isReady ? '<span class="absolute top-2 right-2 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span></span>' : ''}
+                <div class="arcade-card ${isReady ? 'ready' : 'locked'}">
+                    <div class="h-28 flex items-center justify-center rounded-xl mb-4 border border-white/5 bg-black/40">
+                        ${isReady ? thematicSvgs[name] : '<i class="fas fa-lock text-3xl text-gray-700 locked-graphic"></i>'}
                     </div>
                     <p class="text-[10px] font-black orbitron text-white uppercase mb-4 truncate italic">${name}</p>
-                    <button onclick="${isReady ? `showPopup('${name}')` : ''}" class="btn-play w-full orbitron">
-                        ${isReady ? 'RE-SYNC' : 'ENCRYPTED'}
+                    <button onclick="${isReady ? `showPopup('${name}')` : ''}" 
+                        class="w-full ${isReady ? 'bg-cyan-500' : 'bg-gray-800'} text-black py-2 rounded-lg orbitron font-bold text-[9px] hover:bg-white transition uppercase">
+                        ${isReady ? 'PLAY NOW' : 'LOCKED'}
                     </button>
                 </div>`;
-        }
+        });
 
         async function getDatabase() {
             try {
@@ -177,18 +154,20 @@
             document.getElementById('modalTitle').innerText = name;
             const popupRankList = document.getElementById('popupRankList');
             document.getElementById('gameModal').style.display = 'flex';
-            popupRankList.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse italic'>CONNECTING TO DATABASE...</p>";
+            popupRankList.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse italic'>SYNCING GLOBAL DATA...</p>";
 
             const players = await getDatabase();
             popupRankList.innerHTML = "";
-            players.slice(0, 3).forEach((p, idx) => {
-                let color = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : "#cd7f32");
-                popupRankList.innerHTML += `
-                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/10">
-                        <span class="text-[11px] font-bold" style="color:${color}">${idx+1}. ${p.name.toUpperCase()}</span>
-                        <span class="orbitron text-xs text-white">${p.score.toLocaleString()}</span>
-                    </div>`;
-            });
+            if (players.length > 0) {
+                players.slice(0, 3).forEach((p, idx) => {
+                    let color = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : "#cd7f32");
+                    popupRankList.innerHTML += `
+                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${color}44;">
+                            <span style="color:${color}; font-size:11px; font-weight:bold;">${idx+1}. ${p.name.toUpperCase()}</span>
+                            <span class="orbitron" style="color:white; font-size:13px;">${p.score.toLocaleString()}</span>
+                        </div>`;
+                });
+            }
         }
 
         async function syncAll() {
@@ -202,26 +181,31 @@
             if(list) {
                 list.innerHTML = "";
                 players.slice(0, 12).forEach((p, idx) => {
-                    list.innerHTML += `
-                        <div class="bg-white/5 border border-white/10 p-3 rounded-xl flex justify-between items-center hover:border-cyan-500 transition">
-                            <span class="orbitron font-bold text-purple-500 text-xs">${idx+1}</span>
-                            <p class="text-[11px] orbitron uppercase text-white">${p.name}</p>
-                            <p class="text-[11px] orbitron neon-cyan">${p.score.toLocaleString()}</p>
-                        </div>`;
+                    list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center transition hover:border-cyan-500/50"><span class="orbitron font-bold text-purple-500">${idx+1}</span><p class="text-xs orbitron uppercase text-white">${p.name}</p><p class="text-xs orbitron neon-cyan">${p.score.toLocaleString()}</p></div>`;
                 });
             }
         }
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
 
+        // --- SISTEM NAVIGASI ARENA ---
         function startGameAction() { 
             const target = currentGameTarget.toUpperCase().trim();
             const routes = {
-                "SNAKE RETRO": "snake.html", "TETRIS ULTRA": "tetris.html", "PAC-MAN NEO": "pacman.html",
-                "SPACE INVADERS": "invaders.html", "GALAXY SHOOTER": "shooter.html", "BRICK BREAKER": "brick.html",
-                "NEON RACER": "racer.html", "FLAPPY CYBER": "flappy.html", "CYBER STRIKE": "strike.html"
+                "SNAKE RETRO": "snake.html",
+                "TETRIS ULTRA": "tetris.html",
+                "PAC-MAN NEO": "pacman.html",
+                "SPACE INVADERS": "invaders.html",
+                "GALAXY SHOOTER": "shooter.html",
+                "BRICK BREAKER": "brick.html",
+                "NEON RACER": "racer.html",
+                "FLAPPY CYBER": "flappy.html",
+                "CYBER STRIKE": "strike.html"
             };
-            if(routes[target]) window.location.href = routes[target];
+
+            if(routes[target]) {
+                window.location.href = routes[target];
+            }
         }
 
         syncAll();
