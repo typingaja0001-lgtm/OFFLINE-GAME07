@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEON DRIFT - MOUSE CONTROL</title>
+    <title>NEON DRIFT - SUPREME ARENA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@700&display=swap');
         body { margin: 0; background: #02010a; overflow: hidden; font-family: 'Orbitron', sans-serif; touch-action: none; color: white; cursor: crosshair; }
-        canvas { display: block; margin: 0 auto; filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.3)); }
+        canvas { display: block; margin: 0 auto; filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4)); }
         
         /* UI OVERLAY */
         .overlay { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
-        .btn-abort { pointer-events: auto; border: 1px solid #ff0055; background: rgba(255,0,85,0.1); padding: 8px 15px; border-radius: 4px; color: #ff0055; font-size: 10px; backdrop-filter: blur(5px); text-decoration: none; }
+        .btn-back { pointer-events: auto; border: 1px solid #bc13fe; background: rgba(188, 19, 254, 0.1); padding: 10px 20px; border-radius: 5px; color: #bc13fe; font-size: 11px; backdrop-filter: blur(10px); text-decoration: none; transition: 0.3s; }
+        .btn-back:hover { background: #bc13fe; color: white; box-shadow: 0 0 20px #bc13fe; }
         
         /* MODAL GAME OVER */
         #gameOverModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(15px);
             pointer-events: auto;
         }
         .modal-box {
             background: #050112; border: 2px solid #ff0055; padding: 40px; 
-            border-radius: 20px; text-align: center; box-shadow: 0 0 50px #ff0055;
-            width: 90%; max-width: 400px;
+            border-radius: 25px; text-align: center; box-shadow: 0 0 50px #ff0055;
+            width: 90%; max-width: 400px; position: relative;
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay p-6 flex justify-between items-start">
-        <a href="menu.html" class="btn-abort uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition">
-            <i class="fas fa-arrow-left mr-2"></i> BACK TO MENU
+    <div class="overlay p-8 flex justify-between items-start">
+        <a href="index.html" class="btn-back font-black tracking-widest uppercase">
+            <i class="fas fa-th-large mr-2"></i> Dashboard
         </a>
         <div class="text-right">
-            <p class="text-[9px] text-cyan-400 tracking-[4px]">SCORE</p>
-            <h1 id="scoreDisplay" class="text-4xl font-black italic drop-shadow-[0_0_10px_#00f2ff]">0</h1>
+            <p class="text-[9px] text-cyan-400 tracking-[5px] mb-1">CURRENT SCORE</p>
+            <h1 id="scoreDisplay" class="text-5xl font-black italic text-white drop-shadow-[0_0_15px_#00f2ff]">0</h1>
         </div>
     </div>
 
@@ -44,20 +45,23 @@
 
     <div id="gameOverModal">
         <div class="modal-box">
-            <h1 class="text-5xl font-black italic text-red-500 mb-2 uppercase tracking-tighter">WASTED</h1>
-            <p class="text-gray-500 text-[10px] tracking-[5px] mb-8 italic">ENGINE FAILURE DETECTED</p>
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-red-600 rounded-full flex items-center justify-center border-4 border-black shadow-[0_0_30px_#ff0055]">
+                <i class="fas fa-car-crash text-3xl text-white"></i>
+            </div>
+            <h1 class="text-4xl font-black italic text-red-500 mt-6 mb-2 uppercase tracking-tighter">CRASHED!</h1>
+            <p class="text-gray-500 text-[10px] tracking-[4px] mb-8 font-bold">SYSTEM OVERLOADED</p>
             
-            <div class="bg-white/5 p-4 rounded-lg mb-8 border-l-4 border-cyan-500 text-left">
-                <p class="text-[8px] text-gray-500 uppercase tracking-widest">Recorded Score</p>
+            <div class="bg-white/5 p-5 rounded-xl mb-10 border-l-4 border-cyan-500 text-left">
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Final Performance</p>
                 <p id="finalScore" class="text-4xl font-black text-white">0</p>
             </div>
 
             <div class="grid grid-cols-1 gap-4">
-                <button onclick="restartGame()" class="w-full bg-white text-black py-4 font-black tracking-widest hover:bg-cyan-400 transition uppercase text-sm">
+                <button onclick="restartGame()" class="w-full bg-cyan-500 text-black py-4 font-black tracking-[4px] hover:bg-white transition uppercase text-sm rounded-lg">
                     RETRY MISSION
                 </button>
-                <button onclick="window.location.href='menu.html'" class="w-full border border-red-600/50 text-red-500 py-3 font-bold hover:bg-red-600 hover:text-white transition text-[10px] tracking-widest">
-                    RETURN TO MENU
+                <button onclick="window.location.href='index.html'" class="w-full border border-gray-700 text-gray-500 py-3 font-bold hover:text-white transition text-[10px] tracking-widest rounded-lg">
+                    EXIT TO BASE
                 </button>
             </div>
         </div>
@@ -80,7 +84,7 @@
         const player = {
             x: canvas.width / 2 - 22,
             y: canvas.height - 150,
-            w: 44, h: 75,
+            w: 44, h: 78,
             targetX: canvas.width / 2 - 22,
             color: '#00f2ff'
         };
@@ -89,7 +93,7 @@
         const lines = [];
         for(let i=0; i<6; i++) lines.push({ y: i * (canvas.height/5) });
 
-        // MOUSE & TOUCH ONLY
+        // MOUSE CONTROL ONLY
         const moveHandler = (clientX) => {
             if(!gameActive) return;
             const rect = canvas.getBoundingClientRect();
@@ -104,8 +108,8 @@
             const laneWidth = canvas.width / 3;
             enemies.push({
                 x: (lane * laneWidth) + (laneWidth/2) - 22,
-                y: -100, w: 44, h: 75,
-                color: '#ff0055', speedBoost: 0.5 + Math.random() * 0.3
+                y: -100, w: 44, h: 78,
+                color: '#ff0055', speedMult: 0.6 + Math.random() * 0.3
             });
         }
 
@@ -120,28 +124,27 @@
             if(!gameActive) return;
             frame++;
 
-            // Smooth Drift
-            player.x += (player.targetX - player.x) * 0.12;
-            player.x = Math.max(10, Math.min(canvas.width - player.w - 10, player.x));
+            player.x += (player.targetX - player.x) * 0.15;
+            player.x = Math.max(15, Math.min(canvas.width - player.w - 15, player.x));
 
             if(frame % 30 === 0) {
                 score += 10;
-                scoreDisplay.innerText = score;
-                if(speed < 25) speed += 0.08;
+                scoreDisplay.innerText = score.toLocaleString();
+                if(speed < 28) speed += 0.07;
             }
 
             lines.forEach(l => { l.y += speed; if(l.y > canvas.height) l.y = -100; });
-            if(frame % Math.floor(100 / (speed/5)) === 0) spawnEnemy();
+            if(frame % Math.floor(110 / (speed/5)) === 0) spawnEnemy();
 
             enemies.forEach((en, i) => {
-                en.y += speed * en.speedBoost;
+                en.y += speed * en.speedMult;
                 if(en.y > canvas.height) enemies.splice(i, 1);
                 
-                // Hitbox presisi
-                if (player.x < en.x + en.w - 10 && player.x + player.w - 10 > en.x &&
-                    player.y < en.y + en.h - 10 && player.y + player.h - 10 > en.y) {
+                // Collision Detection
+                if (player.x < en.x + en.w - 12 && player.x + player.w - 12 > en.x &&
+                    player.y < en.y + en.h - 12 && player.y + player.h - 12 > en.y) {
                     gameActive = false;
-                    document.getElementById('finalScore').innerText = score;
+                    document.getElementById('finalScore').innerText = score.toLocaleString();
                     modal.style.display = 'flex';
                 }
             });
@@ -150,10 +153,10 @@
         function draw() {
             ctx.fillStyle = '#02010a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Neon Road Lines
-            ctx.strokeStyle = 'rgba(188, 19, 254, 0.2)'; ctx.lineWidth = 2;
+            // Road Lines
+            ctx.strokeStyle = 'rgba(188, 19, 254, 0.3)'; ctx.lineWidth = 3;
             lines.forEach(l => {
-                ctx.beginPath(); ctx.setLineDash([30, 15]);
+                ctx.beginPath(); ctx.setLineDash([40, 20]);
                 ctx.moveTo(canvas.width/3, l.y); ctx.lineTo(canvas.width/3, l.y + canvas.height);
                 ctx.moveTo(canvas.width*2/3, l.y); ctx.lineTo(canvas.width*2/3, l.y + canvas.height);
                 ctx.stroke();
@@ -165,13 +168,13 @@
                 ctx.fillStyle = en.color; ctx.fillRect(en.x, en.y, en.w, en.h);
             });
 
-            // Player Mobil
-            ctx.shadowBlur = 20; ctx.shadowColor = player.color;
+            // Player
+            ctx.shadowBlur = 25; ctx.shadowColor = player.color;
             ctx.fillStyle = player.color; ctx.fillRect(player.x, player.y, player.w, player.h);
             
-            // Lights
+            // Detail Lampu
             ctx.shadowBlur = 0; ctx.fillStyle = 'white'; 
-            ctx.fillRect(player.x+5, player.y+5, 8, 4); ctx.fillRect(player.x+player.w-13, player.y+5, 8, 4);
+            ctx.fillRect(player.x+5, player.y+5, 10, 5); ctx.fillRect(player.x+player.w-15, player.y+5, 10, 5);
 
             update();
             if(gameActive) requestAnimationFrame(draw);
