@@ -3,203 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - ULTIMATE ARCADE</title>
+    <title>YOKBISAYOK - INDIVIDUAL RECORDS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap');
-        
-        body { 
-            background: #050112; color: white; font-family: 'Rajdhani', sans-serif;
-            background-image: linear-gradient(rgba(18, 10, 41, 0.9), rgba(5, 1, 18, 0.95)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            overflow-x: hidden;
-        }
+        body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-
-        .neon-text-purple { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
-        .neon-text-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
+        .neon-purple { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
+        .arcade-card { background: #000; border: 2px solid #ff00ff; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .arcade-card:hover { border-color: #00f2ff; box-shadow: 0 0 20px #00f2ff; }
         
-        .sidebar-nav {
-            background: rgba(0, 0, 0, 0.6);
-            border-right: 2px solid #00f2ff;
-            box-shadow: 5px 0 15px rgba(0, 242, 255, 0.2);
-        }
-
-        .arcade-card {
-            background: #000; border: 2px solid #ff00ff; border-radius: 8px;
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .arcade-card:hover { 
-            transform: scale(1.05); border-color: #00f2ff;
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); 
-        }
-        .play-btn {
-            background: #00f2ff; color: #000; font-family: 'Orbitron';
-            font-size: 8px; font-weight: 900; padding: 4px 0; width: 100%;
-            display: block; text-align: center;
-        }
-
-        /* MODAL POP-UP */
-        #gameModal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.95); z-index: 1000;
-            align-items: center; justify-content: center; backdrop-filter: blur(10px);
-        }
-        .modal-content {
-            background: #0d0221; border: 3px solid #ff00ff;
-            padding: 40px; border-radius: 20px; text-align: center;
-            max-width: 400px; width: 90%; animation: modalZoom 0.3s ease-out;
-        }
-        @keyframes modalZoom { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* MODAL */
+        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <div id="gameModal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <i class="fas fa-trophy text-5xl text-yellow-500 mb-4"></i>
-            <h2 id="modalGameTitle" class="orbitron text-2xl neon-text-cyan mb-2 uppercase italic">GAME TITLE</h2>
-            <p class="text-gray-400 text-[10px] tracking-[4px] mb-6 uppercase">Current Record Holder</p>
+            <div class="mb-4"><i class="fas fa-medal text-5xl text-yellow-500"></i></div>
+            <h2 id="modalGameTitle" class="orbitron text-xl neon-cyan mb-1 uppercase italic">GAME NAME</h2>
+            <p class="text-[10px] text-gray-500 tracking-widest mb-6 uppercase">Current Record Holder</p>
             
             <div class="bg-black/50 border border-purple-500/50 p-6 rounded-xl mb-8">
-                <p id="topPlayerName" class="orbitron text-xl neon-text-purple uppercase tracking-widest">NO DATA</p>
+                <p id="topPlayerName" class="orbitron text-xl neon-purple uppercase">NO RECORD</p>
                 <p id="topPlayerScore" class="text-4xl font-black text-white mt-2">0</p>
-                <p class="text-[9px] text-cyan-400 font-bold uppercase mt-1">Total Points</p>
+                <p class="text-[9px] text-cyan-400 font-bold uppercase">Points in this game</p>
             </div>
-
-            <button onclick="closeModal()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg orbitron font-bold hover:brightness-125 transition">START SESSION</button>
+            <button onclick="closeModal()" class="w-full bg-purple-600 py-3 rounded-lg orbitron font-bold">LANJUT BERMAIN</button>
         </div>
     </div>
 
     <header class="p-4 px-8 flex justify-between items-center bg-black border-b-2 border-cyan-500 sticky top-0 z-50">
-        <h1 class="text-3xl font-black orbitron italic neon-text-cyan">YOKBISAYOK</h1>
+        <h1 class="text-3xl font-black orbitron italic neon-cyan italic">YOKBISAYOK</h1>
         <div class="flex items-center gap-6">
-            <div class="text-right">
-                <p class="text-[10px] text-purple-400 font-bold uppercase tracking-widest">Active Player</p>
-                <p id="userNameDisplay" class="text-sm orbitron font-bold neon-text-purple">---</p>
+            <div class="text-right pr-6 border-r border-gray-800">
+                <p id="userNameDisplay" class="text-sm orbitron font-bold neon-purple uppercase">---</p>
+                <p class="text-[9px] text-gray-500 font-bold uppercase">Active Player</p>
             </div>
-            <button onclick="logout()" class="text-red-500 text-2xl hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
+            <div class="text-right">
+                <p id="myTotalScore" class="text-xl orbitron font-bold neon-cyan">0</p>
+                <p class="text-[9px] text-purple-400 font-bold uppercase">Your Total Points</p>
+            </div>
+            <button onclick="logout()" class="text-red-500 text-xl"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
     <div class="flex flex-1">
-        <aside class="w-20 lg:w-32 sidebar-nav flex flex-col items-center py-10 gap-10 sticky top-[72px] h-[calc(100vh-72px)]">
-            <div class="text-center group cursor-pointer opacity-50 hover:opacity-100 transition">
-                <i class="fas fa-swords text-2xl mb-2 text-purple-500"></i>
-                <p class="text-[8px] orbitron font-bold uppercase">Action</p>
-            </div>
-            <div class="text-center group cursor-pointer opacity-50 hover:opacity-100 transition">
-                <i class="fas fa-car text-2xl mb-2 text-cyan-500"></i>
-                <p class="text-[8px] orbitron font-bold uppercase">Racing</p>
-            </div>
-            <div class="text-center group cursor-pointer opacity-50 hover:opacity-100 transition">
-                <i class="fas fa-puzzle-piece text-2xl mb-2 text-purple-500"></i>
-                <p class="text-[8px] orbitron font-bold uppercase">Puzzle</p>
-            </div>
+        <aside class="w-20 bg-black/50 border-r border-cyan-500 flex flex-col items-center py-10 gap-10">
+            <i class="fas fa-gamepad text-xl text-purple-500"></i>
+            <i class="fas fa-trophy text-xl text-cyan-500"></i>
         </aside>
 
-        <main class="flex-1 p-6 lg:p-10">
-            <div class="mb-10">
-                <h2 class="text-5xl font-black orbitron italic text-white uppercase leading-none mb-2">
-                    PC <span class="neon-text-purple">ULTRA</span> LIBRARY
-                </h2>
-                <p class="text-[10px] text-gray-500 tracking-[5px] font-bold uppercase">48+ Games Offline • High Performance V2026</p>
-            </div>
-
+        <main class="flex-1 p-8">
+            <h2 class="text-4xl font-black orbitron italic mb-8 uppercase">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
+            
             <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-20"></div>
 
-            <h3 class="orbitron text-purple-400 text-sm font-bold mb-6 flex items-center gap-3 italic">
-                <span class="h-[1px] w-12 bg-purple-500"></span> TOP PLAYERS LEADERBOARD <span class="h-[1px] w-full bg-white/10"></span>
-            </h3>
-            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                </div>
+            <h3 class="orbitron text-purple-400 text-sm font-bold mb-6 italic uppercase">Global Hall of Fame</h3>
+            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </main>
     </div>
 
     <script>
-        // Ambil nama dari login (Jika kosong, redirect ke login)
-        const activeUser = localStorage.getItem('loginUser');
-        if(!activeUser) { window.location.href = "index.html"; }
-        document.getElementById('userNameDisplay').innerText = activeUser.toUpperCase();
+        // 1. FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "ISI_API_KEY_BOSKU",
+            databaseURL: "https://yokbisayok-db-default-rtdb.firebaseio.com",
+            projectId: "yokbisayok-db",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // Database Kosong (Real-time di LocalStorage)
-        let arcadeDatabase = JSON.parse(localStorage.getItem('game_database')) || [];
+        const activeUser = localStorage.getItem('loginUser') || "GUEST";
+        document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // Render 48 Game (Kosong Nama, Hanya ID)
+        // 2. RENDER GRID 48 GAMES
         const grid = document.getElementById('arcadeGrid');
         for(let i=1; i<=48; i++) {
+            const gameId = `GAME_${i}`;
             grid.innerHTML += `
-                <div class="arcade-card">
-                    <div class="w-full h-20 bg-gray-900 flex items-center justify-center border-b border-purple-500/20">
-                        <i class="fas fa-gamepad text-gray-800 text-3xl"></i>
+                <div class="arcade-card p-2" onclick="handlePlay('${gameId}')">
+                    <div class="h-16 bg-gray-900 rounded mb-2 flex items-center justify-center">
+                        <i class="fas fa-rocket text-gray-800"></i>
                     </div>
-                    <div class="p-2 bg-black">
-                        <h4 class="text-[8px] font-black orbitron text-white mb-2 uppercase">ARCADE GAME #${i}</h4>
-                        <button onclick="handlePlay('ARCADE GAME #${i}')" class="play-btn">PLAY NOW</button>
-                    </div>
+                    <p class="text-[7px] orbitron text-center text-white uppercase">${gameId.replace('_',' ')}</p>
                 </div>
             `;
         }
 
-        function renderLeaderboard() {
-            const list = document.getElementById('leaderList');
-            list.innerHTML = "";
-            
-            if(arcadeDatabase.length === 0) {
-                list.innerHTML = `<p class="text-gray-600 italic text-xs uppercase tracking-widest col-span-3">No active players yet...</p>`;
-                return;
-            }
+        // 3. FUNGSI PLAY & UPDATE SKOR (INDIVIDUAL & GLOBAL)
+        function handlePlay(gameId) {
+            const globalRef = db.ref('leaderboard/' + activeUser.toLowerCase());
+            const gameRef = db.ref('game_records/' + gameId);
 
-            // Urutkan Skor Tertinggi
-            arcadeDatabase.sort((a, b) => b.score - a.score);
+            // Update Global Score (Total semua game)
+            globalRef.once('value').then(snap => {
+                let data = snap.val();
+                globalRef.set({ name: activeUser, score: (data ? data.score + 100 : 100) });
+            });
 
-            arcadeDatabase.forEach(p => {
-                list.innerHTML += `
-                    <div class="bg-black border border-purple-500/30 p-4 rounded-lg flex justify-between items-center">
-                        <div>
-                            <p class="text-xs font-black orbitron neon-text-purple uppercase">${p.name}</p>
-                            <p class="text-[8px] text-gray-500 uppercase tracking-tighter">Last Play: ${p.game}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs font-black orbitron text-white">${p.score.toLocaleString()}</p>
-                            <p class="text-[8px] text-cyan-400 font-bold uppercase">Points</p>
-                        </div>
-                    </div>
-                `;
+            // Update & Ambil Rekor Tertinggi KHUSUS Game ini
+            gameRef.once('value').then(snap => {
+                let record = snap.val();
+                let myScoreInThisGame = record && record.name === activeUser ? record.score + 100 : 100;
+
+                // Jika skor kita lebih tinggi dari rekor lama, update!
+                if (!record || myScoreInThisGame > record.score) {
+                    gameRef.set({ name: activeUser, score: myScoreInThisGame });
+                }
+
+                // Tampilkan Pop-up Rekor Tertinggi Game ini
+                document.getElementById('modalGameTitle').innerText = gameId.replace('_',' ');
+                document.getElementById('topPlayerName').innerText = (record ? record.name : activeUser);
+                document.getElementById('topPlayerScore').innerText = (record ? record.score : myScoreInThisGame).toLocaleString();
+                document.getElementById('gameModal').style.display = "flex";
             });
         }
 
-        function handlePlay(gameTitle) {
-            // Cari data user di database
-            let userIdx = arcadeDatabase.findIndex(x => x.name === activeUser);
-            
-            if(userIdx === -1) {
-                // Jika user baru, tambahkan ke list
-                arcadeDatabase.push({ name: activeUser, game: gameTitle, score: 500 });
-            } else {
-                // Jika user lama, update game dan tambah skor sedikit
-                arcadeDatabase[userIdx].game = gameTitle;
-                arcadeDatabase[userIdx].score += 250;
-            }
-
-            // Simpan ke memori browser
-            localStorage.setItem('game_database', JSON.stringify(arcadeDatabase));
-            
-            // Munculkan Pop-up Leaderboard
-            const record = arcadeDatabase[userIdx === -1 ? arcadeDatabase.length - 1 : userIdx];
-            document.getElementById('modalGameTitle').innerText = gameTitle;
-            document.getElementById('topPlayerName').innerText = record.name;
-            document.getElementById('topPlayerScore').innerText = record.score.toLocaleString();
-            document.getElementById('gameModal').style.display = "flex";
-
-            renderLeaderboard();
-        }
+        // 4. LISTENER DATA REAL-TIME
+        db.ref('leaderboard').orderByChild('score').on('value', snap => {
+            const list = document.getElementById('leaderList');
+            list.innerHTML = "";
+            let players = [];
+            snap.forEach(c => { 
+                let p = c.val();
+                players.push(p);
+                if(p.name.toLowerCase() === activeUser.toLowerCase()) 
+                    document.getElementById('myTotalScore').innerText = p.score.toLocaleString();
+            });
+            players.reverse().slice(0, 10).forEach((p, i) => {
+                list.innerHTML += `
+                    <div class="bg-black border border-purple-500/20 p-3 rounded flex justify-between items-center">
+                        <span class="orbitron text-xs text-gray-500">${i+1}</span>
+                        <p class="text-[10px] font-black orbitron uppercase ${i<3 ? 'neon-purple':'text-white'}">${p.name}</p>
+                        <p class="text-[10px] orbitron text-white">${p.score.toLocaleString()}</p>
+                    </div>`;
+            });
+        });
 
         function closeModal() { document.getElementById('gameModal').style.display = "none"; }
-        function logout() { localStorage.removeItem('loginUser'); window.location.href = "index.html"; }
-
-        // Jalankan render awal
-        renderLeaderboard();
+        function logout() { localStorage.clear(); window.location.href = "index.html"; }
     </script>
 </body>
 </html>
