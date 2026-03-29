@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOKBISAYOK - CYBER PUNCH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&display=swap');
+        
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-pink: #ff0055;
+            --neon-purple: #bc13fe;
+        }
+
+        body { 
+            background: #02010a; color: white; font-family: 'Rajdhani', sans-serif;
+            margin: 0; overflow: hidden; height: 100vh;
+        }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+
+        /* NEON UI */
+        .glow-pink { box-shadow: 0 0 20px var(--neon-pink); border: 2px solid var(--neon-pink); }
+        .text-glow-blue { text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); }
+        
+        /* ARENA */
+        #game-container {
+            width: 100%; height: 100vh; position: relative;
+            background: radial-gradient(circle, #0f051e 0%, #02010a 100%);
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        #target-area {
+            width: 100%; max-width: 600px; height: 600px;
+            position: relative; margin-top: 50px;
+            cursor: crosshair;
+        }
+
+        /* THE PUNCH TARGET */
+        .punch-target {
+            position: absolute; width: 80px; height: 80px;
+            border-radius: 50%; background: rgba(255, 0, 85, 0.2);
+            border: 4px solid var(--neon-pink);
+            box-shadow: 0 0 30px var(--neon-pink), inset 0 0 15px var(--neon-pink);
+            display: flex; align-items: center; justify-content: center;
+            animation: spawn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.1s;
+        }
+
+        @keyframes spawn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .hit-effect {
+            position: absolute; pointer-events: none;
+            color: var(--neon-blue); font-weight: 900; font-family: 'Orbitron';
+            animation: flyUp 0.5s ease-out forwards;
+        }
+
+        @keyframes flyUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-50px); opacity: 0; } }
+
+        /* BACK BUTTON */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px; z-index: 100;
+            background: rgba(255, 0, 85, 0.1); border: 2px solid var(--neon-pink);
+            color: var(--neon-pink); padding: 10px 20px; border-radius: 8px;
+            font-family: 'Orbitron'; font-size: 12px; transition: 0.3s;
+        }
+        .btn-back:hover { background: var(--neon-pink); color: white; box-shadow: 0 0 20px var(--neon-pink); }
+
+        /* HP BAR */
+        .hp-container { width: 300px; height: 15px; background: #111; border: 1px solid #333; border-radius: 10px; overflow: hidden; }
+        #hp-fill { width: 100%; height: 100%; background: linear-gradient(to right, var(--neon-pink), var(--neon-purple)); transition: 0.3s; }
+
+        /* MODAL */
+        #overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="menu.html" class="btn-back"><i class="fas fa-chevron-left"></i> BACK TO HQ</a>
+
+    <div id="game-container">
+        <div class="w-full p-8 flex justify-between items-start max-w-6xl">
+            <div>
+                <h1 class="text-4xl font-black orbitron italic text-glow-blue">CYBER<span class="text-white">PUNCH</span></h1>
+                <p id="playerName" class="text-xs tracking-[5px] text-pink-500 uppercase mt-1">AGENT: ---</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] orbitron text-gray-500">COMBO: <span id="comboText" class="text-white">0</span></p>
+                <p id="scoreText" class="text-5xl font-black orbitron text-glow-blue">0000</p>
+                <div class="hp-container mt-2"><div id="hp-fill"></div></div>
+            </div>
+        </div>
+
+        <div id="target-area"></div>
+    </div>
+
+    <div id="overlay">
+        <h2 id="statusTitle" class="text-6xl font-black orbitron italic mb-4 text-white">READY?</h2>
+        <p id="finalScore" class="text-2xl orbitron text-cyan-400 mb-8 hidden">SCORE: 0</p>
+        
+        <div class="p-6 bg-white/5 border border-white/10 rounded-2xl mb-8 text-center max-w-xs">
+            <p class="text-xs orbitron text-gray-400 mb-4 uppercase tracking-widest">Cara Bermain</p>
+            <p class="text-sm text-gray-300">Klik/Tap pada lingkaran <span class="text-pink-500 font-bold">NEON</span> yang muncul secepat mungkin. Jangan biarkan menghilang sendiri!</p>
+        </div>
+
+        <button onclick="startGame()" class="bg-cyan-500 text-black px-12 py-4 orbitron font-black text-xl hover:bg-white shadow-[0_0_20px_rgba(0,242,255,0.5)] transition uppercase">MULAI PUKULAN</button>
+    </div>
+
+    <script>
+        const targetArea = document.getElementById('target-area');
+        const scoreDisplay = document.getElementById('scoreText');
+        const comboDisplay = document.getElementById('comboText');
+        const hpFill = document.getElementById('hp-fill');
+        const overlay = document.getElementById('overlay');
+        const statusTitle = document.getElementById('statusTitle');
+        const finalScoreText = document.getElementById('finalScore');
+        
+        const activeUser = (localStorage.getItem('loginUser') || "GUEST").toUpperCase();
+        document.getElementById('playerName').innerText = "AGENT: " + activeUser;
+
+        let score = 0;
+        let combo = 0;
+        let health = 100;
+        let gameActive = false;
+        let spawnRate = 1200; // ms
+        let spawnTimer;
+
+        function startGame() {
+            score = 0;
+            combo = 0;
+            health = 100;
+            spawnRate = 1200;
+            gameActive = true;
+            
+            scoreDisplay.innerText = "0000";
+            comboDisplay.innerText = "0";
+            hpFill.style.width = "100%";
+            overlay.style.display = "none";
+            targetArea.innerHTML = "";
+
+            nextSpawn();
+        }
+
+        function nextSpawn() {
+            if (!gameActive) return;
+            createTarget();
+            
+            // Semakin tinggi skor, semakin cepat munculnya (min 400ms)
+            let currentRate = Math.max(400, spawnRate - (score / 10));
+            spawnTimer = setTimeout(nextSpawn, currentRate);
+        }
+
+        function createTarget() {
+            const target = document.createElement('div');
+            target.className = 'punch-target';
+            
+            // Random Position
+            const x = Math.random() * (targetArea.clientWidth - 80);
+            const y = Math.random() * (targetArea.clientHeight - 80);
+            
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
+            
+            // Icon Random
+            target.innerHTML = '<i class="fas fa-fist-raised text-2xl text-white"></i>';
+
+            // Click Handler
+            target.onclick = function(e) {
+                e.stopPropagation();
+                hit(target, x, y);
+            };
+
+            targetArea.appendChild(target);
+
+            // Auto-remove jika tidak diklik (Miss)
+            setTimeout(() => {
+                if (target.parentElement) {
+                    target.remove();
+                    miss();
+                }
+            }, Math.max(600, spawnRate - 200));
+        }
+
+        function hit(el, x, y) {
+            if (!gameActive) return;
+            
+            score += 10 + (combo * 2);
+            combo++;
+            
+            scoreDisplay.innerText = score.toString().padStart(4, '0');
+            comboDisplay.innerText = combo;
+
+            // Effect
+            const fx = document.createElement('div');
+            fx.className = 'hit-effect';
+            fx.style.left = x + 'px';
+            fx.style.top = y + 'px';
+            fx.innerText = "POW!";
+            targetArea.appendChild(fx);
+            setTimeout(() => fx.remove(), 500);
+
+            el.remove();
+        }
+
+        function miss() {
+            if (!gameActive) return;
+            
+            combo = 0;
+            comboDisplay.innerText = "0";
+            health -= 15;
+            hpFill.style.width = health + "%";
+
+            if (health <= 0) {
+                gameOver();
+            }
+        }
+
+        function gameOver() {
+            gameActive = false;
+            clearTimeout(spawnTimer);
+            
+            statusTitle.innerText = "K.O.";
+            statusTitle.style.color = "var(--neon-pink)";
+            finalScoreText.innerText = "FINAL SCORE: " + score;
+            finalScoreText.classList.remove('hidden');
+            overlay.style.display = "flex";
+            
+            // Optional: Save score to your Firebase here
+        }
+
+        // Anti-Cheat (Clicking background = penalty)
+        targetArea.onclick = function() {
+            if(gameActive) miss();
+        };
+
+    </script>
+</body>
+</html>
