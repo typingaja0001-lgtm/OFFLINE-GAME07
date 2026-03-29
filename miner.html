@@ -2,275 +2,170 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOKBISAYOK - NEON MINER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
-        
-        body { 
-            background: #050112; color: white; font-family: 'Rajdhani', sans-serif; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            min-height: 100vh; margin: 0; padding: 20px; overflow: hidden;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
+
+        body {
+            margin: 0; background: #02010a; color: white;
+            font-family: 'Share Tech Mono', monospace; overflow: hidden;
+            height: 100vh; display: flex; flex-direction: column;
         }
 
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .neon-text-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
-        .neon-text-purple { color: #bc13fe; text-shadow: 0 0 10px #bc13fe; }
+        /* CORE CRYSTAL ANIMATION */
+        #core {
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, #bc13fe 0%, transparent 70%);
+            border: 4px solid #00f2ff; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            box-shadow: 0 0 50px #00f2ff, inset 0 0 20px #bc13fe;
+            cursor: pointer; transition: 0.1s;
+            animation: morph 5s linear infinite alternate;
+        }
 
-        /* BACK BUTTON STYLE */
+        #core:active { transform: scale(0.9); filter: brightness(1.5); }
+
+        @keyframes morph {
+            0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(10deg); }
+        }
+
+        .particle {
+            position: absolute; pointer-events: none;
+            width: 5px; height: 5px; background: #00f2ff;
+            box-shadow: 0 0 10px #00f2ff; border-radius: 50%;
+        }
+
+        .btn-upgrade {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            transition: 0.3s;
+        }
+        .btn-upgrade:hover:not([disabled]) {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: #00f2ff; transform: translateX(5px);
+        }
+        .btn-upgrade[disabled] { opacity: 0.3; cursor: not-allowed; }
+
         .btn-back {
             position: fixed; top: 20px; left: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(188, 19, 254, 0.3);
-            padding: 10px 20px; border-radius: 12px;
-            font-size: 0.8rem; color: #bc13fe; transition: 0.3s;
-            z-index: 1000;
-        }
-        .btn-back:hover { 
-            background: #bc13fe; color: #fff; 
-            box-shadow: 0 0 20px #bc13fe; 
-        }
-
-        /* GAME BOARD GRID */
-        #game-board {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            width: 100%;
-            max-width: 500px;
-            margin-top: 20px;
-        }
-
-        .tile {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            aspect-ratio: 1;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-        }
-
-        .tile:hover:not(.revealed) {
-            background: rgba(0, 242, 255, 0.1);
-            border-color: #00f2ff;
-            transform: scale(1.05);
-        }
-
-        .tile.revealed.diamond {
-            background: rgba(188, 19, 254, 0.1);
-            border-color: #bc13fe;
-            color: #bc13fe;
-            box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
-        }
-
-        .tile.revealed.bomb {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: #ef4444;
-            color: #ef4444;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
-            animation: shake 0.3s;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -1px); }
-            100% { transform: translate(1px, -1px); }
-        }
-
-        #gameOverModal { 
-            display: none; position: fixed; inset: 0; 
-            background: rgba(0,0,0,0.95); z-index: 100; 
-            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
-        }
-
-        .modal-content { 
-            background: #0d0221; border: 3px solid #ef4444; padding: 40px; 
-            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ef4444; width: 340px; 
+            padding: 10px 20px; border: 1px solid #ff0055;
+            color: #ff0055; text-decoration: none; font-weight: bold;
         }
     </style>
 </head>
-<body>
+<body class="p-8">
 
-    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
-        <i class="fas fa-arrow-left mr-2"></i> Abort Mission
-    </a>
+    <a href="menu.html" class="btn-back"><i class="fas fa-home mr-2"></i> EXIT_MINES</a>
 
-    <div id="gameOverModal">
-        <div class="modal-content">
-            <h2 class="orbitron text-4xl text-red-500 mb-2 italic">GAME OVER</h2>
-            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest italic">You Hit a Bomb!</p>
-            <div class="mb-10">
-                <p class="text-gray-500 text-[10px] uppercase orbitron">Lost Bet</p>
-                <p id="lostBetDisplay" class="text-6xl text-red-500 orbitron">0</p>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+        
+        <div class="flex flex-col justify-center space-y-6 order-2 lg:order-1">
+            <div class="p-6 bg-white/5 border-l-4 border-cyan-400">
+                <p class="text-xs text-cyan-400 uppercase tracking-widest">Total_Crystals</p>
+                <h1 id="crystal-count" class="text-5xl font-black orbitron text-white">0</h1>
             </div>
-            <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-red-500 transition uppercase italic text-lg">TRY AGAIN</button>
-            <button onclick="window.location.href='menu.html'" class="mt-4 w-full text-gray-500 text-[10px] orbitron uppercase">Back to Menu</button>
-        </div>
-    </div>
-
-    <div class="w-full max-w-7xl flex flex-col md:flex-row gap-8 items-start">
-        <div class="w-full md:w-80 bg-black/40 border border-white/5 p-8 rounded-[25px] backdrop-blur-md">
-            <div class="text-center mb-8">
-                <h1 class="orbitron text-3xl font-black italic neon-text-purple">NEON MINER</h1>
-                <p class="text-[9px] tracking-[4px] text-gray-500 font-bold uppercase mt-1">Find Diamonds, Avoid Bombs</p>
-            </div>
-
-            <div class="space-y-6">
-                <div>
-                    <label class="text-xs text-purple-400 uppercase font-bold tracking-widest">Bet Amount (IDR)</label>
-                    <input id="betInput" type="number" value="1000" min="100" step="100" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white outline-none focus:border-purple-500">
-                </div>
-                <div>
-                    <label class="text-xs text-purple-400 uppercase font-bold tracking-widest">Number of Bombs (1-24)</label>
-                    <input id="bombInput" type="number" value="3" min="1" max="24" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white outline-none focus:border-purple-500">
-                </div>
-                
-                <div class="pt-6">
-                    <button id="startBtn" onclick="startGame()" class="w-full bg-cyan-500 text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-white hover:shadow-cyan-500 transition shadow-[0_5px_0_#00c2cc]">
-                        START GAME
-                    </button>
-                    <button id="cashoutBtn" onclick="cashOut()" class="w-full mt-4 bg-purple-600 text-white py-4 rounded-xl orbitron font-black text-xl hover:bg-white hover:text-black transition hidden shadow-[0_5px_0_#9c03de]">
-                        CASH OUT
-                    </button>
-                </div>
+            <div class="p-6 bg-white/5 border-l-4 border-purple-500">
+                <p class="text-xs text-purple-400 uppercase tracking-widest">Auto_Rate</p>
+                <h2 id="auto-rate" class="text-2xl font-bold">0 <span class="text-xs">/sec</span></h2>
             </div>
         </div>
 
-        <div class="flex-1 w-full bg-black/40 border border-white/5 p-8 rounded-[25px] backdrop-blur-md">
-            <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-6">
+        <div class="flex flex-col items-center justify-center order-1 lg:order-2 relative">
+            <div id="core" onclick="mine(event)"></div>
+            <p class="mt-8 text-gray-500 animate-pulse text-xs tracking-[5px]">TAP_THE_CORE_TO_EXTRACT</p>
+        </div>
+
+        <div class="flex flex-col justify-center space-y-4 order-3">
+            <h3 class="orbitron text-sm mb-2 text-cyan-400 border-b border-cyan-400/20 pb-2">UPGRADE_TERMINAL</h3>
+            
+            <button onclick="buyUpgrade('drone', 15, 1)" id="btn-drone" class="btn-upgrade p-4 rounded-lg flex justify-between items-center group">
                 <div>
-                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Your Balance</p>
-                    <h2 class="text-3xl orbitron font-black neon-text-blue">IDR <span id="balanceDisplay">0</span></h2>
+                    <p class="font-bold group-hover:text-cyan-400">MINING_DRONE</p>
+                    <p class="text-[10px] text-gray-400">+1 crystal/sec</p>
                 </div>
-                <div class="text-right">
-                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Current Multiplier</p>
-                    <h2 class="text-3xl orbitron font-black neon-text-purple">x<span id="multiplierDisplay">1.00</span></h2>
+                <span class="text-cyan-400 font-bold">15 💎</span>
+            </button>
+
+            <button onclick="buyUpgrade('drill', 100, 8)" id="btn-drill" class="btn-upgrade p-4 rounded-lg flex justify-between items-center group">
+                <div>
+                    <p class="font-bold group-hover:text-cyan-400">PLASMA_DRILL</p>
+                    <p class="text-[10px] text-gray-400">+8 crystals/sec</p>
                 </div>
-            </div>
+                <span class="text-cyan-400 font-bold">100 💎</span>
+            </button>
 
-            <div id="game-board"></div>
-
-            <div id="nextInfo" class="mt-8 p-4 bg-white/5 border border-white/10 rounded-xl text-center hidden">
-                <p class="text-xs text-gray-400 uppercase">Profit on Next Diamond</p>
-                <p class="orbitron text-cyan-400 font-bold text-lg">IDR <span id="nextProfitDisplay">0</span></p>
-            </div>
+            <button onclick="buyUpgrade('extractor', 500, 45)" id="btn-extractor" class="btn-upgrade p-4 rounded-lg flex justify-between items-center group">
+                <div>
+                    <p class="font-bold group-hover:text-cyan-400">VOID_EXTRACTOR</p>
+                    <p class="text-[10px] text-gray-400">+45 crystals/sec</p>
+                </div>
+                <span class="text-cyan-400 font-bold">500 💎</span>
+            </button>
         </div>
     </div>
 
     <script>
-        const activeUser = localStorage.getItem("loginUser");
-        if (!activeUser) {
-            window.location.href = "index.html";
+        let crystals = 0;
+        let perSecond = 0;
+
+        function updateUI() {
+            document.getElementById('crystal-count').innerText = Math.floor(crystals);
+            document.getElementById('auto-rate').innerText = perSecond;
+            
+            // Disable/Enable buttons
+            checkButton('btn-drone', 15);
+            checkButton('btn-drill', 100);
+            checkButton('btn-extractor', 500);
         }
 
-        let users = JSON.parse(localStorage.getItem("users") || "[]");
-        let myData = users.find(x => x.user === activeUser);
-        let balance = myData ? myData.saldo : 0;
-        document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+        function checkButton(id, cost) {
+            const btn = document.getElementById(id);
+            btn.disabled = crystals < cost;
+        }
 
-        let betAmount = 0, numBombs = 0, currentMultiplier = 1.00;
-        let board = [], revealedTiles = 0, gameActive = false;
-        const totalTiles = 25;
+        function mine(e) {
+            crystals += 1;
+            createParticle(e.clientX, e.clientY);
+            updateUI();
+        }
 
-        function generateBoard(bombs) {
-            board = Array(totalTiles).fill('diamond');
-            let placedBombs = 0;
-            while (placedBombs < bombs) {
-                let index = Math.floor(Math.random() * totalTiles);
-                if (board[index] === 'diamond') {
-                    board[index] = 'bomb';
-                    placedBombs++;
-                }
+        function createParticle(x, y) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            document.body.appendChild(p);
+            
+            const destinationX = x + (Math.random() - 0.5) * 200;
+            const destinationY = y + (Math.random() - 0.5) * 200;
+
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+
+            p.animate([
+                { opacity: 1, transform: 'translate(0, 0) scale(1)' },
+                { opacity: 0, transform: `translate(${destinationX - x}px, ${destinationY - y}px) scale(0)` }
+            ], { duration: 1000, easing: 'ease-out' }).onfinish = () => p.remove();
+        }
+
+        function buyUpgrade(type, cost, power) {
+            if (crystals >= cost) {
+                crystals -= cost;
+                perSecond += power;
+                updateUI();
             }
         }
 
-        function updateMultiplier() {
-            const baseGain = 1.1 + (numBombs / 10);
-            currentMultiplier = Math.pow(baseGain, revealedTiles).toFixed(2);
-            document.getElementById("multiplierDisplay").innerText = currentMultiplier;
-
-            const currentProfit = betAmount * currentMultiplier;
-            const nextProfit = betAmount * Math.pow(baseGain, revealedTiles + 1);
-            document.getElementById("nextProfitDisplay").innerText = Math.round(nextProfit - currentProfit).toLocaleString();
-        }
-
-        function startGame() {
-            betAmount = parseInt(document.getElementById("betInput").value);
-            numBombs = parseInt(document.getElementById("bombInput").value);
-
-            if(betAmount < 100) return alert("Minimal IDR 100!");
-            if(balance < betAmount) return alert("Saldo tidak cukup!");
-            if(numBombs < 1 || numBombs > 24) return alert("Bom (1-24)!");
-
-            balance -= betAmount;
-            updateBalanceInStorage();
-            document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
-
-            gameActive = true;
-            revealedTiles = 0;
-            generateBoard(numBombs);
-            updateMultiplier();
-
-            document.getElementById("startBtn").classList.add("hidden");
-            document.getElementById("cashoutBtn").classList.remove("hidden");
-            document.getElementById("nextInfo").classList.remove("hidden");
-            document.getElementById("betInput").disabled = true;
-            document.getElementById("bombInput").disabled = true;
-
-            const boardDiv = document.getElementById("game-board");
-            boardDiv.innerHTML = "";
-            for(let i=0; i<totalTiles; i++) {
-                boardDiv.innerHTML += `<div class="tile" data-index="${i}" onclick="revealTile(${i})">?</div>`;
+        // Game Loop for Auto-Mining
+        setInterval(() => {
+            if (perSecond > 0) {
+                crystals += (perSecond / 10);
+                updateUI();
             }
-        }
+        }, 100);
 
-        function revealTile(index) {
-            if(!gameActive) return;
-            const tile = document.querySelector(`[data-index="${index}"]`);
-            if(tile.classList.contains("revealed")) return;
-
-            const content = board[index];
-            tile.classList.add("revealed", content);
-
-            if(content === 'bomb') {
-                gameOver();
-            } else {
-                tile.innerHTML = '<i class="fas fa-gem"></i>';
-                revealedTiles++;
-                updateMultiplier();
-                if(revealedTiles === (totalTiles - numBombs)) cashOut();
-            }
-        }
-
-        function gameOver() {
-            gameActive = false;
-            document.querySelectorAll(".tile").forEach((tile, i) => {
-                if(board[i] === 'bomb') {
-                    tile.classList.add("revealed", "bomb");
-                    tile.innerHTML = '<i class="fas fa-bomb"></i>';
-                }
-            });
-            document.getElementById("lostBetDisplay").innerText = betAmount.toLocaleString();
-            document.getElementById("gameOverModal").style.display = 'flex';
-        }
-
-        function cashOut() {
-            if(!gameActive || revealedTiles === 0) return;
-            const winnings = Math.round(betAmount * currentMultiplier);
-            balance += winnings;
-            updateBalanceInStorage();
-            alert(`JACKPOT! Profit: IDR ${winnings.toLocaleString()}`);
-            location.reload();
-        }
-
-        function updateBalanceInStorage() {
-            myData.saldo = balance;
-            localStorage.setItem("users", JSON.stringify(users));
-        }
+        updateUI();
     </script>
 </body>
 </html>
