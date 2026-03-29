@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKBISAYOK - TETRIS ULTRA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
+        body { background: #050112; color: white; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #tetris { border: 4px solid #ff00ff; box-shadow: 0 0 20px #ff00ff; background: rgba(0,0,0,0.8); }
+        .stats-box { border: 2px solid #00f2ff; padding: 15px; border-radius: 10px; background: rgba(0, 242, 255, 0.05); text-align: center; min-width: 150px; }
+        .neon-text { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+    </style>
+</head>
+<body>
+
+    <div class="mb-6 flex gap-8">
+        <div class="stats-box">
+            <p class="text-[10px] text-gray-400 uppercase tracking-widest">Player</p>
+            <p id="pName" class="text-lg neon-text uppercase">---</p>
+        </div>
+        <div class="stats-box">
+            <p class="text-[10px] text-gray-400 uppercase tracking-widest">Session Score</p>
+            <p id="pScore" class="text-2xl neon-text">0</p>
+        </div>
+    </div>
+
+    <canvas id="tetris" width="240" height="400"></canvas>
+
+    <div class="mt-8 flex gap-4">
+        <button onclick="location.reload()" class="px-6 py-2 bg-purple-600 text-white rounded-lg orbitron text-xs hover:bg-purple-500 transition">Restart</button>
+        <button onclick="location.href='menu.html'" class="px-6 py-2 border border-gray-600 text-gray-500 rounded-lg hover:text-white hover:border-white transition uppercase text-xs">Menu Utama</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('tetris');
+        const context = canvas.getContext('2d');
+        const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard";
+        const player = (localStorage.getItem('loginUser') || "GUEST").toUpperCase();
+        document.getElementById('pName').innerText = player;
+
+        context.scale(20, 20);
+
+        // --- LOGIKA UPDATE SKOR KE DATABASE ---
+        async function updateGlobalScore(finalScore) {
+            try {
+                const res = await fetch(`${dbURL}.json`);
+                const data = await res.json();
+                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
+                
+                if(userKey) {
+                    // Tambahkan skor baru ke total skor yang sudah ada di database
+                    await fetch(`${dbURL}/${userKey}.json`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ score: data[userKey].score + finalScore })
+                    });
+                }
+            } catch (e) { console.error("Gagal update skor global"); }
+        }
+
+        // --- CORE GAME TETRIS (SEDERHANA) ---
+        function createPiece(type) {
+            if (type === 'I') return [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]];
+            if (type === 'L') return [[0, 2, 0], [0, 2, 0], [0, 2, 2]];
+            if (type === 'O') return [[4, 4], [4, 4]];
+            if (type === 'T') return [[0, 7, 0], [7, 7, 7], [0, 0, 0]];
+            return [[0, 5, 0], [5, 5, 0], [0, 5, 0]];
+        }
+
+        const arena = Array.from({length: 20}, () => Array(12).fill(0));
+        const activePiece = { pos: {x: 5, y: 0}, matrix: createPiece('T'), score: 0 };
+
+        function draw() {
+            context.fillStyle = '#050112';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            drawMatrix(arena, {x: 0, y: 0});
+            drawMatrix(activePiece.matrix, activePiece.pos);
+        }
+
+        function drawMatrix(matrix, offset) {
+            matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        context.fillStyle = '#ff00ff';
+                        context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                    }
+                });
+            });
+        }
+
+        let dropCounter = 0;
+        let lastTime = 0;
+        function update(time = 0) {
+            const deltaTime = time - lastTime;
+            lastTime = time;
+            dropCounter += deltaTime;
+            if (dropCounter > 1000) {
+                activePiece.pos.y++;
+                dropCounter = 0;
+                // Simulasi skor bertambah setiap blok turun
+                activePiece.score += 10;
+                document.getElementById('pScore').innerText = activePiece.score;
+                
+                // Cek Game Over Sederhana
+                if(activePiece.pos.y > 18) {
+                    handleGameOver();
+                    return;
+                }
+            }
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        async function handleGameOver() {
+            alert("GAME OVER! SKOR ANDA: " + activePiece.score);
+            await updateGlobalScore(activePiece.score);
+            window.location.href = 'menu.html';
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.keyCode === 37) activePiece.pos.x--;
+            if (event.keyCode === 39) activePiece.pos.x++;
+            if (event.keyCode === 40) activePiece.pos.y++;
+        });
+
+        update();
+    </script>
+</body>
+</html>
