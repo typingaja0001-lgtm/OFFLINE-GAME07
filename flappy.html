@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOKBISAYOK - FLAPPY CYBER ULTIMATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
         
@@ -18,6 +19,17 @@
         .neon-text-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
         .neon-text-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
 
+        /* BACK BUTTON STYLE */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #00f2ff; transition: 0.3s;
+            z-index: 1000;
+        }
+        .btn-back:hover { background: #00f2ff; color: #020617; box-shadow: 0 0 20px #00f2ff; }
+
         #game-container { 
             position: relative; border: 4px solid #ff00ff; 
             box-shadow: 0 0 40px rgba(255, 0, 255, 0.4); 
@@ -26,7 +38,6 @@
 
         canvas { display: block; cursor: crosshair; }
 
-        /* MODAL GAME OVER */
         #gameOverModal { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.95); z-index: 100; 
@@ -38,7 +49,6 @@
             width: 360px; 
         }
 
-        /* CARA BERMAIN PANEL */
         .guide-panel {
             margin-top: 25px; width: 400px; max-width: 90%;
             background: rgba(255, 255, 255, 0.03);
@@ -54,6 +64,10 @@
     </style>
 </head>
 <body>
+
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-arrow-left mr-2"></i> Back to Base
+    </a>
 
     <div id="gameOverModal">
         <div class="modal-content">
@@ -132,10 +146,8 @@
 
         function drawDrone() {
             ctx.save();
-            // Tail Light (Engine)
             ctx.shadowBlur = 20; ctx.shadowColor = '#00f2ff';
             ctx.fillStyle = '#00f2ff';
-            // Bodi Drone Futuristik
             ctx.beginPath();
             ctx.moveTo(drone.x, drone.y + 8);
             ctx.lineTo(drone.x + drone.w, drone.y);
@@ -143,7 +155,6 @@
             ctx.lineTo(drone.x, drone.y + drone.h - 8);
             ctx.closePath();
             ctx.fill();
-            // Glass/Sensor
             ctx.fillStyle = 'rgba(0,0,0,0.5)';
             ctx.fillRect(drone.x + 20, drone.y + 5, 12, 10);
             ctx.restore();
@@ -152,24 +163,17 @@
         function drawPipes() {
             pipes.forEach(p => {
                 ctx.save();
-                // Laser Effect
                 let grad = ctx.createLinearGradient(p.x, 0, p.x + pipeWidth, 0);
                 grad.addColorStop(0, 'rgba(255, 0, 85, 0.2)');
                 grad.addColorStop(0.5, 'rgba(255, 0, 85, 0.6)');
                 grad.addColorStop(1, 'rgba(255, 0, 85, 0.2)');
-
                 ctx.shadowBlur = 15; ctx.shadowColor = '#ff0055';
                 ctx.fillStyle = grad;
-                
-                // Top & Bottom Laser
                 ctx.fillRect(p.x, 0, pipeWidth, p.y);
                 ctx.fillRect(p.x, p.y + pipeGap, pipeWidth, canvas.height);
-                
-                // Neon Core Line
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
                 ctx.beginPath(); ctx.moveTo(p.x + pipeWidth/2, 0); ctx.lineTo(p.x + pipeWidth/2, p.y); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(p.x + pipeWidth/2, p.y + pipeGap); ctx.lineTo(p.x + pipeWidth/2, canvas.height); ctx.stroke();
-                
                 ctx.restore();
             });
         }
@@ -186,14 +190,10 @@
         function update() {
             if(!gameActive) return;
             drone.dy += gravity; drone.y += drone.dy;
-
             if(drone.y + drone.h > canvas.height || drone.y < 0) gameActive = false;
-
             if(pipes.length === 0 || pipes[pipes.length-1].x < canvas.width - 240) spawnPipe();
-
             pipes.forEach((p, i) => {
                 p.x -= speed;
-                // Hitbox (dengan sedikit toleransi 4px)
                 if(drone.x + drone.w - 4 > p.x && drone.x + 4 < p.x + pipeWidth) {
                     if(drone.y + 4 < p.y || drone.y + drone.h - 4 > p.y + pipeGap) gameActive = false;
                 }
@@ -209,10 +209,8 @@
         function draw() {
             ctx.fillStyle = '#050112';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            // Scanlines Effect
             ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
             for(let i=0; i<canvas.height; i+=4) ctx.fillRect(0, i, canvas.width, 1);
-            
             drawPipes();
             drawDrone();
         }
