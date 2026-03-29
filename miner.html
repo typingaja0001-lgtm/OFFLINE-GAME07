@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKBISAYOK - NEON MINER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
+        
+        body { 
+            background: #050112; color: white; font-family: 'Rajdhani', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; margin: 0; padding: 20px; overflow: hidden;
+        }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .neon-text-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        .neon-text-purple { color: #bc13fe; text-shadow: 0 0 10px #bc13fe; }
+
+        /* GAME BOARD GRID */
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        /* TILE (KOTAK) STYLING */
+        .tile {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .tile:hover:not(.revealed) {
+            background: rgba(0, 242, 255, 0.1);
+            border-color: #00f2ff;
+            transform: scale(1.05);
+        }
+
+        /* REVEALED STATES */
+        .tile.revealed.diamond {
+            background: rgba(188, 19, 254, 0.1);
+            border-color: #bc13fe;
+            color: #bc13fe;
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.5);
+        }
+
+        .tile.revealed.bomb {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, -1px); }
+        }
+
+        /* GAMEOVER MODAL */
+        #gameOverModal { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.95); z-index: 100; 
+            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
+        }
+
+        .modal-content { 
+            background: #0d0221; border: 3px solid #ef4444; padding: 40px; 
+            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ef4444; width: 340px; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gameOverModal">
+        <div class="modal-content">
+            <h2 class="orbitron text-4xl text-red-500 mb-2 italic">GAME OVER</h2>
+            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest italic">You Hit a Bomb!</p>
+            <div class="mb-10">
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Lost Bet</p>
+                <p id="lostBetDisplay" class="text-6xl text-red-500 orbitron">0</p>
+            </div>
+            <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-red-500 transition uppercase italic text-lg">TRY AGAIN</button>
+            <button onclick="window.location.href='menu.html'" class="mt-4 w-full text-gray-500 text-[10px] orbitron uppercase">Back to Menu</button>
+        </div>
+    </div>
+
+    <div class="w-full max-w-7xl flex flex-col md:flex-row gap-8 items-start">
+        
+        <div class="w-full md:w-80 bg-black/40 border border-white/5 p-8 rounded-[25px] backdrop-blur-md">
+            <div class="text-center mb-8">
+                <h1 class="orbitron text-3xl font-black italic neon-text-purple">NEON MINER</h1>
+                <p class="text-[9px] tracking-[4px] text-gray-500 font-bold uppercase mt-1">Find Diamonds, Avoid Bombs</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="text-xs text-purple-400 uppercase font-bold tracking-widest">Bet Amount (IDR)</label>
+                    <input id="betInput" type="number" value="1000" min="100" step="100" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white">
+                </div>
+                <div>
+                    <label class="text-xs text-purple-400 uppercase font-bold tracking-widest">Number of Bombs (1-24)</label>
+                    <input id="bombInput" type="number" value="3" min="1" max="24" class="w-full mt-2 p-4 bg-white/5 border border-white/10 rounded-xl orbitron text-lg text-white">
+                </div>
+                
+                <div class="pt-6">
+                    <button id="startBtn" onclick="startGame()" class="w-full bg-cyan-500 text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-white hover:shadow-cyan-500 transition shadow-[0_5px_0_#00c2cc]">
+                        START GAME
+                    </button>
+                    <button id="cashoutBtn" onclick="cashOut()" class="w-full mt-4 bg-purple-600 text-white py-4 rounded-xl orbitron font-black text-xl hover:bg-white hover:text-black transition hidden shadow-[0_5px_0_#9c03de]">
+                        CASH OUT
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full bg-black/40 border border-white/5 p-8 rounded-[25px] backdrop-blur-md">
+            
+            <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-6">
+                <div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Your Balance</p>
+                    <h2 class="text-3xl orbitron font-black neon-text-blue">IDR <span id="balanceDisplay">0</span></h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Current Multiplier</p>
+                    <h2 class="text-3xl orbitron font-black neon-text-purple">x<span id="multiplierDisplay">1.00</span></h2>
+                </div>
+            </div>
+
+            <div id="game-board">
+                </div>
+
+            <div id="nextInfo" class="mt-8 p-4 bg-white/5 border border-white/10 rounded-xl text-center hidden">
+                <p class="text-xs text-gray-400 uppercase">Profit on Next Diamond</p>
+                <p class="orbitron text-cyan-400 font-bold text-lg">IDR <span id="nextProfitDisplay">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASE & SESSION CHECK ---
+        const activeUser = localStorage.getItem("loginUser");
+        if (!activeUser) {
+            alert("Akses Ilegal! Silakan Login.");
+            window.location.href = "index.html";
+        }
+
+        // Tampilkan Saldo
+        let users = JSON.parse(localStorage.getItem("users") || "[]");
+        let myData = users.find(x => x.user === activeUser);
+        let balance = myData ? myData.saldo : 0;
+        document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+
+        // --- GAME LOGIC ---
+        let betAmount = 0, numBombs = 0, currentMultiplier = 1.00;
+        let board = [], revealedTiles = 0, gameActive = false;
+        const totalTiles = 25;
+
+        // Generate Board
+        function generateBoard(bombs) {
+            board = Array(totalTiles).fill('diamond');
+            let placedBombs = 0;
+            while (placedBombs < bombs) {
+                let index = Math.floor(Math.random() * totalTiles);
+                if (board[index] === 'diamond') {
+                    board[index] = 'bomb';
+                    placedBombs++;
+                }
+            }
+        }
+
+        // Calculate Multiplier (Simulasi Perkalian Hadiah)
+        function updateMultiplier() {
+            // Logika sederhana: Multiplier bertambah seiring jumlah diamond dibuka
+            const baseGain = 1.1 + (numBombs / 10); // Bomb makin banyak, untung makin besar
+            currentMultiplier = Math.pow(baseGain, revealedTiles).toFixed(2);
+            document.getElementById("multiplierDisplay").innerText = currentMultiplier;
+
+            // Hitung Profit Next
+            const currentProfit = betAmount * currentMultiplier;
+            const nextProfit = betAmount * Math.pow(baseGain, revealedTiles + 1);
+            document.getElementById("nextProfitDisplay").innerText = Math.round(nextProfit - currentProfit).toLocaleString();
+        }
+
+        // Start Game
+        function startGame() {
+            betAmount = parseInt(document.getElementById("betInput").value);
+            numBombs = parseInt(document.getElementById("bombInput").value);
+
+            // Validasi input
+            if(betAmount < 100) return alert("Taruhan minimal IDR 100, Bosku!");
+            if(balance < betAmount) return alert("Saldo tidak cukup, Bosku! Silakan Top Up.");
+            if(numBombs < 1 || numBombs > 24) return alert("Jumlah Bom harus antara 1-24, Bosku!");
+
+            // Potong Saldo
+            balance -= betAmount;
+            updateBalanceInStorage();
+            document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+
+            // Setup Board
+            gameActive = true;
+            revealedTiles = 0;
+            generateBoard(numBombs);
+            updateMultiplier();
+
+            // UI Update
+            document.getElementById("startBtn").classList.add("hidden");
+            document.getElementById("cashoutBtn").classList.remove("hidden");
+            document.getElementById("nextInfo").classList.remove("hidden");
+            document.getElementById("betInput").disabled = true;
+            document.getElementById("bombInput").disabled = true;
+
+            // Render Tiles
+            const boardDiv = document.getElementById("game-board");
+            boardDiv.innerHTML = "";
+            for(let i=0; i<totalTiles; i++) {
+                boardDiv.innerHTML += `<div class="tile" data-index="${i}" onclick="revealTile(${i})">?</div>`;
+            }
+        }
+
+        // Reveal Tile
+        function revealTile(index) {
+            if(!gameActive) return;
+            const tile = document.querySelector(`[data-index="${index}"]`);
+            if(tile.classList.contains("revealed")) return; // Kotak sudah dibuka
+
+            const content = board[index];
+            tile.classList.add("revealed", content);
+
+            if(content === 'bomb') {
+                gameOver();
+            } else {
+                // Diamond ditemukan
+                tile.innerHTML = '<i class="fas fa-gem"></i>';
+                revealedTiles++;
+                updateMultiplier();
+
+                // Cek apakah semua diamond sudah dibuka
+                if(revealedTiles === (totalTiles - numBombs)) {
+                    alert("Gila! Semua Diamond Terbuka! Luar Biasa Bosku!");
+                    cashOut();
+                }
+            }
+        }
+
+        // Game Over
+        function gameOver() {
+            gameActive = false;
+            // Tampilkan semua bom
+            document.querySelectorAll(".tile").forEach((tile, i) => {
+                if(board[i] === 'bomb') {
+                    tile.classList.add("revealed", "bomb");
+                    tile.innerHTML = '<i class="fas fa-bomb"></i>';
+                }
+            });
+
+            // UI Modal
+            document.getElementById("lostBetDisplay").innerText = betAmount.toLocaleString();
+            document.getElementById("gameOverModal").style.display = 'flex';
+        }
+
+        // Cash Out
+        function cashOut() {
+            if(!gameActive || revealedTiles === 0) return alert("Gagal Cashout, Bosku!");
+
+            const winnings = Math.round(betAmount * currentMultiplier);
+            balance += winnings;
+            updateBalanceInStorage();
+            document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+
+            alert(`MANTAP BOSKU! Cashout Berhasil. Menang IDR ${winnings.toLocaleString()}!`);
+            location.reload(); // Refresh game
+        }
+
+        // Update Balance di LocalStorage
+        function updateBalanceInStorage() {
+            myData.saldo = balance;
+            localStorage.setItem("users", JSON.stringify(users));
+        }
+
+    </script>
+</body>
+</html>
