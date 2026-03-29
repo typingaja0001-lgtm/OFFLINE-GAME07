@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>YOKBISAYOK - NEON RACER ULTIMATE</title>
+    <title>YOKBISAYOK - NEON RACER ULTRA REVISED</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
         
@@ -14,284 +15,249 @@
         }
 
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        .neon-text-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
-        .neon-text-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; 0 0 20px #ff00ff; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff, 0 0 25px #00f2ff; }
+        .neon-pink { color: #ff00ff; text-shadow: 0 0 15px #ff00ff, 0 0 25px #ff00ff; }
+
+        /* BACK BUTTON */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #ff00ff;
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #ff00ff; transition: 0.3s;
+            z-index: 1000;
+        }
+        .btn-back:hover { background: #ff00ff; color: #fff; box-shadow: 0 0 20px #ff00ff; }
 
         #game-container { 
-            position: relative; border: 4px solid #00f2ff; 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); 
-            background: black; border-radius: 20px; overflow: hidden; 
+            position: relative; 
+            border: 3px solid rgba(255, 0, 255, 0.5);
+            box-shadow: 0 0 60px rgba(255, 0, 255, 0.2); 
+            background: #000; border-radius: 20px; padding: 10px;
         }
 
-        canvas { display: block; }
-
-        /* MODAL GAME OVER */
         #gameOverModal { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.95); z-index: 100; 
             align-items: center; justify-content: center; backdrop-filter: blur(10px); 
         }
+
         .modal-content { 
             background: #0d0221; border: 3px solid #ff00ff; padding: 40px; 
-            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ff00ff; 
-            width: 360px; max-width: 90%; 
-        }
-
-        /* PANDUAN STYLE */
-        .how-to-play { 
-            margin-top: 25px; background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(0, 242, 255, 0.3); padding: 15px; 
-            border-radius: 15px; width: 400px; max-width: 90%; text-align: center;
+            border-radius: 25px; text-align: center; box-shadow: 0 0 80px #ff00ff; width: 340px; 
         }
     </style>
 </head>
 <body>
 
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-arrow-left mr-2"></i> RETURN TO MAZE
+    </a>
+
     <div id="gameOverModal">
         <div class="modal-content">
-            <h2 class="orbitron text-5xl neon-text-pink mb-4 italic uppercase">TOTALED!</h2>
-            <p id="levelReached" class="text-xs text-yellow-400 uppercase orbitron mb-8 tracking-widest">LEVEL 1 REACHED</p>
-            
-            <div class="mb-10 p-6 bg-black/40 rounded-xl border border-white/10">
-                <p class="text-gray-500 text-xs uppercase orbitron tracking-wider">Final Score</p>
-                <p id="finalScoreDisplay" class="text-7xl neon-text-cyan orbitron font-bold">0</p>
+            <h2 class="orbitron text-4xl neon-pink mb-2 italic">WASTED</h2>
+            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest">Eliminated by Ghost</p>
+            <div class="mb-10">
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Final Score</p>
+                <p id="finalScoreDisplay" class="text-6xl neon-cyan orbitron">0</p>
             </div>
-            
             <div class="flex flex-col gap-4">
-                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg shadow-[0_4px_0_#aaa]">RE-START DRIVING</button>
-                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-xl hover:text-white hover:border-white transition uppercase text-xs orbitron">BACK TO GARAGE</button>
+                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg shadow-[0_4px_0_#ccc]">PLAY AGAIN</button>
+                <button onclick="window.location.href='menu.html'" class="w-full text-gray-500 text-[10px] orbitron uppercase tracking-widest">Back to Menu</button>
             </div>
         </div>
     </div>
 
-    <div class="flex gap-12 mb-6 text-center">
-        <div>
-            <p class="text-xs text-gray-500 uppercase orbitron tracking-wider">Level</p>
-            <p id="lvlDisplay" class="text-4xl text-yellow-400 orbitron">1</p>
-        </div>
-        <div>
-            <p class="text-xs text-gray-500 uppercase orbitron tracking-wider">Total Points</p>
-            <p id="pScore" class="text-4xl neon-text-cyan orbitron">0</p>
-        </div>
+    <div class="mb-6 text-center">
+        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Accumulated Score</p>
+        <p id="pScore" class="text-5xl neon-cyan orbitron">0</p>
     </div>
 
     <div id="game-container">
-        <canvas id="raceCanvas" width="400" height="550"></canvas>
+        <canvas id="pacman" width="380" height="300"></canvas>
     </div>
 
-    <div class="how-to-play">
-        <p class="text-sm text-gray-400 uppercase font-bold tracking-[0.2em] leading-relaxed">
-            Gunakan <span class="text-cyan-400">PANAH KIRI & KANAN</span> untuk mengemudi.<br>
-            Hindari mobil <span class="text-pink-500 font-bold">PINK</span>. Skor bertambah setiap detik dan per mobil.
-        </p>
+    <div class="mt-8 grid grid-cols-2 gap-8 text-center max-w-md">
+        <div>
+            <p class="text-[10px] text-gray-500 uppercase orbitron mb-2">Controls</p>
+            <div class="flex justify-center gap-2">
+                <span class="bg-white/10 px-3 py-1 rounded border border-white/20 text-xs">ARROW KEYS</span>
+            </div>
+        </div>
+        <div>
+            <p class="text-[10px] text-gray-500 uppercase orbitron mb-2">Mission</p>
+            <p class="text-xs text-pink-500 font-bold italic">COLLECT ALL NEON DOTS</p>
+        </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('raceCanvas');
+        const canvas = document.getElementById('pacman');
         const ctx = canvas.getContext('2d');
-        const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
         const player = (localStorage.getItem('loginUser') || "USER").toUpperCase();
 
+        const size = 20;
         let score = 0;
         let gameActive = true;
-        let level = 1;
-        let speed = 7;
-        let lineOffset = 0;
-        let keys = {};
 
-        // Ukuran Mobil (Player lebih kecil)
-        const playerW = 38, playerH = 70;
-        const enemyW = 50, enemyH = 85;
+        // 1=Glowing Wall, 0=Dot, 2=Empty
+        const map = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
+            [1,2,2,2,0,2,2,2,2,2,2,2,2,2,0,2,2,2,1],
+            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,2,2,1,2,2,2,1,2,2,0,0,0,0,1],
+            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
 
-        let playerCar = { x: canvas.width / 2 - playerW / 2, y: 450 };
-        let enemies = [];
-        let nextSpawnTime = 0;
+        let pac = { x: 9 * size, y: 13 * size, dir: 0, nextDir: 0 };
+        let ghosts = [
+            { x: 9 * size, y: 7 * size, color: '#ff00ff', dir: 1, speed: 2 },
+            { x: 2 * size, y: 1 * size, color: '#00f2ff', dir: 2, speed: 2 },
+            { x: 16 * size, y: 1 * size, color: '#ff0000', dir: 3, speed: 2 }
+        ];
 
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
-
-        // --- FUNGSI MENGGAMBAR MOBIL LEBIH NYATA (GRADIENT & SHADOW) ---
-        function drawRealisticCar(x, y, w, h, colorPrimary, colorSecondary, isPlayer) {
-            ctx.save();
-            
-            // 1. Tambahkan Glow (Bayangan Menyala)
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = colorPrimary;
-
-            // 2. Bodi Utama Mobil (Gradient)
-            let bodyGradient = ctx.createLinearGradient(x, y, x, y + h);
-            bodyGradient.addColorStop(0, colorSecondary); // Bagian depan agak terang
-            bodyGradient.addColorStop(1, colorPrimary);   // Bagian belakang warna utama
-            
-            ctx.fillStyle = bodyGradient;
-            ctx.fillRect(x, y, w, h);
-
-            // 3. Detail Jendela/Kaca (Hitam/Gelap)
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(x + 5, y + 15, w - 10, h * 0.3); // Kaca depan
-
-            // 4. Detail Lampu
-            ctx.shadowBlur = 30; // Glow lampu lebih kuat
-            if (isPlayer) {
-                // Lampu depan player (Putih bersinar)
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(x + 5, y + 5, 8, 5);
-                ctx.fillRect(x + w - 13, y + 5, 8, 5);
-            } else {
-                // Lampu belakang musuh (Merah bersinar)
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(x + 5, y + h - 10, 10, 5);
-                ctx.fillRect(x + w - 15, y + h - 10, 10, 5);
-            }
-
-            // 5. Garis Tepi (Outline) Neon
-            ctx.shadowBlur = 0; // Matikan shadow untuk garis tepi
-            ctx.strokeStyle = colorPrimary;
-            ctx.lineWidth = 1;
-            ctx.strokeRect(x, y, w, h);
-
-            ctx.restore();
-        }
-
-        // LOGIKA SPAWN ANTI-GEMPET
-        function spawnEnemy() {
-            const now = Date.now();
-            if (now < nextSpawnTime) return;
-
-            const lanes = [60, 160, 260, 360];
-            
-            // Pilih 1 sampai 2 jalur (maksimal 2 agar tidak gempet)
-            let numEnemies = Math.floor(Math.random() * 2) + 1;
-            
-            let selectedLanes = [];
-            let tempLanes = [...lanes];
-            for (let i = 0; i < numEnemies; i++) {
-                let index = Math.floor(Math.random() * tempLanes.length);
-                selectedLanes.push(tempLanes[index]);
-                tempLanes.splice(index, 1);
-            }
-
-            selectedLanes.forEach(lane => {
-                enemies.push({ 
-                    x: lane - enemyW / 2, 
-                    y: -120 
-                });
-            });
-
-            // Beri jeda acak antar gelombang musuh agar tidak terlalu rapat
-            nextSpawnTime = now + 1000 + (Math.random() * 1000); 
-        }
-
-        function checkLevel() {
-            let nextLvl = Math.floor(score / 1500) + 1;
-            if (nextLvl > level) {
-                level = nextLvl;
-                speed += 1.2;
-                document.getElementById('lvlDisplay').innerText = level;
-                // Ubah warna border container setiap 5 level (efek panas)
-                const container = document.getElementById('game-container');
-                if(level >= 5) container.style.borderColor = "#fbbf24"; // Yellow
-                if(level >= 10) container.style.borderColor = "#ef4444"; // Red
-            }
-        }
-
-        function update() {
-            if(!gameActive) return;
-
-            lineOffset += speed;
-            if(lineOffset > 50) lineOffset = 0;
-
-            // Kontrol Player
-            if(keys['ArrowLeft'] && playerCar.x > 15) playerCar.x -= 8;
-            if(keys['ArrowRight'] && playerCar.x < canvas.width - playerW - 15) playerCar.x += 8;
-
-            spawnEnemy();
-
-            // Skor berjalan seiring waktu
-            score += 1;
-            document.getElementById('pScore').innerText = Math.floor(score);
-
-            enemies.forEach((en, i) => {
-                en.y += speed;
-                
-                // Hitbox Collision Presisi
-                if(playerCar.x < en.x + enemyW && 
-                   playerCar.x + playerW > en.x && 
-                   playerCar.y < en.y + enemyH && 
-                   playerCar.y + playerH > en.y) {
-                    gameActive = false;
-                }
-
-                // Hapus musuh yang lewat dan tambah skor besar
-                if(en.y > canvas.height) {
-                    enemies.splice(i, 1);
-                    score += 100;
-                    document.getElementById('pScore').innerText = Math.floor(score);
-                    checkLevel();
-                }
-            });
+        function isWall(nx, ny) {
+            let gx = Math.floor(nx / size);
+            let gy = Math.floor(ny / size);
+            if (gy < 0 || gy >= map.length || gx < 0 || gx >= map[0].length) return true;
+            return map[gy][gx] === 1;
         }
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0,0,canvas.width, canvas.height);
 
-            // Gambar Jalan (Garis Neon)
-            ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
-            [110, 210, 310].forEach(lx => {
-                ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, canvas.height); ctx.stroke();
-            });
+            for(let y=0; y<map.length; y++) {
+                for(let x=0; x<map[y].length; x++) {
+                    if(map[y][x] === 1) {
+                        // --- ULTRA REAL NEON WALL RENDERING ---
+                        // Outer Glow
+                        ctx.shadowBlur = 20;
+                        ctx.shadowColor = '#ff00ff';
+                        ctx.strokeStyle = '#ff00ff';
+                        ctx.lineWidth = 2.5;
+                        ctx.strokeRect(x*size+4, y*size+4, size-8, size-8);
+                        
+                        // Inner Glow & Fill
+                        ctx.fillStyle = 'rgba(255, 0, 255, 0.1)';
+                        ctx.fillRect(x*size+4, y*size+4, size-8, size-8);
+                        
+                        // Core Highlight (White)
+                        ctx.shadowBlur = 5;
+                        ctx.shadowColor = '#ffffff';
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 0.5;
+                        ctx.strokeRect(x*size+6, y*size+6, size-12, size-12);
 
-            // Garis Tengah Jalan bersinar
-            ctx.save();
-            ctx.strokeStyle = level < 5 ? '#00f2ff' : (level < 10 ? '#fbbf24' : '#ef4444');
-            ctx.lineWidth = 3;
-            ctx.setLineDash([30, 20]);
-            ctx.lineDashOffset = -lineOffset;
-            ctx.shadowBlur = 10; ctx.shadowColor = ctx.strokeStyle;
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 0);
-            ctx.lineTo(canvas.width / 2, canvas.height);
-            ctx.stroke();
-            ctx.restore();
-
-            // Gambar Enemies (Pink Neon, Gradasi)
-            enemies.forEach(en => {
-                // Pink Tua ke Magenta
-                drawRealisticCar(en.x, en.y, enemyW, enemyH, '#ff00ff', '#880088', false);
-            });
-
-            // Gambar Player (Cyan Neon, Gradasi)
-            // Cyan Tua ke Biru Langit
-            drawRealisticCar(playerCar.x, playerCar.y, playerW, playerH, '#00f2ff', '#0088aa', true);
-        }
-
-        async function saveAndExit() {
-            try {
-                const res = await fetch(dbURL);
-                const data = await res.json();
-                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
-                if(userKey) {
-                    await fetch(`https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard/${userKey}.json`, {
-                        method: 'PATCH',
-                        body: JSON.stringify({ score: data[userKey].score + Math.floor(score) })
-                    });
+                        ctx.shadowBlur = 0; // Reset blur
+                    } else if(map[y][x] === 0) {
+                        ctx.fillStyle = '#00f2ff';
+                        ctx.beginPath();
+                        ctx.arc(x*size+size/2, y*size+size/2, 2.5, 0, Math.PI*2);
+                        ctx.fill();
+                    }
                 }
-            } catch (e) {}
-            window.location.href = 'menu.html';
-        }
-
-        function loop() {
-            update();
-            draw();
-            if(gameActive) requestAnimationFrame(loop);
-            else {
-                document.getElementById('finalScoreDisplay').innerText = Math.floor(score);
-                document.getElementById('levelReached').innerText = "LEVEL " + level + " REACHED";
-                document.getElementById('gameOverModal').style.display = 'flex';
             }
+
+            // Pacman (Neon Yellow)
+            ctx.fillStyle = '#ffff00';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ffff00';
+            ctx.beginPath();
+            let mouth = (Math.sin(Date.now() / 100) + 1) * 0.2;
+            ctx.arc(pac.x+size/2, pac.y+size/2, size/2-1, (0.2 + mouth)*Math.PI, (1.8 - mouth)*Math.PI);
+            ctx.lineTo(pac.x+size/2, pac.y+size/2);
+            ctx.fill();
+
+            // Ghosts (Neon Glow)
+            ghosts.forEach(g => {
+                ctx.fillStyle = g.color;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = g.color;
+                ctx.fillRect(g.x+3, g.y+3, size-6, size-6);
+            });
+            ctx.shadowBlur = 0; // Reset
         }
 
-        loop();
+        function move() {
+            if(!gameActive) return;
+            
+            // Movement Pacman
+            let pNextX = pac.x, pNextY = pac.y;
+            if(pac.dir === 1) pNextX -= 2;
+            if(pac.dir === 2) pNextX += 2;
+            if(pac.dir === 3) pNextY -= 2;
+            if(pac.dir === 4) pNextY += 2;
+
+            if(!isWall(pNextX, pNextY) && !isWall(pNextX + size - 1, pNextY + size - 1)) {
+                pac.x = pNextX;
+                pac.y = pNextY;
+            }
+
+            // Eat Dot
+            let gx = Math.floor((pac.x+size/2)/size);
+            let gy = Math.floor((pac.y+size/2)/size);
+            if(map[gy] && map[gy][gx] === 0) {
+                map[gy][gx] = 2;
+                score += 10;
+                document.getElementById('pScore').innerText = score;
+                // Respawn dot after 5 seconds
+                let ty = gy, tx = gx;
+                setTimeout(() => { if(gameActive) map[ty][tx] = 0; }, 5000);
+            }
+
+            // Ghost AI
+            ghosts.forEach(g => {
+                let gNextX = g.x, gNextY = g.y;
+                if(g.dir === 1) gNextX -= g.speed;
+                if(g.dir === 2) gNextX += g.speed;
+                if(g.dir === 3) gNextY -= g.speed;
+                if(g.dir === 4) gNextY += g.speed;
+
+                if(isWall(gNextX, gNextY) || isWall(gNextX + size - 1, gNextY + size - 1) || Math.random() < 0.02) {
+                    g.dir = Math.floor(Math.random() * 4) + 1;
+                } else {
+                    g.x = gNextX;
+                    g.y = gNextY;
+                }
+
+                // Collision Check
+                if(Math.abs(pac.x - g.x) < 12 && Math.abs(pac.y - g.y) < 12) {
+                    gameActive = false;
+                }
+            });
+        }
+
+        function gameLoop() {
+            if(!gameActive) {
+                document.getElementById('finalScoreDisplay').innerText = score;
+                document.getElementById('gameOverModal').style.display = 'flex';
+                return;
+            }
+            move();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', e => {
+            if(e.keyCode === 37) pac.dir = 1; // Left
+            if(e.keyCode === 39) pac.dir = 2; // Right
+            if(e.keyCode === 38) pac.dir = 3; // Up
+            if(e.keyCode === 40) pac.dir = 4; // Down
+            if([37,38,39,40].includes(e.keyCode)) e.preventDefault();
+        });
+
+        gameLoop();
     </script>
 </body>
 </html>
