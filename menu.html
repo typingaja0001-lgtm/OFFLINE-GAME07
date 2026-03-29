@@ -13,9 +13,8 @@
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
         .arcade-card { background: rgba(255, 255, 255, 0.03); border: 2px solid #ff00ff; border-radius: 15px; padding: 20px; text-align: center; backdrop-filter: blur(10px); transition: 0.4s; cursor: pointer; }
         .arcade-card:hover { border-color: #00f2ff; transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); }
-        /* Modal Style Sesuai Gambar */
         #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-box { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 60px rgba(255, 0, 255, 0.4); position: relative; }
+        .modal-box { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 60px rgba(255, 0, 255, 0.4); }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -27,11 +26,10 @@
                     <i class="fas fa-gamepad text-3xl text-black"></i>
                 </div>
             </div>
-            <h2 id="modalTitle" class="orbitron text-3xl neon-purple mb-8 uppercase italic">SNAKE RETRO</h2>
-            <div id="popupRankList" class="mb-10 min-h-[60px] flex flex-col gap-3">
-                </div>
+            <h2 id="modalTitle" class="orbitron text-3xl neon-purple mb-8 uppercase italic">GAME NAME</h2>
+            <div id="popupRankList" class="mb-10 min-h-[60px] flex flex-col gap-3"></div>
             <button onclick="startGameAction()" class="w-full bg-white text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-cyan-400 transition uppercase tracking-tighter">MASUK ARENA</button>
-            <button onclick="closeModal()" class="mt-8 text-gray-500 text-sm orbitron uppercase tracking-[0.2em] block w-full hover:text-white transition">BATAL</button>
+            <button onclick="closeModal()" class="mt-8 text-gray-500 text-sm orbitron uppercase tracking-[0.2em] block w-full">BATAL</button>
         </div>
     </div>
 
@@ -51,7 +49,9 @@
             <h2 class="text-5xl font-black orbitron italic text-white uppercase italic">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
             <p class="text-[10px] text-gray-500 tracking-[5px] mt-2 font-bold uppercase">DATABASE REALTIME AKTIF</p>
         </div>
+        
         <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-24"></div>
+
         <h3 class="orbitron text-purple-400 text-xl mb-8 italic flex items-center gap-4">
             <span class="h-[1px] w-12 bg-purple-500"></span> HALL OF FAME <span class="h-[1px] w-full bg-gray-800"></span>
         </h3>
@@ -59,65 +59,65 @@
     </main>
 
     <script>
-        // ALAMAT DATABASE (PASTIKAN RULES DATABASE SUDAH READ: TRUE)
+        // JALUR ANTI-RIBET (Langsung ke Database)
         const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
         const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // 1. RENDER 48 GAME (Tampilan Awal Bosku)
+        // RENDER 48 GAME (Tampilan Utuh)
         const games = ["SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", "GALAXY SHOOTER", "BRICK BREAKER"];
         for(let i=7; i<=48; i++) { games.push("ARCADE GAME #" + i); }
         const grid = document.getElementById('arcadeGrid');
         games.forEach(name => {
             grid.innerHTML += `
                 <div class="arcade-card">
-                    <div class="h-24 flex items-center justify-center bg-black/40 rounded-lg mb-4 border border-white/5"><i class="fas fa-gamepad text-4xl text-gray-700"></i></div>
+                    <div class="h-24 flex items-center justify-center bg-black/40 rounded-lg mb-4 border border-white/5">
+                        <i class="fas fa-gamepad text-4xl text-gray-700"></i>
+                    </div>
                     <p class="text-xs font-black orbitron text-white uppercase mb-4 truncate">${name}</p>
                     <button onclick="showPopup('${name}')" class="w-full bg-cyan-500 text-black py-2 rounded-lg orbitron font-bold text-[10px] hover:bg-white transition">PLAY NOW</button>
                 </div>`;
         });
 
-        // 2. LOGIKA AMBIL DATA (SANGAT TELITI)
-        async function fetchAllScores() {
+        // FUNGSI AMBIL DATA TANPA API KEY
+        async function getDatabase() {
             try {
-                const res = await fetch(dbURL + "?nocache=" + new Date().getTime()); // Pakai cache buster
+                const res = await fetch(dbURL + "?nocache=" + Date.now());
                 const data = await res.json();
                 if (!data) return [];
                 return Object.values(data).sort((a, b) => b.score - a.score);
-            } catch (err) { console.error(err); return []; }
+            } catch (e) { return []; }
         }
 
         let currentGameTarget = "";
 
-        // POPUP RANK (Sesuai Gambar 1 & 2)
+        // POPUP RANK 1-2-3 (AKTIF)
         async function showPopup(name) {
             currentGameTarget = name;
             document.getElementById('modalTitle').innerText = name;
             const popupRankList = document.getElementById('popupRankList');
             document.getElementById('gameModal').style.display = 'flex';
-            
-            popupRankList.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse italic uppercase'>MEMANGGIL REKOR TERBAIK...</p>";
+            popupRankList.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse italic'>SYNCING...</p>";
 
-            const players = await fetchAllScores();
+            const players = await getDatabase();
             popupRankList.innerHTML = "";
-            
             if (players.length > 0) {
                 players.slice(0, 3).forEach((p, idx) => {
                     let color = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : "#cd7f32");
                     popupRankList.innerHTML += `
-                        <div class="flex justify-between items-center p-3 rounded-xl border border-white/5 bg-white/5">
-                            <span class="text-[11px] font-bold" style="color:${color}">${idx+1}. ${p.name.toUpperCase()}</span>
-                            <span class="orbitron text-sm text-white">${p.score.toLocaleString()}</span>
+                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${color}44;">
+                            <span style="color:${color}; font-size:11px; font-weight:bold;">${idx+1}. ${p.name.toUpperCase()}</span>
+                            <span class="orbitron" style="color:white; font-size:13px;">${p.score.toLocaleString()}</span>
                         </div>`;
                 });
             } else {
-                popupRankList.innerHTML = "<p class='text-[10px] text-gray-600 uppercase tracking-widest font-bold'>BELUM ADA DATA</p>";
+                popupRankList.innerHTML = "<p class='text-[10px] text-gray-600 uppercase font-bold'>NO DATA</p>";
             }
         }
 
-        // SYNC INTERFACE (Header & Leaderboard Bawah)
-        async function syncInterface() {
-            const players = await fetchAllScores();
+        // SYNC HEADER & LEADERBOARD (AKTIF)
+        async function syncAll() {
+            const players = await getDatabase();
             const list = document.getElementById('leaderList');
             const myHeaderScore = document.getElementById('myTotalScore');
 
@@ -129,17 +129,17 @@
             if(list) {
                 list.innerHTML = "";
                 players.slice(0, 12).forEach((p, idx) => {
-                    list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center"><span class="orbitron font-bold text-purple-500">${idx+1}</span><p class="text-xs orbitron uppercase text-white">${p.name}</p><p class="text-xs orbitron neon-cyan">${p.score.toLocaleString()}</p></div>`;
+                    list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center transition hover:border-cyan-500/50"><span class="orbitron font-bold text-purple-500">${idx+1}</span><p class="text-xs orbitron uppercase text-white">${p.name}</p><p class="text-xs orbitron neon-cyan">${p.score.toLocaleString()}</p></div>`;
                 });
             }
         }
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
-        function startGameAction() { if(currentGameTarget === "SNAKE RETRO") window.location.href = "snake.html"; else alert("BELUM TERSEDIA"); }
+        function startGameAction() { if(currentGameTarget === "SNAKE RETRO") window.location.href = "snake.html"; else alert("Akses Ditutup."); }
 
-        // AUTO SYNC TIAP 5 DETIK
-        syncInterface();
-        setInterval(syncInterface, 5000);
+        // SINKRONISASI OTOMATIS
+        syncAll();
+        setInterval(syncAll, 5000);
     </script>
 </body>
 </html>
