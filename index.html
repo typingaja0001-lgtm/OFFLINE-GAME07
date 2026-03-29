@@ -1,174 +1,276 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - LOBBY REPOSITORY</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        
-        body { background: #020617; color: #a1a1aa; font-family: 'Rajdhani', sans-serif; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        /* GAYA NEON UTAMA */
-        .neon-border-blue { border: 2px solid #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
-        .neon-border-purple { border: 2px solid #bc13fe; box-shadow: 0 0 15px rgba(188, 19, 254, 0.4); }
-        .neon-text-blue { color: #00f2ff; text-shadow: 0 0 5px #00f2ff; }
-        .neon-text-purple { color: #bc13fe; text-shadow: 0 0 5px #bc13fe; }
-        .neon-text-green { color: #4ade80; text-shadow: 0 0 5px #4ade80; }
+<meta charset="UTF-8">
+<title>YOKBISAYOK Casino - Neon Edition</title>
+<script src="https://cdn.tailwindcss.com"></script>
 
-        /* HEADER & TOMBOL */
-        .header-btn { background: rgba(0, 242, 255, 0.1); border: 1px solid #00f2ff; color: #00f2ff; transition: 0.3s; }
-        .header-btn:hover { background: #00f2ff; color: black; box-shadow: 0 0 10px #00f2ff; }
-        
-        .code-btn { background: #4ade80; color: black; border-radius: 6px; font-weight: bold; }
-        .code-btn:hover { background: #22c55e; }
+<style>
+body{
+  background:#020617;
+  color:white;
+  margin:0;
+  font-family:sans-serif;
+}
 
-        /* TABEL FILE */
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; color: #71717a; padding: 12px; font-size: 12px; text-transform: uppercase; }
-        td { padding: 12px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+/* HEADER - NEON STYLE */
+.header{
+  background:linear-gradient(to right,#000,#001f3f);
+  box-shadow:0 0 20px cyan;
+  border-bottom: 2px solid cyan;
+}
 
-        /* SIDEBAR PANEL */
-        .side-panel { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .side-link { color: #bc13fe; cursor: pointer; transition: 0.2s; }
-        .side-link:hover { color: white; text-shadow: 0 0 5px white; }
-        
-        /* GAYA LINK KHUSUS */
-        .file-link { color: #bc13fe; text-decoration: none; font-weight: 500; }
-        .file-link:hover { color: #00f2ff; text-shadow: 0 0 2px #00f2ff; }
-    </style>
+/* LOGO */
+.logo{
+  height:70px;
+  width:300px;
+  object-fit:cover;
+  filter: drop-shadow(0 0 5px cyan);
+}
+
+/* SIDEBAR */
+.sidebar{
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(10px);
+  min-height:100vh;
+  border-right: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.menu-item{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.menu-item:hover{
+  color:cyan;
+  text-shadow: 0 0 10px cyan;
+  transform:translateX(5px);
+}
+
+/* 🔥 KOTAK LIVE WIN NEON */
+.win-container{
+  margin-top:20px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(0,0,0,0.6);
+  box-shadow:0 0 15px cyan;
+  border:1px solid rgba(0,255,255,0.5);
+}
+
+#winBox div{
+  background:rgba(0,0,0,0.6);
+  border-left:3px solid cyan;
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:12px;
+  margin-bottom: 8px;
+  animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateX(-10px);}
+  to{opacity:1; transform:translateX(0);}
+}
+
+/* BANNER UTAMA (DITAMBAH LOGO OVERLAY) */
+.banner{
+  width:100%;
+  height:70vh;
+  border-radius:15px;
+  overflow:hidden;
+  position: relative;
+  border: 1px solid rgba(188, 19, 254, 0.5);
+  box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
+}
+
+.banner img.main-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.banner-logo {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  filter: drop-shadow(0 0 15px cyan);
+  z-index: 10;
+}
+
+/* GAME CARD NEON */
+.game-card{
+  background:#0f172a;
+  border-radius:12px;
+  overflow:hidden;
+  position:relative;
+  transition:0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px #a855f7, 0 0 30px #3b82f6;
+}
+
+.game-card:hover{
+  transform:scale(1.05);
+  box-shadow: 0 0 30px #ec4899, 0 0 60px #3b82f6;
+  border-color: #ec4899;
+}
+
+.game-img{
+  width:100%;
+  height:140px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#020617;
+  border-bottom: 2px solid cyan;
+}
+
+.game-img img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+
+/* KOTAK PANJANG DI BAWAH (LOWER BANNER) */
+.lower-promo {
+    margin-top: 20px;
+    width: 100%;
+    height: 120px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #000 0%, #001f3f 50%, #000 100%);
+    border: 1px solid cyan;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    overflow: hidden;
+}
+
+.lower-promo img {
+    height: 80px;
+    margin-right: 20px;
+    filter: drop-shadow(0 0 10px cyan);
+}
+
+.promo-text h2 { font-size: 20px; font-weight: bold; color: white; margin: 0; }
+.promo-text p { font-size: 14px; color: cyan; margin: 0; }
+
+/* INPUT & BUTTON NEON */
+input:focus { outline: none; box-shadow: 0 0 10px cyan; border-color: cyan !important; }
+button:hover { box-shadow: 0 0 15px cyan; filter: brightness(1.2); }
+
+</style>
 </head>
-<body class="p-6">
 
-    <div class="flex flex-col lg:flex-row gap-6">
-        
-        <div class="lg:w-3/4 flex flex-col gap-6">
-            
-            <div class="flex items-center justify-between neon-border-blue p-4 rounded-xl bg-slate-950">
-                <div class="flex items-center gap-3">
-                    <button class="header-btn px-4 py-2 rounded-lg font-medium orbitron text-xs flex items-center gap-2">
-                        <i class="fas fa-code-branch text-sm"></i> main
-                    </button>
-                    <span class="text-sm font-medium"><i class="fas fa-code-branch mr-1 text-gray-600"></i> 1 Branch</span>
-                    <span class="text-sm font-medium"><i class="fas fa-tag mr-1 text-gray-600"></i> 0 Tags</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
-                        <input type="text" placeholder="Go to file" class="bg-slate-900 border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-cyan-400">
-                    </div>
-                    <button class="bg-slate-800 px-3 py-2 rounded-lg"><i class="fas fa-plus"></i></button>
-                    <button class="code-btn px-4 py-2 text-sm flex items-center gap-2">
-                        <i class="fas fa-code"></i> Code
-                    </button>
-                </div>
-            </div>
+<body>
 
-            <div class="neon-border-blue rounded-xl bg-slate-950 overflow-hidden">
-                <div class="flex items-center gap-2 p-4 bg-slate-900 border-b border-gray-800">
-                    <i class="fas fa-folder text-cyan-400"></i>
-                    <span class="neon-text-blue font-semibold">marketingday2121-ctrl</span>
-                    <span class="neon-text-green text-sm">Update snake.html</span>
-                    <span class="text-gray-600 text-xs ml-auto">2d21cc2 • 12 hours ago</span>
-                    <span class="text-gray-400 text-sm ml-2 orbitron"><i class="fas fa-history mr-1"></i> 181 Commits</span>
-                </div>
-                
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="w-2/5">Name</th>
-                            <th class="w-2/5">Last Commit</th>
-                            <th class="w-1/5">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="baccarat.html" class="file-link">baccarat.html</a></td><td class="neon-text-green">Update baccarat.html</td><td>14 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="daftar.html" class="file-link">daftar.html</a></td><td class="neon-text-green">Update daftar.html</td><td>16 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="deposit.html" class="file-link">deposit.html</a></td><td class="neon-text-green">Add files via upload</td><td>2 days ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="history.html" class="file-link">history.html</a></td><td class="neon-text-green">Create history.html</td><td>15 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="index.html" class="file-link">index.html</a></td><td class="neon-text-green">Update index.html</td><td>16 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="loading.html" class="file-link">loading.html</a></td><td class="neon-text-green">Update loading.html</td><td>17 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="menu.html" class="file-link">menu.html</a></td><td class="neon-text-green">Update menu.html</td><td>12 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="roulette.html" class="file-link">roulette.html</a></td><td class="neon-text-green">Update roulette.html</td><td>13 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="slot.html" class="file-link">slot.html</a></td><td class="neon-text-green">Update slot.html</td><td>13 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="snake.html" class="file-link">snake.html</a></td><td class="neon-text-green">Update snake.html</td><td>12 hours ago</td></tr>
-                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="withdraw.html" class="file-link">withdraw.html</a></td><td class="neon-text-green">Add files via upload</td><td>2 days ago</td></tr>
-                        <tr><td><i class="fas fa-file-alt mr-2 text-gray-500"></i><a href="README.md" class="file-link">README.md</a></td><td class="neon-text-green">Initial commit</td><td>3 days ago</td></tr>
-                    </tbody>
-                </table>
-            </div>
+<div class="header flex justify-between items-center p-4">
 
-            <div class="neon-border-blue rounded-xl bg-slate-950 p-6 flex flex-col gap-4">
-                <div class="flex items-center gap-2 border-b border-gray-800 pb-3">
-                    <i class="fas fa-book neon-text-blue"></i>
-                    <span class="font-bold text-white orbitron">README</span>
-                    <i class="fas fa-pencil-alt ml-auto text-xs text-gray-600"></i>
-                </div>
-                <div class="p-20 text-center text-gray-700 italic text-sm">
-                    README content will be rendered here.
-                </div>
-            </div>
-        </div>
+<img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdhDckWYFzrQhib7bYa4eao7mrT5FeY2gUu4eSrY1Cz63-aDFelus82uIAn88lohADWgoeSIUbPBV2cAd_zWl5YGtnFoBFKT9zS0Gq8Y2jqLXyDYHwg0HVHVOqKYVAX09S6ahIgHfEm94JdB-DV0w7b0dipaYKzM3YvlVYm3flQ721RzdWwqZkjXmRskQN/s1536/Logo%20futuristik%20dengan%20efek%20neon.png" class="logo">
 
-        <div class="lg:w-1/4">
-            
-            <div class="side-panel neon-border-purple flex flex-col gap-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-white orbitron">About</h3>
-                    <i class="fas fa-cog text-gray-600 hover:text-white cursor-pointer"></i>
-                </div>
-                <p class="text-sm italic text-gray-600">No description, website, or topics provided.</p>
-                <div class="flex flex-col gap-2 pt-2 border-t border-gray-800 text-sm">
-                    <span class="side-link"><i class="fas fa-book mr-2"></i> Readme</span>
-                    <span class="side-link"><i class="fas fa-chart-line mr-2"></i> Activity</span>
-                    <span class="text-gray-500"><i class="fas fa-star mr-2"></i> 0 stars</span>
-                    <span class="text-gray-500"><i class="fas fa-eye mr-2"></i> 0 watching</span>
-                    <span class="text-gray-500"><i class="fas fa-code-branch mr-2"></i> 0 forks</span>
-                </div>
-            </div>
+<div class="flex gap-3 items-center">
+<input id="username" type="text" placeholder="Username" class="px-3 py-1 rounded text-black border border-gray-400">
+<input id="password" type="password" placeholder="Password" class="px-3 py-1 rounded text-black border border-gray-400">
 
-            <div class="side-panel neon-border-purple flex flex-col gap-3">
-                <h3 class="font-bold text-white orbitron">Releases</h3>
-                <p class="text-sm italic text-gray-600">No releases published.</p>
-                <span class="neon-text-purple text-xs font-semibold cursor-pointer hover:underline">Create a new release</span>
-            </div>
+<button onclick="login()" class="bg-cyan-500 px-6 py-1 rounded font-bold text-black transition">LOGIN</button>
+<a href="daftar.html" class="bg-green-500 px-4 py-1 rounded text-white font-bold hover:shadow-[0_0_15px_#22c55e]">DAFTAR</a>
+</div>
 
-            <div class="side-panel neon-border-purple flex flex-col gap-3">
-                <div class="flex items-center gap-2">
-                    <h3 class="font-bold text-white orbitron">Deployments</h3>
-                    <span class="bg-slate-700 px-2 py-0.5 rounded text-xs orbitron">176</span>
-                </div>
-                <div class="flex items-center gap-2 text-sm">
-                    <i class="fas fa-check-circle text-green-500 text-lg"></i>
-                    <span class="neon-text-blue font-medium">github-pages</span>
-                    <span class="text-gray-600 text-xs ml-auto">12 hours ago</span>
-                </div>
-                <span class="neon-text-purple text-xs font-semibold cursor-pointer hover:underline">+ 175 deployments</span>
-            </div>
+</div>
 
-            <div class="side-panel neon-border-purple flex flex-col gap-3">
-                <h3 class="font-bold text-white orbitron">Packages</h3>
-                <p class="text-sm italic text-gray-600">No packages published.</p>
-                <span class="neon-text-purple text-xs font-semibold cursor-pointer hover:underline">Publish your first package</span>
-            </div>
+<div class="flex">
 
-            <div class="side-panel neon-border-purple flex flex-col gap-3">
-                <div class="flex items-center gap-2">
-                    <h3 class="font-bold text-white orbitron">Contributors</h3>
-                    <span class="bg-slate-700 px-2 py-0.5 rounded text-xs orbitron">1</span>
-                </div>
-                <div class="flex items-center gap-2 text-sm pt-2">
-                    <div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-700 flex items-center justify-center font-bold text-xs">M</div>
-                    <span class="text-gray-300">marketingday2121-ctrl</span>
-                </div>
-            </div>
+<div class="w-64 sidebar p-4">
+<div class="menu-item">📘 Cara Bermain</div>
+<div class="menu-item">📊 History Nomor</div>
+<div class="menu-item">📖 Buku Mimpi</div>
+<div class="menu-item">👥 Referral</div>
+<div class="menu-item">📞 Hubungi Kami</div>
+<div class="menu-item">🎁 Promosi</div>
 
-        </div>
+<div class="win-container">
+  <div class="text-xs text-cyan-400 mb-2 font-bold animate-pulse">🔥 LIVE WIN</div>
+  <div id="winBox" class="space-y-2"></div>
+</div>
+
+</div>
+
+<div class="flex-1 p-4">
+
+<div class="banner mb-6">
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhaMcCd2hx20TB7NVGklDTWCE7gL63FOEHkTYvzST6_FDyN6PLLZhzlfEXrr5icfwQhdb_p7a6PMVFWcT-Xyuy78fVEa7DgGYOL6QhNadKHZsmQfHH6lbe7nkYtmfsfK9dviCA6PYDLc2qq2OY9nhb5hnR3oWSKkrssqTCDkD-sD4Puo0PvA-K7hh03zsnk/s1536/Promo%20kasino%20dengan%20bonus%20menarik.png" class="banner-logo">
+  
+  <img class="main-img" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirkDNypW_BwHDWH5HEBbJue2tpO-InABWUuvJIhn5is22cZqJQHzwG4lnqr0WiOH3OHZU3cwkkB-ADz0sYMi2X6vcDwginxJR6leFjjVpUV-2gMVynthJcwsYyABYV8dQcqYkgcUvufFUZIdp8RzSvG49s5Nqs1V114wa5K7d2pkl42YTwE_9l73lpQCrz/s1536/Promo%20kasino%20dengan%20bonus%20menarik.png">
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEibgrlg1rKzUYIKDkfQoEsIoA4O1O8OHq4NHvrS6Ubryf_dJPOF9BGNvrvVOEj4M2lP2eHnoDG_c3L6yTkavoe_rLOCS0l75oK9mqBnc-UuNDYdpPeOz3aHu6atsEBThdI2YkgoZSXRk_XHwRdxxcSKJxn1etQSnLLNKc5P_z-St_38oy8wuFUSCHq8Ic_H"></div></div>
+  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEhCB1FIXZjFoK4e9MT5v5T5ipLMYdNemml5t5XEeSa0AYR9PZ41IZiY2FJLHqCuVT_DuuncAYXALUMx-RmQc5gJj16iHb0GHTlwiNU-bxqxIP3PIyTTUvfOkWPVWa_ukWPgbm_uQyXyU0tjzIGU_KX0Yx22MebWWcDxGLRnMKL5ZGw3ZPtoKrnASf31eYj4"></div></div>
+  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEhW6iWB9kaNVu9AYHSVqbm14bGCiJt1wRBMviAxelJrQz-iyEgERH-_Cb_X08W2UNXFL16O9rmsJO1zdQFRNNHfi7DD1mTVXaQF-PaKDwjTxOoY0X7A9GlsKbAG8BrhirVfYtlpQXEwG71PfoCs9In17nuYPEdQ_xu3pwx9Lg4upe9mlm-4MHYImw9SZOLw"></div></div>
+  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEjIzPRw-o_gcKucfOefWM52m3pzYRBxAYhZR7VsJz35U_6sKxaMUjAFBu1kTcHgT3UPT8gmHUPcAP7WpVjZjUFF5LswSjFRff3zBJvEidyVJNdMOhW5u2N-h7T13emukK2EGGW52x2Tz5pSnT1yqluERwZLFLrtG2wMZzyPSJroslOheQ7NLR915oFZd4uh"></div></div>
+</div>
+
+<div class="lower-promo">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEibgrlg1rKzUYIKDkfQoEsIoA4O1O8OHq4NHvrS6Ubryf_dJPOF9BGNvrvVOEj4M2lP2eHnoDG_c3L6yTkavoe_rLOCS0l75oK9mqBnc-UuNDYdpPeOz3aHu6atsEBThdI2YkgoZSXRk_XHwRdxxcSKJxn1etQSnLLNKc5P_z-St_38oy8wuFUSCHq8Ic_H">
+    <div class="promo-text">
+        <h2>GAMES TERLENGKAP & TERPERCAYA</h2>
+        <p>SLOT • LIVE CASINO • SPORT • ARCADE • JACKPOT HARIAN</p>
     </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function login(){
+  let user = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
+
+  if(user === "" || pass === ""){
+    alert("Isi username & password dulu!");
+    return;
+  }
+
+  // AMBIL DATA DARI LOCAL STORAGE
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+
+  // CARI USER
+  let found = users.find(u => u.user === user && u.pass === pass);
+
+  if(found){
+    localStorage.setItem("loginUser", user);
+    // Masuk ke halaman loading dulu biar keren
+    window.location.href = "loading.html?game=menu";
+  }else{
+    alert("Username atau password salah! Pastikan sudah Daftar.");
+  }
+}
+
+/* LIVE WINNER LOGIC */
+const games = ["PRAGMATIC", "BACCARAT", "ROULETTE", "POKER", "PGSOFT"];
+const names = ["Master", "Raja", "Sultan", "Hoki88", "Gacor", "King"];
+const winBox = document.getElementById("winBox");
+
+function addWin(){
+  let name = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*99);
+  let game = games[Math.floor(Math.random()*games.length)];
+  let amount = (Math.floor(Math.random()*900000)+50000).toLocaleString('id-ID');
+
+  let div = document.createElement("div");
+  div.innerHTML = `<span style="color:cyan">***${name.slice(-3)}</span> menang <b style="color:yellow">Rp ${amount}</b> di ${game}`;
+  winBox.prepend(div);
+
+  if(winBox.children.length > 6){
+    winBox.removeChild(winBox.lastChild);
+  }
+}
+
+for(let i=0;i<5;i++){ addWin(); }
+setInterval(addWin, 3000);
+</script>
 
 </body>
 </html>
