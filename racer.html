@@ -2,56 +2,87 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>YOKBISAYOK - NEON RACER PRO</title>
+    <title>YOKBISAYOK - NEON RACER ULTIMATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
-        body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; overflow: hidden; }
+        
+        body { 
+            background: #050112; color: white; font-family: 'Rajdhani', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; margin: 0; padding: 20px; overflow: hidden;
+        }
+
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        #game-container { position: relative; border: 4px solid #00f2ff; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); background: #000; border-radius: 15px; overflow: hidden; }
+        .neon-text-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
+        .neon-text-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; 0 0 20px #ff00ff; }
+
+        #game-container { 
+            position: relative; border: 4px solid #00f2ff; 
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); 
+            background: black; border-radius: 20px; overflow: hidden; 
+        }
+
         canvas { display: block; }
-        .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
-        #gameOverModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { background: #0d0221; border: 3px solid #00f2ff; padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 0 60px #00f2ff; width: 340px; }
-        .how-to-play { margin-top: 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.3); padding: 15px; border-radius: 15px; width: 360px; text-align: center; }
+
+        /* MODAL GAME OVER */
+        #gameOverModal { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.95); z-index: 100; 
+            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
+        }
+        .modal-content { 
+            background: #0d0221; border: 3px solid #ff00ff; padding: 40px; 
+            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ff00ff; 
+            width: 360px; max-width: 90%; 
+        }
+
+        /* PANDUAN STYLE */
+        .how-to-play { 
+            margin-top: 25px; background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(0, 242, 255, 0.3); padding: 15px; 
+            border-radius: 15px; width: 400px; max-width: 90%; text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div id="gameOverModal">
         <div class="modal-content">
-            <h2 class="orbitron text-4xl neon-cyan mb-2 italic">CRASHED</h2>
-            <p id="lvlMsg" class="text-[10px] text-yellow-400 uppercase orbitron mb-6 tracking-widest italic">LEVEL 1 REACHED</p>
-            <div class="mb-10">
-                <p class="text-gray-500 text-[10px] uppercase orbitron">Final Score</p>
-                <p id="finalScoreDisplay" class="text-6xl neon-cyan orbitron">0</p>
+            <h2 class="orbitron text-5xl neon-text-pink mb-4 italic uppercase">TOTALED!</h2>
+            <p id="levelReached" class="text-xs text-yellow-400 uppercase orbitron mb-8 tracking-widest">LEVEL 1 REACHED</p>
+            
+            <div class="mb-10 p-6 bg-black/40 rounded-xl border border-white/10">
+                <p class="text-gray-500 text-xs uppercase orbitron tracking-wider">Final Score</p>
+                <p id="finalScoreDisplay" class="text-7xl neon-text-cyan orbitron font-bold">0</p>
             </div>
+            
             <div class="flex flex-col gap-4">
-                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg">RE-DRIVE</button>
-                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-xl hover:text-white hover:border-white transition uppercase text-[10px] orbitron">BACK TO GARAGE</button>
+                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg shadow-[0_4px_0_#aaa]">RE-START DRIVING</button>
+                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-xl hover:text-white hover:border-white transition uppercase text-xs orbitron">BACK TO GARAGE</button>
             </div>
         </div>
     </div>
 
-    <div class="flex gap-8 mb-4 text-center">
+    <div class="flex gap-12 mb-6 text-center">
         <div>
-            <p class="text-[10px] text-gray-400 uppercase orbitron">Level</p>
-            <p id="lvlDisplay" class="text-3xl text-yellow-400 orbitron">1</p>
+            <p class="text-xs text-gray-500 uppercase orbitron tracking-wider">Level</p>
+            <p id="lvlDisplay" class="text-4xl text-yellow-400 orbitron">1</p>
         </div>
         <div>
-            <p class="text-[10px] text-gray-400 uppercase orbitron">Score</p>
-            <p id="pScore" class="text-3xl neon-cyan orbitron">0</p>
+            <p class="text-xs text-gray-500 uppercase orbitron tracking-wider">Total Points</p>
+            <p id="pScore" class="text-4xl neon-text-cyan orbitron">0</p>
         </div>
     </div>
 
     <div id="game-container">
-        <canvas id="raceCanvas" width="360" height="500"></canvas>
+        <canvas id="raceCanvas" width="400" height="550"></canvas>
     </div>
 
     <div class="how-to-play">
-        <p class="text-[11px] text-gray-400 uppercase font-bold tracking-[0.2em]">
-            Gunakan <span class="text-cyan-400">PANAH KIRI & KANAN</span> untuk menghindar.
-            <br><span class="text-pink-500">Mobil musuh lebih besar dan berbahaya!</span>
+        <p class="text-sm text-gray-400 uppercase font-bold tracking-[0.2em] leading-relaxed">
+            Gunakan <span class="text-cyan-400">PANAH KIRI & KANAN</span> untuk mengemudi.<br>
+            Hindari mobil <span class="text-pink-500 font-bold">PINK</span>. Skor bertambah setiap detik dan per mobil.
         </p>
     </div>
 
@@ -64,32 +95,103 @@
         let score = 0;
         let gameActive = true;
         let level = 1;
-        let speed = 6;
+        let speed = 7;
         let lineOffset = 0;
-
-        // UKURAN MOBIL DISESUAIKAN (Player lebih kecil)
-        const playerCar = { x: 165, y: 400, w: 35, h: 65 }; // Ramping
-        const enemyW = 50; // Musuh lebih lebar
-        const enemyH = 80; // Musuh lebih panjang
-        
-        let enemies = [];
         let keys = {};
+
+        // Ukuran Mobil (Player lebih kecil)
+        const playerW = 38, playerH = 70;
+        const enemyW = 50, enemyH = 85;
+
+        let playerCar = { x: canvas.width / 2 - playerW / 2, y: 450 };
+        let enemies = [];
+        let nextSpawnTime = 0;
 
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
+        // --- FUNGSI MENGGAMBAR MOBIL LEBIH NYATA (GRADIENT & SHADOW) ---
+        function drawRealisticCar(x, y, w, h, colorPrimary, colorSecondary, isPlayer) {
+            ctx.save();
+            
+            // 1. Tambahkan Glow (Bayangan Menyala)
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = colorPrimary;
+
+            // 2. Bodi Utama Mobil (Gradient)
+            let bodyGradient = ctx.createLinearGradient(x, y, x, y + h);
+            bodyGradient.addColorStop(0, colorSecondary); // Bagian depan agak terang
+            bodyGradient.addColorStop(1, colorPrimary);   // Bagian belakang warna utama
+            
+            ctx.fillStyle = bodyGradient;
+            ctx.fillRect(x, y, w, h);
+
+            // 3. Detail Jendela/Kaca (Hitam/Gelap)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(x + 5, y + 15, w - 10, h * 0.3); // Kaca depan
+
+            // 4. Detail Lampu
+            ctx.shadowBlur = 30; // Glow lampu lebih kuat
+            if (isPlayer) {
+                // Lampu depan player (Putih bersinar)
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x + 5, y + 5, 8, 5);
+                ctx.fillRect(x + w - 13, y + 5, 8, 5);
+            } else {
+                // Lampu belakang musuh (Merah bersinar)
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(x + 5, y + h - 10, 10, 5);
+                ctx.fillRect(x + w - 15, y + h - 10, 10, 5);
+            }
+
+            // 5. Garis Tepi (Outline) Neon
+            ctx.shadowBlur = 0; // Matikan shadow untuk garis tepi
+            ctx.strokeStyle = colorPrimary;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x, y, w, h);
+
+            ctx.restore();
+        }
+
+        // LOGIKA SPAWN ANTI-GEMPET
         function spawnEnemy() {
-            const lanes = [40, 130, 220, 310];
-            const lane = lanes[Math.floor(Math.random() * lanes.length)];
-            enemies.push({ x: lane - (enemyW/2), y: -100 });
+            const now = Date.now();
+            if (now < nextSpawnTime) return;
+
+            const lanes = [60, 160, 260, 360];
+            
+            // Pilih 1 sampai 2 jalur (maksimal 2 agar tidak gempet)
+            let numEnemies = Math.floor(Math.random() * 2) + 1;
+            
+            let selectedLanes = [];
+            let tempLanes = [...lanes];
+            for (let i = 0; i < numEnemies; i++) {
+                let index = Math.floor(Math.random() * tempLanes.length);
+                selectedLanes.push(tempLanes[index]);
+                tempLanes.splice(index, 1);
+            }
+
+            selectedLanes.forEach(lane => {
+                enemies.push({ 
+                    x: lane - enemyW / 2, 
+                    y: -120 
+                });
+            });
+
+            // Beri jeda acak antar gelombang musuh agar tidak terlalu rapat
+            nextSpawnTime = now + 1000 + (Math.random() * 1000); 
         }
 
         function checkLevel() {
-            let nextLvl = Math.floor(score / 1000) + 1;
+            let nextLvl = Math.floor(score / 1500) + 1;
             if (nextLvl > level) {
                 level = nextLvl;
-                speed += 1.5;
+                speed += 1.2;
                 document.getElementById('lvlDisplay').innerText = level;
+                // Ubah warna border container setiap 5 level (efek panas)
+                const container = document.getElementById('game-container');
+                if(level >= 5) container.style.borderColor = "#fbbf24"; // Yellow
+                if(level >= 10) container.style.borderColor = "#ef4444"; // Red
             }
         }
 
@@ -97,64 +199,70 @@
             if(!gameActive) return;
 
             lineOffset += speed;
-            if(lineOffset > 40) lineOffset = 0;
+            if(lineOffset > 50) lineOffset = 0;
 
-            if(keys['ArrowLeft'] && playerCar.x > 10) playerCar.x -= 7;
-            if(keys['ArrowRight'] && playerCar.x < canvas.width - playerCar.w - 10) playerCar.x += 7;
+            // Kontrol Player
+            if(keys['ArrowLeft'] && playerCar.x > 15) playerCar.x -= 8;
+            if(keys['ArrowRight'] && playerCar.x < canvas.width - playerW - 15) playerCar.x += 8;
 
-            if(Math.random() < 0.02 + (level * 0.002)) spawnEnemy();
+            spawnEnemy();
+
+            // Skor berjalan seiring waktu
+            score += 1;
+            document.getElementById('pScore').innerText = Math.floor(score);
 
             enemies.forEach((en, i) => {
                 en.y += speed;
                 
-                // Hitbox Collision
-                if(playerCar.x < en.x + enemyW && playerCar.x + playerCar.w > en.x && playerCar.y < en.y + enemyH && playerCar.y + playerCar.h > en.y) {
+                // Hitbox Collision Presisi
+                if(playerCar.x < en.x + enemyW && 
+                   playerCar.x + playerW > en.x && 
+                   playerCar.y < en.y + enemyH && 
+                   playerCar.y + playerH > en.y) {
                     gameActive = false;
                 }
 
+                // Hapus musuh yang lewat dan tambah skor besar
                 if(en.y > canvas.height) {
                     enemies.splice(i, 1);
                     score += 100;
-                    document.getElementById('pScore').innerText = score;
+                    document.getElementById('pScore').innerText = Math.floor(score);
                     checkLevel();
                 }
             });
         }
 
         function draw() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Jalanan
-            ctx.strokeStyle = '#00f2ff';
-            ctx.setLineDash([20, 20]);
-            ctx.lineDashOffset = -lineOffset;
-            ctx.lineWidth = 2;
-            [90, 180, 270].forEach(lx => {
+            // Gambar Jalan (Garis Neon)
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+            [110, 210, 310].forEach(lx => {
                 ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, canvas.height); ctx.stroke();
             });
 
-            // Draw Player Car (Kecil & Ramping)
-            ctx.shadowBlur = 15; ctx.shadowColor = '#00f2ff';
-            ctx.fillStyle = '#00f2ff';
-            ctx.fillRect(playerCar.x, playerCar.y, playerCar.w, playerCar.h);
-            // Detail lampu player
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(playerCar.x + 5, playerCar.y + 5, 6, 4);
-            ctx.fillRect(playerCar.x + playerCar.w - 11, playerCar.y + 5, 6, 4);
+            // Garis Tengah Jalan bersinar
+            ctx.save();
+            ctx.strokeStyle = level < 5 ? '#00f2ff' : (level < 10 ? '#fbbf24' : '#ef4444');
+            ctx.lineWidth = 3;
+            ctx.setLineDash([30, 20]);
+            ctx.lineDashOffset = -lineOffset;
+            ctx.shadowBlur = 10; ctx.shadowColor = ctx.strokeStyle;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.restore();
 
-            // Draw Enemies (Besar & Pink)
-            ctx.shadowColor = '#ff00ff';
+            // Gambar Enemies (Pink Neon, Gradasi)
             enemies.forEach(en => {
-                ctx.fillStyle = '#ff00ff';
-                ctx.fillRect(en.x, en.y, enemyW, enemyH);
-                // Detail lampu musuh
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(en.x + 5, en.y + enemyH - 10, 10, 5);
-                ctx.fillRect(en.x + enemyW - 15, en.y + enemyH - 10, 10, 5);
+                // Pink Tua ke Magenta
+                drawRealisticCar(en.x, en.y, enemyW, enemyH, '#ff00ff', '#880088', false);
             });
 
-            ctx.shadowBlur = 0; ctx.setLineDash([]);
+            // Gambar Player (Cyan Neon, Gradasi)
+            // Cyan Tua ke Biru Langit
+            drawRealisticCar(playerCar.x, playerCar.y, playerW, playerH, '#00f2ff', '#0088aa', true);
         }
 
         async function saveAndExit() {
@@ -165,7 +273,7 @@
                 if(userKey) {
                     await fetch(`https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard/${userKey}.json`, {
                         method: 'PATCH',
-                        body: JSON.stringify({ score: data[userKey].score + score })
+                        body: JSON.stringify({ score: data[userKey].score + Math.floor(score) })
                     });
                 }
             } catch (e) {}
@@ -177,8 +285,8 @@
             draw();
             if(gameActive) requestAnimationFrame(loop);
             else {
-                document.getElementById('finalScoreDisplay').innerText = score;
-                document.getElementById('lvlMsg').innerText = "LEVEL " + level + " REACHED";
+                document.getElementById('finalScoreDisplay').innerText = Math.floor(score);
+                document.getElementById('levelReached').innerText = "LEVEL " + level + " REACHED";
                 document.getElementById('gameOverModal').style.display = 'flex';
             }
         }
