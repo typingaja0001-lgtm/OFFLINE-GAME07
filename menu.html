@@ -12,35 +12,35 @@
         .neon-purple { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
         
+        /* CARD ANIMATION */
         .arcade-card { 
             background: rgba(255, 255, 255, 0.03); 
-            border: 2px solid rgba(255, 0, 255, 0.3); 
+            border: 1px solid rgba(255, 0, 255, 0.2); 
             border-radius: 20px; padding: 20px; text-align: center; 
             backdrop-filter: blur(10px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             position: relative; overflow: hidden;
         }
-        .arcade-card.ready { border-color: #ff00ff; cursor: pointer; }
         .arcade-card.ready:hover { 
             border-color: #00f2ff; 
-            transform: scale(1.08) translateY(-10px); 
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.4); 
-            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-10px); 
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
+            background: rgba(0, 242, 255, 0.05);
         }
 
         .h-28 { 
-            height: 112px;
-            display: flex; align-items: center; justify-content: center; 
-            background: rgba(0, 0, 0, 0.6); border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05);
+            height: 112px; display: flex; align-items: center; justify-content: center; 
+            background: rgba(0, 0, 0, 0.6); border-radius: 12px; margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         
-        .arcade-card.locked { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
-        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-box { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 60px rgba(255, 0, 255, 0.4); }
+        .arcade-card.locked { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
         
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #050112; }
-        ::-webkit-scrollbar-thumb { background: #ff00ff; border-radius: 10px; }
+        /* MODAL */
+        #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .modal-box { background: #0d0221; border: 2px solid #00f2ff; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 50px rgba(0, 242, 255, 0.2); }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #00f2ff; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -48,145 +48,168 @@
     <div id="gameModal">
         <div class="modal-box">
             <div class="flex justify-center mb-6">
-                <div class="bg-cyan-400 p-3 rounded-2xl shadow-[0_0_20px_#00f2ff]">
-                    <i class="fas fa-play text-3xl text-black"></i>
+                <div class="bg-cyan-500 p-4 rounded-full shadow-[0_0_20px_#00f2ff]">
+                    <i class="fas fa-play text-2xl text-black"></i>
                 </div>
             </div>
-            <h2 id="modalTitle" class="orbitron text-3xl neon-purple mb-8 uppercase italic font-bold">GAME NAME</h2>
-            <div id="popupRankList" class="mb-10 min-h-[60px] flex flex-col gap-3"></div>
-            <button onclick="startGameAction()" class="w-full bg-white text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-cyan-400 transition uppercase tracking-tighter shadow-[0_5px_0_#ccc]">MASUK ARENA</button>
-            <button onclick="closeModal()" class="mt-8 text-gray-500 text-xs orbitron uppercase tracking-[0.2em] block w-full hover:text-white transition">BATAL</button>
+            <h2 id="modalTitle" class="orbitron text-2xl neon-cyan mb-2 uppercase italic font-bold">GAME NAME</h2>
+            <p class="text-[10px] text-gray-400 orbitron tracking-[3px] mb-8 italic">PREPARING INTERFACE...</p>
+            
+            <div id="popupRankList" class="mb-10 space-y-2">
+                </div>
+
+            <button onclick="confirmStart()" class="w-full bg-cyan-500 text-black py-4 rounded-xl orbitron font-black text-xl hover:bg-white transition uppercase shadow-[0_4px_0_#008891]">
+                MASUK ARENA
+            </button>
+            <button onclick="closeModal()" class="mt-6 text-gray-500 text-[10px] orbitron uppercase tracking-[0.2em] block w-full hover:text-red-500 transition">BATAL</button>
         </div>
     </div>
 
-    <header class="p-6 px-12 flex justify-between items-center bg-black/90 border-b-2 border-cyan-500 sticky top-0 z-50 backdrop-blur-md">
-        <h1 class="text-3xl font-black orbitron italic neon-cyan">YOKBISAYOK</h1>
-        <div class="flex items-center gap-10">
-            <div class="text-right">
-                <p id="userNameDisplay" class="text-[10px] orbitron font-bold neon-purple uppercase tracking-widest">---</p>
-                <p id="myTotalScore" class="text-2xl orbitron font-bold neon-cyan">0</p>
+    <header class="p-6 px-12 flex justify-between items-center bg-black/80 border-b border-white/10 sticky top-0 z-50 backdrop-blur-md">
+        <h1 class="text-2xl font-black orbitron italic neon-cyan">YOKBI<span class="text-white">SAYOK</span></h1>
+        <div class="flex items-center gap-8">
+            <div class="text-right border-r border-white/10 pr-8">
+                <p id="userNameDisplay" class="text-[10px] orbitron font-bold text-gray-400 uppercase tracking-widest">---</p>
+                <p class="text-xs orbitron">CREDITS: <span id="myTotalScore" class="neon-purple">0</span></p>
             </div>
-            <button onclick="localStorage.removeItem('loginUser'); window.location.href='index.html'" class="text-red-500 text-2xl hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
+            <button onclick="logout()" class="text-gray-500 hover:text-red-500 text-xl transition"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
-    <main class="p-12">
-        <div class="mb-12">
-            <h2 class="text-5xl font-black orbitron italic text-white uppercase italic">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
-            <p class="text-[10px] text-gray-500 tracking-[5px] mt-2 font-bold uppercase">DATABASE REALTIME AKTIF • 11 READY GAMES</p>
+    <main class="p-12 max-w-7xl mx-auto">
+        <div class="mb-16">
+            <h2 class="text-5xl font-black orbitron italic text-white uppercase italic tracking-tighter">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
+            <div class="flex items-center gap-4 mt-2">
+                <span class="h-2 w-2 bg-green-500 rounded-full animate-ping"></span>
+                <p class="text-[10px] text-cyan-500 tracking-[5px] font-bold uppercase">DATABASE REALTIME AKTIF • 11 READY GAMES</p>
+            </div>
         </div>
         
-        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-24"></div>
+        <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-24"></div>
 
         <h3 class="orbitron text-purple-400 text-xl mb-8 italic flex items-center gap-4">
             <span class="h-[1px] w-12 bg-purple-500"></span> HALL OF FAME <span class="h-[1px] flex-1 bg-gray-800"></span>
         </h3>
-        <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
     </main>
 
     <script>
+        // Gunakan URL Database kamu
         const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
-        const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
+        const activeUser = (localStorage.getItem('loginUser') || "GUEST").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // --- DAFTAR GAME READY ---
-        const readyGames = [
-            "CYBER CRASH", "NEON MINER", "SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", 
-            "SPACE INVADERS", "GALAXY SHOOTER", "BRICK BREAKER", "NEON RACER", 
-            "FLAPPY CYBER", "CYBER STRIKE"
+        // Daftar Game & Route File (Wajib sama dengan nama file .html)
+        const gamesMap = [
+            { id: "cyber-crash", name: "CYBER CRASH", file: "crash" },
+            { id: "neon-miner", name: "NEON MINER", file: "miner" },
+            { id: "snake-retro", name: "SNAKE RETRO", file: "snake" },
+            { id: "tetris-ultra", name: "TETRIS ULTRA", file: "tetris" },
+            { id: "pacman-neo", name: "PAC-MAN NEO", file: "pacman" },
+            { id: "invaders", name: "SPACE INVADERS", file: "invaders" },
+            { id: "shooter", name: "GALAXY SHOOTER", file: "shooter" },
+            { id: "brick", name: "BRICK BREAKER", file: "brick" },
+            { id: "racer", name: "NEON RACER", file: "racer" },
+            { id: "flappy", name: "FLAPPY CYBER", file: "flappy" },
+            { id: "strike", name: "CYBER STRIKE", file: "strike" }
         ];
-        
-        const thematicSvgs = {
-            "CYBER CRASH": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M50 10 L70 50 L50 40 L30 50 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/><path d="M50 40 L60 80 L50 70 L40 80 Z" fill="#00f2ff"/></svg>`,
-            "NEON MINER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><path d="M20 80 L50 50 L80 80 Z" fill="#00f2ff" opacity="0.5"/><path d="M50 20 L80 50 L50 80 L20 50 Z" fill="#ff00ff"/><path d="M50 20 L80 50 L50 80 L20 50 Z" fill="none" stroke="#fff" stroke-width="2"/></svg>`,
-            "SNAKE RETRO": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M10 10 h10 v10 h10 v10 h-10 v10 h10 v10 h20 v-10 h10 v-10 h-10 v-10 h10 v-10 h-20 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
-            "TETRIS ULTRA": `<svg viewBox="0 0 100 100" class="h-16 w-16"><rect x="10" y="10" width="15" height="15" fill="#ff0000"/><rect x="10" y="25" width="15" height="15" fill="#00ff00"/><path d="M10 10 h30 v45 h-30 Z" fill="none" stroke="#fff" stroke-width="2"/></svg>`,
-            "PAC-MAN NEO": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 50 A40 40 0 1 1 90 50 A40 40 0 1 1 10 50 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
-            "SPACE INVADERS": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 50 h80 v10 h-10 v10 h-10 v10 h-10 v-10 h-10 v-10 h-10 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
-            "GALAXY SHOOTER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M50 10 L60 40 L90 40 L70 60 L80 90 L50 70 L20 90 L30 60 L10 40 L40 40 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
-            "BRICK BREAKER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><rect x="10" y="80" width="30" height="5" fill="#fff"/><circle cx="20" cy="70" r="3" fill="#ff00ff"/></svg>`,
-            "NEON RACER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 80 h80 L70 40 L30 40 Z" fill="#00f2ff" stroke="#fff" stroke-width="2"/></svg>`,
-            "FLAPPY CYBER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 50 L30 30 L50 50 L30 70 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
-            "CYBER STRIKE": `<svg viewBox="0 0 100 100" class="h-16 w-16"><circle cx="50" cy="50" r="40" fill="none" stroke="#ff00ff" stroke-width="3"/></svg>`
-        };
 
-        const grid = document.getElementById('arcadeGrid');
-        let allGames = [...readyGames];
-        for(let i=allGames.length + 1; i<=48; i++) { allGames.push("LOCKED GAME #" + i); }
+        let selectedGameFile = "";
 
-        allGames.forEach((name, idx) => {
-            const isReady = readyGames.includes(name);
-            grid.innerHTML += `
-                <div class="arcade-card ${isReady ? 'ready' : 'locked'}">
-                    <div class="h-28 flex items-center justify-center rounded-xl mb-4 border border-white/5 bg-black/40">
-                        ${isReady ? thematicSvgs[name] : '<i class="fas fa-lock text-3xl text-gray-700"></i>'}
-                    </div>
-                    <p class="text-[10px] font-black orbitron text-white uppercase mb-4 truncate italic">${name}</p>
-                    <button onclick="${isReady ? `showPopup('${name}')` : ''}" 
-                        class="w-full ${isReady ? 'bg-cyan-500' : 'bg-gray-800'} text-black py-2 rounded-lg orbitron font-bold text-[9px] hover:bg-white transition uppercase">
-                        ${isReady ? 'PLAY NOW' : 'LOCKED'}
-                    </button>
-                </div>`;
-        });
+        // Render Grid
+        function renderGrid() {
+            const grid = document.getElementById('arcadeGrid');
+            grid.innerHTML = "";
+            
+            // Render Game Ready
+            gamesMap.forEach(game => {
+                grid.innerHTML += `
+                    <div class="arcade-card ready group" onclick="showPopup('${game.name}', '${game.file}')">
+                        <div class="h-28">
+                            <i class="fas fa-gamepad text-4xl text-cyan-500 group-hover:scale-125 transition"></i>
+                        </div>
+                        <p class="text-[10px] font-black orbitron text-white uppercase truncate italic">${game.name}</p>
+                        <div class="mt-3 text-[9px] orbitron text-cyan-500 opacity-0 group-hover:opacity-100 transition">LAUNCH ARENA</div>
+                    </div>`;
+            });
 
-        async function getDatabase() {
-            try {
-                const res = await fetch(dbURL + "?nocache=" + Date.now());
-                const data = await res.json();
-                return data ? Object.values(data).sort((a, b) => b.score - a.score) : [];
-            } catch (e) { return []; }
+            // Render Game Locked (Lengkapi sampai 24 slot saja agar rapi)
+            for(let i=1; i<=13; i++) {
+                grid.innerHTML += `
+                    <div class="arcade-card locked">
+                        <div class="h-28"><i class="fas fa-lock text-gray-700"></i></div>
+                        <p class="text-[10px] font-black orbitron text-gray-600 uppercase italic">LOCKED #${i}</p>
+                    </div>`;
+            }
         }
 
-        let currentGameTarget = "";
-        async function showPopup(name) {
-            currentGameTarget = name;
+        // Popup Logic
+        async function showPopup(name, file) {
+            selectedGameFile = file;
             document.getElementById('modalTitle').innerText = name;
             document.getElementById('gameModal').style.display = 'flex';
+            
             const list = document.getElementById('popupRankList');
-            list.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse'>SYNCING...</p>";
+            list.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse orbitron italic'>SYNCING RECORDS...</p>";
+            
             const players = await getDatabase();
             list.innerHTML = "";
             players.slice(0, 3).forEach((p, i) => {
-                list.innerHTML += `<div class="bg-white/5 p-2 rounded border border-white/10 flex justify-between text-[11px]"><span>${p.name}</span><span class="neon-cyan">${p.score}</span></div>`;
+                list.innerHTML += `
+                    <div class="bg-white/5 p-2 rounded border border-white/10 flex justify-between text-[11px] orbitron">
+                        <span class="text-gray-400">#${i+1} ${p.name}</span>
+                        <span class="neon-cyan">${p.score}</span>
+                    </div>`;
             });
         }
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
 
-        // --- RUTE AKTIF ---
-        function startGameAction() { 
-            const target = currentGameTarget.toUpperCase().trim();
-            const routes = {
-                "CYBER CRASH": "crash.html",   // Aktif!
-                "NEON MINER": "miner.html",    // Aktif!
-                "SNAKE RETRO": "snake.html",
-                "TETRIS ULTRA": "tetris.html",
-                "PAC-MAN NEO": "pacman.html",
-                "SPACE INVADERS": "invaders.html",
-                "GALAXY SHOOTER": "shooter.html",
-                "BRICK BREAKER": "brick.html",
-                "NEON RACER": "racer.html",
-                "FLAPPY CYBER": "flappy.html",
-                "CYBER STRIKE": "strike.html"
-            };
-            if(routes[target]) window.location.href = routes[target];
+        // --- INI KONEKSI KE LOADING.HTML ---
+        function confirmStart() {
+            // Kita kirim nama file ke loading.html melalui parameter ?game=
+            window.location.href = `loading.html?game=${selectedGameFile}`;
+        }
+
+        async function getDatabase() {
+            try {
+                const res = await fetch(dbURL + "?nocache=" + Date.now());
+                const data = await res.json();
+                if(!data) return [];
+                return Object.values(data).sort((a, b) => b.score - a.score);
+            } catch (e) { return []; }
         }
 
         async function syncAll() {
             const players = await getDatabase();
             const me = players.find(p => p.name.toUpperCase() === activeUser);
             document.getElementById('myTotalScore').innerText = me ? me.score.toLocaleString() : "0";
+            
             const list = document.getElementById('leaderList');
-            if(list) {
-                list.innerHTML = "";
-                players.slice(0, 12).forEach((p, idx) => {
-                    list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center"><span class="orbitron text-purple-500">${idx+1}</span><p class="text-xs orbitron">${p.name}</p><p class="text-xs neon-cyan">${p.score}</p></div>`;
-                });
+            list.innerHTML = "";
+            players.slice(0, 12).forEach((p, idx) => {
+                list.innerHTML += `
+                    <div class="bg-black/40 border border-white/5 p-4 rounded-xl flex justify-between items-center group hover:border-purple-500/50 transition">
+                        <div class="flex items-center gap-4">
+                            <span class="orbitron text-gray-600 text-xs">${idx+1}</span>
+                            <p class="text-xs orbitron font-bold group-hover:text-purple-400">${p.name}</p>
+                        </div>
+                        <p class="text-xs orbitron neon-cyan font-bold">${p.score}</p>
+                    </div>`;
+            });
+        }
+
+        function logout() {
+            if(confirm("TERMINATE SESSION?")) {
+                localStorage.removeItem('loginUser');
+                window.location.href = 'index.html';
             }
         }
 
+        // Jalankan
+        renderGrid();
         syncAll();
-        setInterval(syncAll, 5000);
+        setInterval(syncAll, 10000); // Sync tiap 10 detik agar tidak berat
     </script>
 </body>
 </html>
