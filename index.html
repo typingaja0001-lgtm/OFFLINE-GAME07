@@ -2,274 +2,248 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>YOKBISAYOK Casino - Neon Edition</title>
+<title>YOKBISAYOK - OFFLINE GAME HUB</title>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body{
-  background:#020617;
-  color:white;
-  margin:0;
-  font-family:sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+body {
+  background: #020617;
+  color: white;
+  margin: 0;
+  font-family: 'Rajdhani', sans-serif;
 }
 
-/* HEADER - NEON STYLE */
-.header{
-  background:linear-gradient(to right,#000,#001f3f);
-  box-shadow:0 0 20px cyan;
-  border-bottom: 2px solid cyan;
+.orbitron { font-family: 'Orbitron', sans-serif; }
+
+/* HEADER NEON */
+.header {
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #bc13fe;
+  box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
 }
 
-/* LOGO */
-.logo{
-  height:70px;
-  width:300px;
-  object-fit:cover;
-  filter: drop-shadow(0 0 5px cyan);
+/* SIDEBAR ARCADE STYLE */
+.sidebar {
+  background: rgba(0, 0, 0, 0.5);
+  border-right: 1px solid rgba(188, 19, 254, 0.2);
+  min-height: 100vh;
 }
 
-/* SIDEBAR */
-.sidebar{
-  background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(10px);
-  min-height:100vh;
-  border-right: 1px solid rgba(0, 255, 255, 0.2);
+.menu-item {
+  padding: 12px 20px;
+  margin: 5px 0;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0 50px 50px 0;
+  font-weight: bold;
+  color: #94a3b8;
 }
 
-.menu-item{
-  padding:10px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
-  cursor:pointer;
-  transition:0.3s;
+.menu-item:hover {
+  background: linear-gradient(90deg, rgba(188, 19, 254, 0.2), transparent);
+  color: #bc13fe;
+  transform: translateX(10px);
 }
 
-.menu-item:hover{
-  color:cyan;
-  text-shadow: 0 0 10px cyan;
-  transform:translateX(5px);
+.menu-active {
+  background: linear-gradient(90deg, #bc13fe, transparent);
+  color: white !important;
+  border-left: 4px solid #00f2ff;
 }
 
-/* 🔥 KOTAK LIVE WIN NEON */
-.win-container{
-  margin-top:20px;
-  padding:10px;
-  border-radius:10px;
-  background:rgba(0,0,0,0.6);
-  box-shadow:0 0 15px cyan;
-  border:1px solid rgba(0,255,255,0.5);
+/* STATS BOX (Ganti Live Win) */
+.stats-container {
+  margin-top: 30px;
+  padding: 15px;
+  border-radius: 15px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid #00f2ff55;
 }
 
-#winBox div{
-  background:rgba(0,0,0,0.6);
-  border-left:3px solid cyan;
-  padding:6px 10px;
-  border-radius:6px;
-  font-size:12px;
-  margin-bottom: 8px;
-  animation:fadeIn 0.5s ease;
+.stat-entry {
+  font-size: 12px;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: space-between;
 }
 
-@keyframes fadeIn{
-  from{opacity:0; transform:translateX(-10px);}
-  to{opacity:1; transform:translateX(0);}
+/* GAME TILES */
+.game-card {
+  background: #0f172a;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: 0.4s;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* BANNER UTAMA (DITAMBAH LOGO OVERLAY) */
-.banner{
-  width:100%;
-  height:70vh;
-  border-radius:15px;
-  overflow:hidden;
+.game-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: #00f2ff;
+  box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
+}
+
+.game-thumb {
+  width: 100%;
+  height: 160px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  border: 1px solid rgba(188, 19, 254, 0.5);
-  box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
 }
 
-.banner img.main-img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.banner-logo {
+.play-overlay {
   position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 350px;
-  filter: drop-shadow(0 0 15px cyan);
-  z-index: 10;
+  inset: 0;
+  background: rgba(188, 19, 254, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: 0.3s;
 }
 
-/* GAME CARD NEON */
-.game-card{
-  background:#0f172a;
-  border-radius:12px;
-  overflow:hidden;
-  position:relative;
-  transition:0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 15px #a855f7, 0 0 30px #3b82f6;
+.game-card:hover .play-overlay { opacity: 1; }
+
+/* INPUT & BUTTON */
+.btn-neon {
+  background: linear-gradient(45deg, #bc13fe, #00f2ff);
+  color: black;
+  font-weight: 900;
+  transition: 0.3s;
 }
 
-.game-card:hover{
-  transform:scale(1.05);
-  box-shadow: 0 0 30px #ec4899, 0 0 60px #3b82f6;
-  border-color: #ec4899;
+.btn-neon:hover {
+  box-shadow: 0 0 20px #00f2ff;
+  transform: scale(1.05);
 }
-
-.game-img{
-  width:100%;
-  height:140px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#020617;
-  border-bottom: 2px solid cyan;
-}
-
-.game-img img{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-}
-
-/* KOTAK PANJANG DI BAWAH (LOWER BANNER) */
-.lower-promo {
-    margin-top: 20px;
-    width: 100%;
-    height: 120px;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #000 0%, #001f3f 50%, #000 100%);
-    border: 1px solid cyan;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-    display: flex;
-    align-items: center;
-    padding: 0 30px;
-    overflow: hidden;
-}
-
-.lower-promo img {
-    height: 80px;
-    margin-right: 20px;
-    filter: drop-shadow(0 0 10px cyan);
-}
-
-.promo-text h2 { font-size: 20px; font-weight: bold; color: white; margin: 0; }
-.promo-text p { font-size: 14px; color: cyan; margin: 0; }
-
-/* INPUT & BUTTON NEON */
-input:focus { outline: none; box-shadow: 0 0 10px cyan; border-color: cyan !important; }
-button:hover { box-shadow: 0 0 15px cyan; filter: brightness(1.2); }
 
 </style>
 </head>
 
 <body>
 
-<div class="header flex justify-between items-center p-4">
+<div class="header flex justify-between items-center px-8 py-4 sticky top-0 z-50">
+    <div class="flex items-center gap-4">
+        <h1 class="text-3xl font-black orbitron italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-cyan-400">
+            YOKBISAYOK <span class="text-white not-italic text-sm font-light tracking-widest ml-2">OFFLINE HUB</span>
+        </h1>
+    </div>
 
-<img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdhDckWYFzrQhib7bYa4eao7mrT5FeY2gUu4eSrY1Cz63-aDFelus82uIAn88lohADWgoeSIUbPBV2cAd_zWl5YGtnFoBFKT9zS0Gq8Y2jqLXyDYHwg0HVHVOqKYVAX09S6ahIgHfEm94JdB-DV0w7b0dipaYKzM3YvlVYm3flQ721RzdWwqZkjXmRskQN/s1536/Logo%20futuristik%20dengan%20efek%20neon.png" class="logo">
-
-<div class="flex gap-3 items-center">
-<input id="username" type="text" placeholder="Username" class="px-3 py-1 rounded text-black border border-gray-400">
-<input id="password" type="password" placeholder="Password" class="px-3 py-1 rounded text-black border border-gray-400">
-
-<button onclick="login()" class="bg-cyan-500 px-6 py-1 rounded font-bold text-black transition">LOGIN</button>
-<a href="daftar.html" class="bg-green-500 px-4 py-1 rounded text-white font-bold hover:shadow-[0_0_15px_#22c55e]">DAFTAR</a>
-</div>
-
+    <div class="flex gap-6 items-center">
+        <div class="text-right">
+            <p class="text-[10px] text-gray-400 orbitron">GUEST PLAYER</p>
+            <p id="saldoDisplay" class="text-cyan-400 font-bold orbitron">XP: 2,450</p>
+        </div>
+        <button onclick="location.href='index.html'" class="btn-neon px-6 py-2 rounded-full text-xs orbitron">LOGIN SYSTEM</button>
+    </div>
 </div>
 
 <div class="flex">
 
-<div class="w-64 sidebar p-4">
-<div class="menu-item">📘 Cara Bermain</div>
-<div class="menu-item">📊 History Nomor</div>
-<div class="menu-item">📖 Buku Mimpi</div>
-<div class="menu-item">👥 Referral</div>
-<div class="menu-item">📞 Hubungi Kami</div>
-<div class="menu-item">🎁 Promosi</div>
+    <div class="w-72 sidebar p-6">
+        <p class="text-[10px] text-gray-500 orbitron mb-4 tracking-widest">LIBRARY KATEGORI</p>
+        <div class="menu-item menu-active"><i class="fas fa-gamepad mr-3"></i> SEMUA GAME</div>
+        <div class="menu-item"><i class="fas fa-bolt mr-3"></i> ARCADE CLASSIC</div>
+        <div class="menu-item"><i class="fas fa-brain mr-3"></i> PUZZLE & LOGIC</div>
+        <div class="menu-item"><i class="fas fa-trophy mr-3"></i> HIGH SCORES</div>
+        <div class="menu-item"><i class="fas fa-cog mr-3"></i> PENGATURAN</div>
 
-<div class="win-container">
-  <div class="text-xs text-cyan-400 mb-2 font-bold animate-pulse">🔥 LIVE WIN</div>
-  <div id="winBox" class="space-y-2"></div>
-</div>
+        <div class="stats-container mt-10">
+            <p class="text-[10px] text-cyan-400 orbitron mb-3 italic">🏆 LOCAL TOP SCORE</p>
+            <div id="scoreBox" class="space-y-1">
+                </div>
+        </div>
+    </div>
 
-</div>
+    <div class="flex-1 p-8">
+        
+        <div class="relative w-full h-64 rounded-3xl overflow-hidden mb-10 border border-white/10">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirkDNypW_BwHDWH5HEBbJue2tpO-InABWUuvJIhn5is22cZqJQHzwG4lnqr0WiOH3OHZU3cwkkB-ADz0sYMi2X6vcDwginxJR6leFjjVpUV-2gMVynthJcwsYyABYV8dQcqYkgcUvufFUZIdp8RzSvG49s5Nqs1V114wa5K7d2pkl42YTwE_9l73lpQCrz/s1536/Promo%20kasino%20dengan%20bonus%20menarik.png" 
+                 class="w-full h-full object-cover opacity-50">
+            <div class="absolute inset-0 flex flex-col justify-center px-12">
+                <h2 class="text-5xl font-black orbitron mb-2">NEON ARCADE</h2>
+                <p class="text-cyan-400 tracking-[5px] font-bold">MAIN SEKARANG TANPA KONEKSI</p>
+                <button class="mt-6 bg-white text-black w-fit px-8 py-3 rounded-full font-bold orbitron text-xs hover:bg-cyan-400 transition">MULAI PETUALANGAN</button>
+            </div>
+        </div>
 
-<div class="flex-1 p-4">
+        <h3 class="text-xl font-bold orbitron mb-6 flex items-center gap-3">
+            <span class="w-2 h-8 bg-cyan-400"></span> GAME TERINSTAL
+        </h3>
 
-<div class="banner mb-6">
-  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhaMcCd2hx20TB7NVGklDTWCE7gL63FOEHkTYvzST6_FDyN6PLLZhzlfEXrr5icfwQhdb_p7a6PMVFWcT-Xyuy78fVEa7DgGYOL6QhNadKHZsmQfHH6lbe7nkYtmfsfK9dviCA6PYDLc2qq2OY9nhb5hnR3oWSKkrssqTCDkD-sD4Puo0PvA-K7hh03zsnk/s1536/Promo%20kasino%20dengan%20bonus%20menarik.png" class="banner-logo">
-  
-  <img class="main-img" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEirkDNypW_BwHDWH5HEBbJue2tpO-InABWUuvJIhn5is22cZqJQHzwG4lnqr0WiOH3OHZU3cwkkB-ADz0sYMi2X6vcDwginxJR6leFjjVpUV-2gMVynthJcwsYyABYV8dQcqYkgcUvufFUZIdp8RzSvG49s5Nqs1V114wa5K7d2pkl42YTwE_9l73lpQCrz/s1536/Promo%20kasino%20dengan%20bonus%20menarik.png">
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <div class="game-card" onclick="location.href='snake.html'">
+                <div class="game-thumb">
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEibgrlg1rKzUYIKDkfQoEsIoA4O1O8OHq4NHvrS6Ubryf_dJPOF9BGNvrvVOEj4M2lP2eHnoDG_c3L6yTkavoe_rLOCS0l75oK9mqBnc-UuNDYdpPeOz3aHu6atsEBThdI2YkgoZSXRk_XHwRdxxcSKJxn1etQSnLLNKc5P_z-St_38oy8wuFUSCHq8Ic_H" class="max-h-32">
+                    <div class="play-overlay"><span class="orbitron font-bold">PLAY GAME</span></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-xs text-purple-400 font-bold orbitron">ARCADE</p>
+                    <h4 class="font-bold text-lg">Snake Classic</h4>
+                </div>
+            </div>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEibgrlg1rKzUYIKDkfQoEsIoA4O1O8OHq4NHvrS6Ubryf_dJPOF9BGNvrvVOEj4M2lP2eHnoDG_c3L6yTkavoe_rLOCS0l75oK9mqBnc-UuNDYdpPeOz3aHu6atsEBThdI2YkgoZSXRk_XHwRdxxcSKJxn1etQSnLLNKc5P_z-St_38oy8wuFUSCHq8Ic_H"></div></div>
-  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEhCB1FIXZjFoK4e9MT5v5T5ipLMYdNemml5t5XEeSa0AYR9PZ41IZiY2FJLHqCuVT_DuuncAYXALUMx-RmQc5gJj16iHb0GHTlwiNU-bxqxIP3PIyTTUvfOkWPVWa_ukWPgbm_uQyXyU0tjzIGU_KX0Yx22MebWWcDxGLRnMKL5ZGw3ZPtoKrnASf31eYj4"></div></div>
-  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEhW6iWB9kaNVu9AYHSVqbm14bGCiJt1wRBMviAxelJrQz-iyEgERH-_Cb_X08W2UNXFL16O9rmsJO1zdQFRNNHfi7DD1mTVXaQF-PaKDwjTxOoY0X7A9GlsKbAG8BrhirVfYtlpQXEwG71PfoCs9In17nuYPEdQ_xu3pwx9Lg4upe9mlm-4MHYImw9SZOLw"></div></div>
-  <div class="game-card"><div class="game-img"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEjIzPRw-o_gcKucfOefWM52m3pzYRBxAYhZR7VsJz35U_6sKxaMUjAFBu1kTcHgT3UPT8gmHUPcAP7WpVjZjUFF5LswSjFRff3zBJvEidyVJNdMOhW5u2N-h7T13emukK2EGGW52x2Tz5pSnT1yqluERwZLFLrtG2wMZzyPSJroslOheQ7NLR915oFZd4uh"></div></div>
-</div>
+            <div class="game-card" onclick="location.href='slot.html'">
+                <div class="game-thumb">
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhCB1FIXZjFoK4e9MT5v5T5ipLMYdNemml5t5XEeSa0AYR9PZ41IZiY2FJLHqCuVT_DuuncAYXALUMx-RmQc5gJj16iHb0GHTlwiNU-bxqxIP3PIyTTUvfOkWPVWa_ukWPgbm_uQyXyU0tjzIGU_KX0Yx22MebWWcDxGLRnMKL5ZGw3ZPtoKrnASf31eYj4" class="max-h-32">
+                    <div class="play-overlay"><span class="orbitron font-bold">PLAY GAME</span></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-xs text-purple-400 font-bold orbitron">LUCKY SPIN</p>
+                    <h4 class="font-bold text-lg">Neon Slot 777</h4>
+                </div>
+            </div>
 
-<div class="lower-promo">
-    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEibgrlg1rKzUYIKDkfQoEsIoA4O1O8OHq4NHvrS6Ubryf_dJPOF9BGNvrvVOEj4M2lP2eHnoDG_c3L6yTkavoe_rLOCS0l75oK9mqBnc-UuNDYdpPeOz3aHu6atsEBThdI2YkgoZSXRk_XHwRdxxcSKJxn1etQSnLLNKc5P_z-St_38oy8wuFUSCHq8Ic_H">
-    <div class="promo-text">
-        <h2>GAMES TERLENGKAP & TERPERCAYA</h2>
-        <p>SLOT • LIVE CASINO • SPORT • ARCADE • JACKPOT HARIAN</p>
+            <div class="game-card" onclick="location.href='baccarat.html'">
+                <div class="game-thumb">
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjIzPRw-o_gcKucfOefWM52m3pzYRBxAYhZR7VsJz35U_6sKxaMUjAFBu1kTcHgT3UPT8gmHUPcAP7WpVjZjUFF5LswSjFRff3zBJvEidyVJNdMOhW5u2N-h7T13emukK2EGGW52x2Tz5pSnT1yqluERwZLFLrtG2wMZzyPSJroslOheQ7NLR915oFZd4uh" class="max-h-32">
+                    <div class="play-overlay"><span class="orbitron font-bold">PLAY GAME</span></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-xs text-purple-400 font-bold orbitron">STRATEGY</p>
+                    <h4 class="font-bold text-lg">Card Battle</h4>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="location.href='roulette.html'">
+                <div class="game-thumb">
+                    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhW6iWB9kaNVu9AYHSVqbm14bGCiJt1wRBMviAxelJrQz-iyEgERH-_Cb_X08W2UNXFL16O9rmsJO1zdQFRNNHfi7DD1mTVXaQF-PaKDwjTxOoY0X7A9GlsKbAG8BrhirVfYtlpQXEwG71PfoCs9In17nuYPEdQ_xu3pwx9Lg4upe9mlm-4MHYImw9SZOLw" class="max-h-32">
+                    <div class="play-overlay"><span class="orbitron font-bold">PLAY GAME</span></div>
+                </div>
+                <div class="p-4">
+                    <p class="text-xs text-purple-400 font-bold orbitron">CHANCE</p>
+                    <h4 class="font-bold text-lg">Neon Wheel</h4>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
-</div>
-</div>
-
 <script>
-function login(){
-  let user = document.getElementById("username").value;
-  let pass = document.getElementById("password").value;
+// LOCAL SCOREBOARD LOGIC (SIMULASI)
+const scoreBox = document.getElementById("scoreBox");
+const players = ["AAN", "GAMER_X", "PLAYER_1", "GUEST_2"];
 
-  if(user === "" || pass === ""){
-    alert("Isi username & password dulu!");
-    return;
-  }
-
-  // AMBIL DATA DARI LOCAL STORAGE
-  let users = JSON.parse(localStorage.getItem("users") || "[]");
-
-  // CARI USER
-  let found = users.find(u => u.user === user && u.pass === pass);
-
-  if(found){
-    localStorage.setItem("loginUser", user);
-    // Masuk ke halaman loading dulu biar keren
-    window.location.href = "loading.html?game=menu";
-  }else{
-    alert("Username atau password salah! Pastikan sudah Daftar.");
-  }
+function loadScores() {
+    scoreBox.innerHTML = "";
+    players.forEach(p => {
+        let score = Math.floor(Math.random() * 5000) + 1000;
+        let div = document.createElement("div");
+        div.className = "stat-entry";
+        div.innerHTML = `<span>${p}</span> <span class="text-purple-400">${score} XP</span>`;
+        scoreBox.appendChild(div);
+    });
 }
 
-/* LIVE WINNER LOGIC */
-const games = ["PRAGMATIC", "BACCARAT", "ROULETTE", "POKER", "PGSOFT"];
-const names = ["Master", "Raja", "Sultan", "Hoki88", "Gacor", "King"];
-const winBox = document.getElementById("winBox");
-
-function addWin(){
-  let name = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*99);
-  let game = games[Math.floor(Math.random()*games.length)];
-  let amount = (Math.floor(Math.random()*900000)+50000).toLocaleString('id-ID');
-
-  let div = document.createElement("div");
-  div.innerHTML = `<span style="color:cyan">***${name.slice(-3)}</span> menang <b style="color:yellow">Rp ${amount}</b> di ${game}`;
-  winBox.prepend(div);
-
-  if(winBox.children.length > 6){
-    winBox.removeChild(winBox.lastChild);
-  }
-}
-
-for(let i=0;i<5;i++){ addWin(); }
-setInterval(addWin, 3000);
+loadScores();
+setInterval(loadScores, 10000); // Update score setiap 10 detik biar kelihatan dinamis
 </script>
 
 </body>
