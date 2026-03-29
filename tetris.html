@@ -2,34 +2,41 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>YOKBISAYOK - TETRIS ULTRA</title>
+    <title>YOKBISAYOK - TETRIS ULTRA NEON</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
         body { background: #050112; color: white; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #tetris { border: 4px solid #ff00ff; box-shadow: 0 0 20px #ff00ff; background: rgba(0,0,0,0.8); }
-        .stats-box { border: 2px solid #00f2ff; padding: 15px; border-radius: 10px; background: rgba(0, 242, 255, 0.05); text-align: center; min-width: 150px; }
-        .neon-text { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        #game-container { position: relative; border: 4px solid #ff00ff; box-shadow: 0 0 30px #ff00ff; background: #000; }
+        canvas { display: block; }
+        .stats-panel { border: 2px solid #00f2ff; padding: 15px; border-radius: 10px; background: rgba(0, 242, 255, 0.05); text-align: center; min-width: 140px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        .neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
     </style>
 </head>
 <body>
 
-    <div class="mb-6 flex gap-8">
-        <div class="stats-box">
-            <p class="text-[10px] text-gray-400 uppercase tracking-widest">Player</p>
-            <p id="pName" class="text-lg neon-text uppercase">---</p>
+    <div class="mb-6 flex gap-6">
+        <div class="stats-panel">
+            <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Player</p>
+            <p id="pName" class="text-sm neon-cyan uppercase italic">---</p>
         </div>
-        <div class="stats-box">
-            <p class="text-[10px] text-gray-400 uppercase tracking-widest">Session Score</p>
-            <p id="pScore" class="text-2xl neon-text">0</p>
+        <div class="stats-panel">
+            <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Score</p>
+            <p id="pScore" class="text-2xl neon-pink">0</p>
+        </div>
+        <div class="stats-panel">
+            <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Lines</p>
+            <p id="pLines" class="text-2xl neon-cyan">0</p>
         </div>
     </div>
 
-    <canvas id="tetris" width="240" height="400"></canvas>
+    <div id="game-container">
+        <canvas id="tetris" width="240" height="400"></canvas>
+    </div>
 
     <div class="mt-8 flex gap-4">
-        <button onclick="location.reload()" class="px-6 py-2 bg-purple-600 text-white rounded-lg orbitron text-xs hover:bg-purple-500 transition">Restart</button>
-        <button onclick="location.href='menu.html'" class="px-6 py-2 border border-gray-600 text-gray-500 rounded-lg hover:text-white hover:border-white transition uppercase text-xs">Menu Utama</button>
+        <button onclick="location.href='menu.html'" class="px-6 py-2 border border-gray-600 text-gray-500 rounded-lg orbitron text-[10px] hover:text-white hover:border-white transition">EXIT TO MENU</button>
     </div>
 
     <script>
@@ -41,88 +48,199 @@
 
         context.scale(20, 20);
 
-        // --- LOGIKA UPDATE SKOR KE DATABASE ---
-        async function updateGlobalScore(finalScore) {
-            try {
-                const res = await fetch(`${dbURL}.json`);
-                const data = await res.json();
-                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
-                
-                if(userKey) {
-                    // Tambahkan skor baru ke total skor yang sudah ada di database
-                    await fetch(`${dbURL}/${userKey}.json`, {
-                        method: 'PATCH',
-                        body: JSON.stringify({ score: data[userKey].score + finalScore })
-                    });
+        // 1. SISTEM PECAH BARIS & SKOR (Sesuai Tetris Asli)
+        function arenaSweep() {
+            let rowCount = 1;
+            outer: for (let y = arena.length - 1; y > 0; --y) {
+                for (let x = 0; x < arena[y].length; ++x) {
+                    if (arena[y][x] === 0) {
+                        continue outer;
+                    }
                 }
-            } catch (e) { console.error("Gagal update skor global"); }
+                // Jika baris penuh (tidak ada angka 0)
+                const row = arena.splice(y, 1)[0].fill(0);
+                arena.unshift(row);
+                ++y;
+
+                // Pemberian Skor: Pecah 1 baris = 100, Pecah 2 sekaligus = 300, dst.
+                playerStats.score += rowCount * 100;
+                playerStats.lines += 1;
+                rowCount *= 2;
+                
+                updateStats();
+            }
         }
 
-        // --- CORE GAME TETRIS (SEDERHANA) ---
+        // 2. LOGIKA COLLISION (Cek Tabrakan)
+        function collide(arena, player) {
+            const [m, o] = [player.matrix, player.pos];
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // 3. PEMBUATAN ARENA & BLOK
+        function createMatrix(w, h) {
+            const matrix = [];
+            while (h--) { matrix.push(new Array(w).fill(0)); }
+            return matrix;
+        }
+
         function createPiece(type) {
             if (type === 'I') return [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]];
             if (type === 'L') return [[0, 2, 0], [0, 2, 0], [0, 2, 2]];
+            if (type === 'J') return [[0, 3, 0], [0, 3, 0], [3, 3, 0]];
             if (type === 'O') return [[4, 4], [4, 4]];
+            if (type === 'Z') return [[5, 5, 0], [0, 5, 5], [0, 0, 0]];
+            if (type === 'S') return [[0, 6, 6], [6, 6, 0], [0, 0, 0]];
             if (type === 'T') return [[0, 7, 0], [7, 7, 7], [0, 0, 0]];
-            return [[0, 5, 0], [5, 5, 0], [0, 5, 0]];
         }
-
-        const arena = Array.from({length: 20}, () => Array(12).fill(0));
-        const activePiece = { pos: {x: 5, y: 0}, matrix: createPiece('T'), score: 0 };
 
         function draw() {
-            context.fillStyle = '#050112';
+            context.fillStyle = '#000';
             context.fillRect(0, 0, canvas.width, canvas.height);
             drawMatrix(arena, {x: 0, y: 0});
-            drawMatrix(activePiece.matrix, activePiece.pos);
+            drawMatrix(playerStats.matrix, playerStats.pos);
         }
+
+        const colors = [null, '#00f2ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0000', '#0000ff', '#ffa500'];
 
         function drawMatrix(matrix, offset) {
             matrix.forEach((row, y) => {
                 row.forEach((value, x) => {
                     if (value !== 0) {
-                        context.fillStyle = '#ff00ff';
+                        context.shadowBlur = 10;
+                        context.shadowColor = colors[value];
+                        context.fillStyle = colors[value];
                         context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                        context.shadowBlur = 0;
                     }
                 });
             });
         }
 
+        function merge(arena, player) {
+            player.matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        arena[y + player.pos.y][x + player.pos.x] = value;
+                    }
+                });
+            });
+        }
+
+        function playerDrop() {
+            playerStats.pos.y++;
+            if (collide(arena, playerStats)) {
+                playerStats.pos.y--;
+                merge(arena, playerStats);
+                playerReset();
+                arenaSweep();
+            }
+            dropCounter = 0;
+        }
+
+        function playerMove(dir) {
+            playerStats.pos.x += dir;
+            if (collide(arena, playerStats)) {
+                playerStats.pos.x -= dir;
+            }
+        }
+
+        function rotate(matrix, dir) {
+            for (let y = 0; y < matrix.length; ++y) {
+                for (let x = 0; x < y; ++x) {
+                    [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+                }
+            }
+            if (dir > 0) matrix.forEach(row => row.reverse());
+            else matrix.reverse();
+        }
+
+        function playerRotate(dir) {
+            const pos = playerStats.pos.x;
+            let offset = 1;
+            rotate(playerStats.matrix, dir);
+            while (collide(arena, playerStats)) {
+                playerStats.pos.x += offset;
+                offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > playerStats.matrix[0].length) {
+                    rotate(playerStats.matrix, -dir);
+                    playerStats.pos.x = pos;
+                    return;
+                }
+            }
+        }
+
+        function playerReset() {
+            const pieces = 'ILJOTSZ';
+            playerStats.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
+            playerStats.pos.y = 0;
+            playerStats.pos.x = (arena[0].length / 2 | 0) - (playerStats.matrix[0].length / 2 | 0);
+            
+            if (collide(arena, playerStats)) {
+                handleGameOver();
+            }
+        }
+
+        async function handleGameOver() {
+            alert("GAME OVER! SKOR AKHIR: " + playerStats.score);
+            try {
+                const res = await fetch(`${dbURL}.json`);
+                const data = await res.json();
+                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
+                if(userKey) {
+                    await fetch(`${dbURL}/${userKey}.json`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ score: data[userKey].score + playerStats.score })
+                    });
+                }
+            } catch (e) {}
+            window.location.href = 'menu.html';
+        }
+
+        function updateStats() {
+            document.getElementById('pScore').innerText = playerStats.score;
+            document.getElementById('pLines').innerText = playerStats.lines;
+        }
+
         let dropCounter = 0;
+        let dropInterval = 1000;
         let lastTime = 0;
+
         function update(time = 0) {
             const deltaTime = time - lastTime;
             lastTime = time;
             dropCounter += deltaTime;
-            if (dropCounter > 1000) {
-                activePiece.pos.y++;
-                dropCounter = 0;
-                // Simulasi skor bertambah setiap blok turun
-                activePiece.score += 10;
-                document.getElementById('pScore').innerText = activePiece.score;
-                
-                // Cek Game Over Sederhana
-                if(activePiece.pos.y > 18) {
-                    handleGameOver();
-                    return;
-                }
+            if (dropCounter > dropInterval) {
+                playerDrop();
             }
             draw();
             requestAnimationFrame(update);
         }
 
-        async function handleGameOver() {
-            alert("GAME OVER! SKOR ANDA: " + activePiece.score);
-            await updateGlobalScore(activePiece.score);
-            window.location.href = 'menu.html';
-        }
+        const arena = createMatrix(12, 20);
+        const playerStats = {
+            pos: {x: 0, y: 0},
+            matrix: null,
+            score: 0,
+            lines: 0,
+        };
 
         document.addEventListener('keydown', event => {
-            if (event.keyCode === 37) activePiece.pos.x--;
-            if (event.keyCode === 39) activePiece.pos.x++;
-            if (event.keyCode === 40) activePiece.pos.y++;
+            if (event.keyCode === 37) playerMove(-1); // Kiri
+            else if (event.keyCode === 39) playerMove(1); // Kanan
+            else if (event.keyCode === 40) playerDrop(); // Bawah
+            else if (event.keyCode === 38) playerRotate(1); // Atas (Putar)
         });
 
+        playerReset();
+        updateStats();
         update();
     </script>
 </body>
