@@ -2,80 +2,122 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>YOKBISAYOK - GALAXY SHOOTER</title>
+    <title>YOKBISAYOK - GALAXY SHOOTER ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
-        body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; overflow: hidden; }
+        
+        body { 
+            background: #020008; color: white; font-family: 'Rajdhani', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; margin: 0; padding: 20px; overflow: hidden;
+        }
+
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        #game-container { position: relative; border: 4px solid #00f2ff; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); background: #000; border-radius: 15px; overflow: hidden; }
-        canvas { display: block; background: url('https://www.transparenttextures.com/patterns/stardust.png'); }
-        .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
-        #gameOverModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 0 60px #ff00ff; width: 340px; }
-        .how-to-play { margin-top: 25px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.3); padding: 20px; border-radius: 15px; width: 440px; }
-        .key-badge { background: #1a1a1a; border: 1px solid #00f2ff; color: #00f2ff; padding: 2px 10px; border-radius: 6px; font-size: 11px; font-family: 'Orbitron'; }
+        .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
+        
+        /* BACK BUTTON */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #00f2ff;
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #00f2ff; transition: 0.3s;
+            z-index: 1000;
+        }
+        .btn-back:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px #00f2ff; }
+
+        #game-container { 
+            position: relative; border: 2px solid #00f2ff; 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2); 
+            background: radial-gradient(circle, #0d0221 0%, #000 100%); 
+            border-radius: 20px; overflow: hidden;
+        }
+
+        #gameOverModal { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.95); z-index: 100; 
+            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
+        }
+
+        .modal-content { 
+            background: #0d0221; border: 3px solid #ff00ff; padding: 40px; 
+            border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ff00ff; width: 340px; 
+        }
     </style>
 </head>
 <body>
 
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-arrow-left mr-2"></i> Abort Mission
+    </a>
+
     <div id="gameOverModal">
         <div class="modal-content">
-            <h2 class="orbitron text-4xl neon-pink mb-2 italic" style="color:#ff00ff">CRASHED</h2>
-            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest">Pilot Ejected</p>
+            <h2 class="orbitron text-4xl text-red-500 mb-2 italic">MAYDAY!</h2>
+            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest">Starship Destroyed</p>
             <div class="mb-10">
                 <p class="text-gray-500 text-[10px] uppercase orbitron">Final Score</p>
                 <p id="finalScoreDisplay" class="text-6xl neon-cyan orbitron">0</p>
             </div>
             <div class="flex flex-col gap-4">
                 <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg">REDEPLOY</button>
-                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-xl hover:text-white hover:border-white transition uppercase text-[10px] orbitron">MENU UTAMA</button>
+                <button onclick="window.location.href='menu.html'" class="w-full text-gray-500 text-[10px] orbitron uppercase tracking-widest">Back to Hangar</button>
             </div>
         </div>
     </div>
 
     <div class="mb-6 text-center">
-        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Galaxy Score</p>
+        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Sector Control Score</p>
         <p id="pScore" class="text-5xl neon-cyan orbitron">0</p>
     </div>
 
     <div id="game-container">
-        <canvas id="shooter" width="400" height="500"></canvas>
+        <canvas id="shooter" width="400" height="550"></canvas>
     </div>
 
-    <div class="how-to-play">
-        <h3 class="orbitron text-[10px] text-cyan-400 mb-4 italic uppercase tracking-widest text-center">🚀 STARSHIP CONTROL 🚀</h3>
-        <div class="grid grid-cols-2 gap-4 text-[13px] text-gray-300">
-            <div class="space-y-2">
-                <p class="flex justify-between"><span>Navigasi:</span> <span class="key-badge">← → ↑ ↓</span></p>
-                <p class="flex justify-between"><span>Senjata:</span> <span class="key-badge">SPASI</span></p>
-            </div>
-            <div class="space-y-2 border-l border-white/10 pl-4">
-                <p class="flex justify-between text-yellow-500 italic font-bold"><span>Misi:</span> <span>Hancurkan Meteor</span></p>
-            </div>
+    <div class="mt-8 text-center max-w-md">
+        <p class="text-[10px] text-gray-500 uppercase orbitron mb-4 tracking-[0.2em]">Pilot Guidance</p>
+        <div class="flex justify-center gap-4 text-xs">
+            <span class="bg-white/5 border border-white/20 px-3 py-1 rounded">Arrows: MOVE</span>
+            <span class="bg-white/5 border border-white/20 px-3 py-1 rounded">Space: FIRE</span>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById('shooter');
         const ctx = canvas.getContext('2d');
-        const dbURL = "https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard.json";
-        const player = (localStorage.getItem('loginUser') || "USER").toUpperCase();
+        const player = (localStorage.getItem('loginUser') || "PILOT").toUpperCase();
 
         let score = 0;
         let gameActive = true;
         let keys = {};
+        let particles = [];
 
-        const ship = { x: 185, y: 430, w: 30, h: 30, speed: 6 };
+        const ship = { x: 185, y: 480, w: 34, h: 40, speed: 7 };
         let bullets = [];
         let enemies = [];
-        let spawnTimer = 0;
+        let spawnRate = 40;
+        let frameCount = 0;
 
         window.addEventListener('keydown', e => { 
             keys[e.code] = true; 
             if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code)) e.preventDefault(); 
         });
         window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function createExplosion(x, y, color) {
+            for(let i=0; i<8; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 20,
+                    color: color
+                });
+            }
+        }
 
         function update() {
             if(!gameActive) return;
@@ -86,89 +128,117 @@
             if(keys['ArrowUp'] && ship.y > 0) ship.y -= ship.speed;
             if(keys['ArrowDown'] && ship.y < canvas.height - ship.h) ship.y += ship.speed;
 
-            // Shoot
-            if(keys['Space'] && bullets.length < 5) {
-                bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w: 4, h: 12 });
-                keys['Space'] = false; // Semi-auto
+            // Shoot Logic (Auto Fire while Space held)
+            if(keys['Space'] && frameCount % 10 === 0) {
+                bullets.push({ x: ship.x + ship.w/2 - 2, y: ship.y, w: 4, h: 15 });
             }
 
-            // Bullet Logic
+            // Bullet Movement
             bullets.forEach((b, i) => {
-                b.y -= 8;
-                if(b.y < 0) bullets.splice(i, 1);
+                b.y -= 12;
+                if(b.y < -20) bullets.splice(i, 1);
             });
 
-            // Enemy Logic
-            spawnTimer++;
-            if(spawnTimer > 30) {
-                enemies.push({ x: Math.random() * (canvas.width - 30), y: -30, w: 30, h: 30, speed: 2 + Math.random() * 3 });
-                spawnTimer = 0;
+            // Enemy Spawn & Movement
+            frameCount++;
+            if(frameCount % Math.max(15, spawnRate) === 0) {
+                enemies.push({ 
+                    x: Math.random() * (canvas.width - 40), 
+                    y: -50, 
+                    w: 30 + Math.random()*20, 
+                    h: 30 + Math.random()*20, 
+                    speed: 2 + (score/1000) 
+                });
             }
 
             enemies.forEach((en, ei) => {
                 en.y += en.speed;
                 
-                // Collision with Ship
+                // Ship Collision
                 if(ship.x < en.x + en.w && ship.x + ship.w > en.x && ship.y < en.y + en.h && ship.y + ship.h > en.y) {
                     gameActive = false;
+                    createExplosion(ship.x + ship.w/2, ship.y + ship.h/2, '#ff00ff');
                 }
 
-                // Collision with Bullet
+                // Bullet Collision
                 bullets.forEach((b, bi) => {
                     if(b.x < en.x + en.w && b.x + b.w > en.x && b.y < en.y + en.h && b.y + b.h > en.y) {
+                        createExplosion(en.x + en.w/2, en.y + en.h/2, '#ff3333');
                         enemies.splice(ei, 1);
                         bullets.splice(bi, 1);
                         score += 50;
+                        if(score % 500 === 0 && spawnRate > 10) spawnRate -= 2;
                         document.getElementById('pScore').innerText = score;
                     }
                 });
 
                 if(en.y > canvas.height) enemies.splice(ei, 1);
             });
+
+            // Particles Logic
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.life--;
+                if(p.life <= 0) particles.splice(i, 1);
+            });
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Ship (Cyan)
-            ctx.fillStyle = '#00f2ff';
+        function drawShip() {
             ctx.shadowBlur = 15; ctx.shadowColor = '#00f2ff';
+            ctx.fillStyle = '#00f2ff';
+            
+            // Body
             ctx.beginPath();
             ctx.moveTo(ship.x + ship.w/2, ship.y);
             ctx.lineTo(ship.x, ship.y + ship.h);
             ctx.lineTo(ship.x + ship.w, ship.y + ship.h);
             ctx.fill();
 
-            // Bullets (Yellow)
+            // Wings
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(ship.x - 5, ship.y + ship.h - 10, 5, 10);
+            ctx.fillRect(ship.x + ship.w, ship.y + ship.h - 10, 5, 10);
+
+            // Engine Thruster
+            if(frameCount % 2 === 0) {
+                ctx.fillStyle = '#ffff00';
+                ctx.fillRect(ship.x + ship.w/2 - 4, ship.y + ship.h, 8, 8);
+            }
+            ctx.shadowBlur = 0;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 20;
+                ctx.fillRect(p.x, p.y, 3, 3);
+            });
+            ctx.globalAlpha = 1;
+
+            drawShip();
+
+            // Bullets
             ctx.fillStyle = '#ffff00';
-            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 10; ctx.shadowColor = '#ffff00';
             bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
 
-            // Enemies (Red Meteor)
-            ctx.fillStyle = '#ff3333';
-            ctx.shadowColor = '#ff3333';
+            // Enemies (Meteors)
             enemies.forEach(en => {
+                ctx.fillStyle = '#ff3333';
+                ctx.shadowBlur = 15; ctx.shadowColor = '#ff3333';
                 ctx.beginPath();
                 ctx.arc(en.x + en.w/2, en.y + en.h/2, en.w/2, 0, Math.PI*2);
+                ctx.fill();
+                // Rock detail
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.arc(en.x + en.w/2 - 5, en.y + en.h/2 - 5, 4, 0, Math.PI*2);
                 ctx.fill();
             });
             
             ctx.shadowBlur = 0;
-        }
-
-        async function saveAndExit() {
-            try {
-                const res = await fetch(dbURL);
-                const data = await res.json();
-                let userKey = Object.keys(data).find(k => data[k].name.toUpperCase() === player);
-                if(userKey) {
-                    await fetch(`https://yokbisayok-db-default-rtdb.firebaseio.com/leaderboard/${userKey}.json`, {
-                        method: 'PATCH',
-                        body: JSON.stringify({ score: data[userKey].score + score })
-                    });
-                }
-            } catch (e) {}
-            window.location.href = 'menu.html';
         }
 
         function gameLoop() {
