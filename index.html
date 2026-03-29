@@ -3,116 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - PC OFFLINE ARCADE 2026</title>
+    <title>YOKBISAYOK - PERMANENT ACCESS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Orbitron', sans-serif; background: #020617; }
 
-        /* NEON BACKGROUND EFFECT */
         .hero-pc {
             position: absolute; inset: 0;
-            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.4), #020617), 
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.6), #020617), 
                         url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop');
             background-size: cover; background-position: center;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* GLITCH NEON TEXT */
         .neon-title {
-            font-size: 7rem; font-weight: 900; line-height: 0.9;
-            color: #fff;
-            text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff, 0 0 40px #bc13fe;
-            animation: glow 2s infinite alternate;
-            text-transform: uppercase; font-style: italic;
+            font-size: clamp(2rem, 8vw, 6rem); font-weight: 900; line-height: 0.9;
+            color: #fff; text-shadow: 0 0 20px #00f2ff;
+            animation: glow 2s infinite alternate; text-transform: uppercase; font-style: italic;
         }
 
         @keyframes glow {
-            from { text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
-            to { text-shadow: 0 0 20px #bc13fe, 0 0 40px #bc13fe, 0 0 60px #bc13fe; }
+            from { text-shadow: 0 0 10px #00f2ff; }
+            to { text-shadow: 0 0 30px #bc13fe; }
         }
 
-        /* NEON BUTTON */
-        .btn-neon-play {
-            background: transparent;
-            border: 4px solid #00f2ff;
-            color: #00f2ff;
-            padding: 20px 80px;
-            font-size: 1.8rem;
-            font-weight: 900;
-            border-radius: 0; /* Kotak biar kesan PC-nya dapet */
-            cursor: pointer;
-            box-shadow: 0 0 15px #00f2ff, inset 0 0 15px #00f2ff;
-            transition: 0.3s;
-            margin-top: 40px;
-            text-transform: uppercase;
-        }
-
-        .btn-neon-play:hover {
-            background: #00f2ff;
-            color: #000;
-            box-shadow: 0 0 50px #00f2ff;
-            transform: scale(1.05);
-        }
-
-        /* MODAL NEON */
         .modal-neon {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             backdrop-filter: blur(20px); z-index: 100; display: none;
             align-items: center; justify-content: center;
         }
 
         .neon-card {
-            background: #000; border: 2px solid #bc13fe;
-            padding: 50px; width: 100%; max-width: 450px;
-            box-shadow: 0 0 30px #bc13fe;
+            background: #000; border: 2px solid #00f2ff;
+            padding: 40px; width: 90%; max-width: 400px;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.3);
         }
 
         .input-neon {
-            background: #000; border: 1px solid #00f2ff;
+            background: rgba(255,255,255,0.05); border: 1px solid #333;
             color: #00f2ff; padding: 15px; width: 100%;
-            outline: none; transition: 0.3s;
+            outline: none; transition: 0.3s; font-family: sans-serif;
         }
 
-        .input-neon:focus { box-shadow: 0 0 15px #00f2ff; }
+        .input-neon:focus { border-color: #00f2ff; box-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
     </style>
 </head>
 <body>
 
-    <div id="hero" class="hero-pc">
-        <div class="text-center z-10">
-            <p class="text-cyan-400 font-bold tracking-[15px] mb-4">SYSTEM ONLINE: TERMINAL 01</p>
-            <h1 class="neon-title">TOP 100+ PC<br>OFFLINE GAMES</h1>
-            <p class="text-white/60 text-2xl font-bold mt-4 tracking-widest uppercase">High Performance • 4K Ultra Graphics</p>
-            
-            <button onclick="openAuth()" class="btn-neon-play">MULAI BERMAIN</button>
+    <div class="hero-pc">
+        <div class="text-center px-4">
+            <h1 class="neon-title">ARCADE<br>SYSTEM</h1>
+            <button onclick="openAuth()" class="mt-10 border-4 border-cyan-400 text-cyan-400 px-12 py-4 font-black text-2xl hover:bg-cyan-400 hover:text-black transition shadow-[0_0_20px_#00f2ff]">
+                ENTER SYSTEM
+            </button>
         </div>
     </div>
 
     <div id="authModal" class="modal-neon">
-        <div class="neon-card text-center">
+        <div class="neon-card">
+            
             <div id="loginForm">
-                <h3 class="text-3xl font-black text-cyan-400 mb-8 tracking-tighter">USER AUTHENTICATION</h3>
-                <div class="space-y-6">
-                    <input type="text" id="lUser" placeholder="IDENTITAS USER" class="input-neon">
-                    <input type="password" id="lPass" placeholder="KODE AKSES" class="input-cyber input-neon">
+                <h3 class="text-2xl font-black text-cyan-400 mb-6 uppercase italic">Login User</h3>
+                <div class="space-y-4">
+                    <input type="text" id="lUser" placeholder="USERNAME" class="input-neon">
+                    <input type="password" id="lPass" placeholder="PASSWORD" class="input-neon">
                 </div>
-                <button onclick="doLogin()" class="w-full mt-8 bg-cyan-500 p-4 font-black text-black hover:bg-white transition">LOGIN KE SISTEM</button>
-                <p class="mt-8 text-xs text-gray-500 uppercase">Akses Ditolak? <span onclick="toggleTab()" class="text-purple-500 cursor-pointer font-bold">Daftar Akun Baru</span></p>
+                <button onclick="doLogin()" class="w-full mt-6 bg-cyan-500 py-4 font-black text-black hover:bg-white transition uppercase">Akses Masuk</button>
+                <p class="mt-6 text-[10px] text-gray-500 uppercase">Belum punya akun? <span onclick="toggleTab()" class="text-purple-500 cursor-pointer font-bold underline">Daftar Sekarang</span></p>
             </div>
 
             <div id="regForm" class="hidden">
-                <h3 class="text-3xl font-black text-purple-500 mb-8 tracking-tighter">CREATE NEW ACCOUNT</h3>
-                <div class="space-y-6">
-                    <input type="text" id="rUser" placeholder="USERNAME BARU" class="input-neon">
-                    <input type="password" id="rPass" placeholder="PASSWORD BARU" class="input-neon">
+                <h3 class="text-2xl font-black text-purple-500 mb-6 uppercase italic">New Member</h3>
+                <div class="space-y-4">
+                    <input type="text" id="rUser" placeholder="PILIH USERNAME" class="input-neon">
+                    <input type="password" id="rPass" placeholder="PILIH PASSWORD" class="input-neon">
                 </div>
-                <button onclick="doRegister()" class="w-full mt-8 bg-purple-600 p-4 font-black text-white hover:bg-white hover:text-black transition">DAFTARKAN IDENTITAS</button>
-                <p class="mt-8 text-xs text-gray-500 uppercase">Sudah Terdaftar? <span onclick="toggleTab()" class="text-cyan-400 cursor-pointer font-bold">Kembali ke Login</span></p>
+                <button onclick="doRegister()" class="w-full mt-6 bg-purple-600 py-4 font-black text-white hover:bg-white hover:text-black transition uppercase">Daftarkan Akun</button>
+                <p class="mt-6 text-[10px] text-gray-500 uppercase">Sudah ada akun? <span onclick="toggleTab()" class="text-cyan-400 cursor-pointer font-bold underline">Kembali Login</span></p>
             </div>
-            <button onclick="closeAuth()" class="mt-6 text-gray-700 text-[10px] hover:text-red-500 tracking-widest">CANCEL_SESSION</button>
+
+            <button onclick="closeAuth()" class="mt-6 text-[9px] text-gray-700 hover:text-red-500 tracking-[5px]">CLOSE_TERMINAL</button>
         </div>
     </div>
 
@@ -125,29 +97,55 @@
             document.getElementById("regForm").classList.toggle("hidden");
         }
 
-        // --- AUTH LOGIC ---
+        // --- SISTEM PENYIMPANAN PERMANEN ---
+        
         function doRegister() {
-            const u = document.getElementById("rUser").value;
-            const p = document.getElementById("rPass").value;
-            if(!u || !p) return alert("System Error: Data tidak lengkap!");
-            let users = JSON.parse(localStorage.getItem("users") || "[]");
-            users.push({user: u, pass: p});
-            localStorage.setItem("users", JSON.stringify(users));
-            alert("Sistem: Registrasi Berhasil!");
-            toggleTab();
+            const u = document.getElementById("rUser").value.trim();
+            const p = document.getElementById("rPass").value.trim();
+
+            if(!u || !p) return alert("Error: Username & Password wajib diisi!");
+
+            // Ambil data users yang sudah ada di memori browser
+            let users = JSON.parse(localStorage.getItem("db_users") || "[]");
+
+            // Cek apakah username sudah dipakai
+            const isExist = users.find(user => user.username === u);
+            if(isExist) return alert("Username sudah terdaftar! Gunakan nama lain.");
+
+            // Simpan akun baru (Saldo awal kasih Rp 50.000 biar senang)
+            users.push({ 
+                username: u, 
+                password: p, 
+                balance: 50000,
+                level: 1 
+            });
+
+            // Simpan kembali ke LocalStorage (Data Permanen)
+            localStorage.setItem("db_users", JSON.stringify(users));
+            
+            alert("Sistem: Akun berhasil dibuat! Silakan Login.");
+            toggleTab(); // Pindah ke layar login
         }
 
         function doLogin() {
-            const u = document.getElementById("lUser").value;
-            const p = document.getElementById("lPass").value;
-            const users = JSON.parse(localStorage.getItem("users") || "[]");
-            const found = users.find(x => x.user === u && x.pass === p);
-            
+            const u = document.getElementById("lUser").value.trim();
+            const p = document.getElementById("lPass").value.trim();
+
+            // Ambil database user dari memori browser
+            const users = JSON.parse(localStorage.getItem("db_users") || "[]");
+
+            // Cari user yang cocok
+            const found = users.find(user => user.username === u && user.password === p);
+
             if(found) {
+                // Simpan siapa yang login saat ini (Session)
                 localStorage.setItem("loginUser", u);
+                localStorage.setItem("userBalance", found.balance);
+                
+                // Redirect ke loading lalu ke menu
                 window.location.href = "loading.html?game=menu";
             } else {
-                alert("Sistem: Akses Ditolak! Kredensial Salah.");
+                alert("Sistem: Login Gagal! Periksa kembali Username & Password.");
             }
         }
     </script>
