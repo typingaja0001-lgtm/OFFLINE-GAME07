@@ -16,6 +16,17 @@
 
         .orbitron { font-family: 'Orbitron', sans-serif; }
 
+        /* BACK BUTTON */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #00f2ff; transition: 0.3s;
+            z-index: 100;
+        }
+        .btn-back:hover { background: #00f2ff; color: #020617; box-shadow: 0 0 20px #00f2ff; }
+
         /* AREA GAME */
         #game-area {
             width: 100%; max-width: 800px; height: 400px;
@@ -25,17 +36,11 @@
             box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
         }
 
-        /* ANIMASI BINTANG */
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: moveStar linear infinite; }
         @keyframes moveStar { from { transform: translateX(850px); } to { transform: translateX(-50px); } }
 
-        /* ROKET */
-        #rocket {
-            position: absolute; bottom: 50px; left: 80px;
-            font-size: 4rem; z-index: 20; transition: transform 0.1s;
-        }
+        #rocket { position: absolute; bottom: 50px; left: 80px; font-size: 4rem; z-index: 20; }
 
-        /* ANGKA MULTIPLIER */
         #multiplier {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
@@ -43,7 +48,6 @@
             z-index: 10; pointer-events: none; color: #00f2ff;
         }
 
-        /* TOMBOL */
         .btn-action {
             background: linear-gradient(45deg, #00f2ff, #0ea5e9);
             color: #020617; border-radius: 20px;
@@ -56,7 +60,11 @@
 </head>
 <body>
 
-    <div class="w-full max-w-[800px] flex justify-between items-end mb-6">
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-arrow-left mr-2"></i> Kembali ke Arena
+    </a>
+
+    <div class="w-full max-w-[800px] flex justify-between items-end mb-6 px-4">
         <div>
             <h1 class="orbitron text-4xl text-cyan-400 italic">CYBER CRASH</h1>
             <p class="text-xs tracking-widest text-purple-500 font-bold uppercase">Infinite Offline Edition</p>
@@ -75,16 +83,12 @@
         <div id="overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 z-50 hidden">
             <h2 id="result-title" class="orbitron text-6xl font-black italic"></h2>
             <p id="result-val" class="text-3xl mt-4 orbitron text-cyan-400"></p>
-            <p class="mt-8 text-gray-400 animate-bounce uppercase tracking-widest">Klik tombol bawah untuk main lagi</p>
+            <p class="mt-8 text-gray-400 animate-bounce uppercase tracking-widest text-xs">Klik tombol bawah untuk main lagi</p>
         </div>
     </div>
 
     <div class="mt-10">
         <button id="mainBtn" onclick="toggleGame()" class="btn-action orbitron italic uppercase">LAUNCH ROCKET</button>
-    </div>
-
-    <div class="mt-12 text-center text-gray-500 text-sm max-w-md">
-        <p><i class="fas fa-info-circle mr-2"></i><b>TANTANGAN:</b> Berapa multiplier tertinggi yang bisa kamu dapatkan sebelum roket meledak? Klik <b>EJECT</b> untuk mengamankan skor!</p>
     </div>
 
     <script>
@@ -124,6 +128,7 @@
         function start() {
             isPlaying = true;
             multiplier = 1.00;
+            // Algoritma Crash Realistis
             crashPoint = (Math.random() < 0.08) ? 1.00 : (0.99 / (1 - Math.random())).toFixed(2);
             startTime = Date.now();
 
@@ -147,7 +152,6 @@
 
             multiTxt.innerText = multiplier.toFixed(2) + "x";
 
-            // Efek Roket Bergetar & Terbang
             let shake = Math.sin(Date.now() * 0.1) * 2;
             rocket.style.bottom = (50 + (elapsed * 15)) + shake + "px";
             rocket.style.transform = `rotate(${Math.sin(elapsed * 10) * 5}deg)`;
