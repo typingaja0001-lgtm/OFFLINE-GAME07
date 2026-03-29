@@ -3,118 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - 100+ NEON ARCADE</title>
+    <title>YOKBISAYOK - MEGA ARCADE 100+</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
-        .text-neon { text-shadow: 0 0 10px #00f2ff; color: #00f2ff; }
         
-        /* CARD STYLE: Lebih Kecil & Padat */
+        body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* AUTH STYLE */
+        .glass-box { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); border: 1px solid #bc13fe; box-shadow: 0 0 20px rgba(188, 19, 254, 0.3); }
+        .input-neon { background: #000 !important; border: 1px solid #334155 !important; color: white !important; }
+        .input-neon:focus { border-color: #00f2ff !important; box-shadow: 0 0 10px #00f2ff; outline: none; }
+
+        /* GAME CARD REVOLUTION */
         .game-card {
-            background: #0f172a; border-radius: 15px; overflow: hidden; transition: 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer;
-            position: relative; height: 180px;
+            background: #0f172a; border-radius: 16px; overflow: hidden; transition: 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.05); position: relative; height: 220px;
         }
-        .game-card:hover { transform: scale(1.05); border-color: #00f2ff; box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); z-index: 10; }
-        .game-icon { font-size: 40px; height: 100px; display: flex; align-items: center; justify-content: center; background: #020617; }
-        .badge-hot { position: absolute; top: 8px; left: 8px; background: red; color: white; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .game-card:hover { transform: translateY(-8px) scale(1.03); border-color: #00f2ff; box-shadow: 0 10px 30px rgba(0, 242, 255, 0.4); z-index: 10; }
+        
+        .game-img { width: 100%; height: 130px; object-fit: cover; filter: brightness(0.7); transition: 0.3s; }
+        .game-card:hover .game-img { filter: brightness(1); }
+
+        .game-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 130px;
+            background: linear-gradient(to bottom, transparent, #0f172a);
+        }
+
+        .badge-hot { position: absolute; top: 10px; right: 10px; background: #ff0055; color: white; font-size: 9px; padding: 2px 8px; border-radius: 4px; font-weight: bold; box-shadow: 0 0 10px #ff0055; z-index: 5; }
+        
+        .neon-text { text-shadow: 0 0 8px #00f2ff; color: #00f2ff; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #bc13fe; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div id="lobbySection">
-    <header class="p-4 flex justify-between items-center border-b border-white/10 sticky top-0 bg-slate-950/90 backdrop-blur-md z-50">
-        <h1 class="text-xl font-black orbitron text-neon italic">YOKBISAYOK</h1>
-        <div class="flex gap-4 items-center">
-            <span class="text-xs orbitron text-gray-400">STATUS: <span class="text-green-400">ONLINE</span></span>
-            <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold">M</div>
-        </div>
-    </header>
-
-    <main class="p-4 max-w-7xl mx-auto">
-        <div class="mb-8 p-8 rounded-3xl border border-cyan-500/30 bg-gradient-to-r from-blue-900/20 to-transparent">
-            <h2 class="text-3xl font-black orbitron">OFFLINE MEGA STORE</h2>
-            <p class="text-cyan-400 text-sm tracking-[3px]">COLLECTION: 100+ GAMES AVAILABLE</p>
-        </div>
-
-        <div class="flex gap-3 mb-8 overflow-x-auto pb-2">
-            <button class="bg-cyan-500 text-black px-4 py-1 rounded-full text-xs font-bold orbitron">ALL</button>
-            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">ACTION</button>
-            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">RACING</button>
-            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">PUZZLE</button>
-            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">SPORT</button>
-        </div>
-
-        <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+    <div id="authSection" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <h1 class="text-6xl font-black orbitron italic neon-text mb-8 italic tracking-tighter">YOKBISAYOK</h1>
+        <div class="glass-box p-8 w-full max-w-md rounded-3xl">
+            <div id="loginForm">
+                <h2 class="text-xl font-bold orbitron mb-6 text-center">PLAYER LOGIN</h2>
+                <input type="text" id="lUser" placeholder="Username" class="input-neon w-full p-3 rounded-xl mb-4 text-sm">
+                <input type="password" id="lPass" placeholder="Password" class="input-neon w-full p-3 rounded-xl mb-6 text-sm">
+                <button onclick="doLogin()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-xl font-bold orbitron hover:scale-105 transition shadow-lg shadow-purple-500/20">MASUK TERMINAL</button>
+                <p class="text-center mt-6 text-xs text-gray-500">Belum terdaftar? <span onclick="toggleAuth()" class="text-cyan-400 cursor-pointer hover:underline">Buat Akun</span></p>
             </div>
-    </main>
-</div>
+            <div id="regForm" class="hidden">
+                <h2 class="text-xl font-bold orbitron mb-6 text-center text-cyan-400">REGISTRATION</h2>
+                <input type="text" id="rUser" placeholder="Username Baru" class="input-neon w-full p-3 rounded-xl mb-4 text-sm">
+                <input type="password" id="rPass" placeholder="Password Baru" class="input-neon w-full p-3 rounded-xl mb-6 text-sm">
+                <button onclick="doRegister()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 p-3 rounded-xl font-bold orbitron hover:scale-105 transition shadow-lg shadow-cyan-500/20">DAFTAR SEKARANG</button>
+                <p class="text-center mt-6 text-xs text-gray-500">Sudah ada akun? <span onclick="toggleAuth()" class="text-purple-400 cursor-pointer hover:underline">Login</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="lobbySection" class="hidden">
+        <header class="p-4 flex justify-between items-center border-b border-white/10 sticky top-0 bg-slate-950/90 backdrop-blur-md z-50">
+            <h1 class="text-2xl font-black orbitron neon-text italic">YOKBISAYOK</h1>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:block text-right">
+                    <p id="userNama" class="text-sm font-bold orbitron text-purple-400 tracking-widest">PLAYER</p>
+                    <p class="text-[9px] text-cyan-400 font-bold uppercase">Rank: Pro Gamer</p>
+                </div>
+                <button onclick="doLogout()" class="bg-red-500/20 text-red-500 w-10 h-10 rounded-xl hover:bg-red-500 hover:text-white transition flex items-center justify-center">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="p-4 lg:p-8 max-w-[1600px] mx-auto">
+            <div class="mb-10 p-10 rounded-[40px] border border-cyan-500/20 bg-gradient-to-br from-slate-900 via-blue-900/10 to-transparent relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-5xl font-black orbitron mb-2 tracking-tighter">MEGA STORE</h2>
+                    <p class="text-cyan-400 font-bold tracking-[6px] text-xs">100+ PREMIUM OFFLINE GAMES</p>
+                    <button class="mt-6 bg-white text-black px-8 py-2 rounded-full font-bold text-xs orbitron hover:bg-cyan-400 transition">EXPLORE ALL</button>
+                </div>
+                <i class="fas fa-gamepad absolute -right-10 -bottom-10 text-[200px] text-white/5 -rotate-12"></i>
+            </div>
+
+            <div class="flex gap-3 mb-10 overflow-x-auto pb-4 no-scrollbar">
+                <button class="bg-cyan-500 text-black px-6 py-2 rounded-xl text-xs font-black orbitron shadow-[0_0_15px_#00f2ff]">ALL GAMES</button>
+                <button class="bg-slate-800/50 hover:bg-slate-700 px-6 py-2 rounded-xl text-xs font-bold orbitron transition">ACTION</button>
+                <button class="bg-slate-800/50 hover:bg-slate-700 px-6 py-2 rounded-xl text-xs font-bold orbitron transition">RACING</button>
+                <button class="bg-slate-800/50 hover:bg-slate-700 px-6 py-2 rounded-xl text-xs font-bold orbitron transition">PUZZLE</button>
+                <button class="bg-slate-800/50 hover:bg-slate-700 px-6 py-2 rounded-xl text-xs font-bold orbitron transition">SPORT</button>
+            </div>
+
+            <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                </div>
+        </main>
+    </div>
 
 <script>
-    // DATA GAME (Bisa ditambah sampai ratusan)
-    const gameList = [
-        { name: "Neon Snake", icon: "🐍", cat: "ARCADE", link: "snake.html", hot: true },
-        { name: "Cyber Moto", icon: "🏍️", cat: "RACING", link: "#" },
-        { name: "Brick Break", icon: "🧱", cat: "ACTION", link: "#" },
-        { name: "Space Invader", icon: "🚀", cat: "SHOOTER", link: "#" },
-        { name: "Memory Pro", icon: "🧠", cat: "BRAIN", link: "#" },
-        { name: "Tetris Neo", icon: "🕹️", cat: "PUZZLE", link: "#" },
-        { name: "Boxing Glow", icon: "🥊", cat: "FIGHT", link: "#" },
-        { name: "Penalty Kick", icon: "⚽", cat: "SPORT", link: "#" },
-        { name: "Dino Run", icon: "🦖", cat: "ARCADE", link: "#" },
-        { name: "Neon Tank", icon: "🛡️", cat: "WAR", link: "#" },
-        { name: "Sudoku Lite", icon: "🧩", cat: "MATH", link: "#" },
-        { name: "Fast Drift", icon: "🏎️", cat: "RACING", link: "#" },
-        { name: "Ping Pong", icon: "🏓", cat: "SPORT", link: "#" },
-        { name: "Tic Tac Toe", icon: "❌", cat: "LOGIC", link: "#" },
-        { name: "Gold Miner", icon: "⛏️", cat: "CASUAL", link: "#" },
-        { name: "Cyber Archer", icon: "🏹", cat: "ACTION", link: "#" },
-        { name: "Jewel Match", icon: "💎", cat: "PUZZLE", link: "#" },
-        { name: "Neon Jump", icon: "🦘", cat: "ARCADE", link: "#" },
-        { name: "Pool 8 Ball", icon: "🎱", cat: "SPORT", link: "#" },
-        { name: "Piano Tiles", icon: "🎹", cat: "MUSIC", link: "#" },
-        { name: "Angry Bird", icon: "🐦", cat: "ACTION", link: "#" },
-        { name: "Solitaire", icon: "🃏", cat: "CARD", link: "#" },
-        { name: "Ludo King", icon: "🎲", cat: "BOARD", link: "#" },
-        { name: "Fruit Ninja", icon: "🍉", cat: "ACTION", link: "#" },
-        { name: "Chess Pro", icon: "♟️", cat: "STRATEGY", link: "#" },
-        { name: "Subway Neon", icon: "🏃", cat: "RUNNER", link: "#" },
-        { name: "Bubble Pop", icon: "🫧", cat: "PUZZLE", link: "#" },
-        { name: "Pinball Glow", icon: "🕹️", cat: "ARCADE", link: "#" },
-        { name: "Air Hockey", icon: "🏒", cat: "SPORT", link: "#" },
-        { name: "Doodle Jump", icon: "🖍️", cat: "CASUAL", link: "#" },
-        { name: "Car Parking", icon: "🅿️", cat: "SIMULATOR", link: "#" },
-        { name: "Tower Stack", icon: "🏢", cat: "LOGIC", link: "#" },
-        { name: "Zombie Smasher", icon: "🧟", cat: "HORROR", link: "#" },
-        { name: "Fishing Hook", icon: "🎣", cat: "CASUAL", link: "#" },
-        { name: "Knife Hit", icon: "🔪", cat: "ACTION", link: "#" },
-        { name: "Bowling Glow", icon: "🎳", cat: "SPORT", link: "#" }
+    const games = [
+        { name: "Neon Snake", cat: "ARCADE", img: "snake", link: "snake.html", hot: true },
+        { name: "Cyber Moto", cat: "RACING", img: "motorcycle", link: "#" },
+        { name: "Brick Break", cat: "ACTION", img: "breakout", link: "#" },
+        { name: "Space War", cat: "SHOOTER", img: "galaxy", link: "#" },
+        { name: "Memory Pro", cat: "BRAIN", img: "puzzle", link: "#" },
+        { name: "Tetris Neo", cat: "PUZZLE", img: "blocks", link: "#" },
+        { name: "Boxing Glow", cat: "FIGHT", img: "boxing", link: "#" },
+        { name: "Penalty Kick", cat: "SPORT", img: "soccer", link: "#" },
+        { name: "Dino Run", cat: "ARCADE", img: "dinosaur", link: "#" },
+        { name: "Neon Tank", cat: "WAR", img: "tank", link: "#" },
+        { name: "Sudoku Lite", cat: "MATH", img: "numbers", link: "#" },
+        { name: "Fast Drift", cat: "RACING", img: "racecar", link: "#" },
+        { name: "Ping Pong", cat: "SPORT", img: "pingpong", link: "#" },
+        { name: "Tic Tac Toe", cat: "LOGIC", img: "neon", link: "#" },
+        { name: "Gold Miner", cat: "CASUAL", img: "gold", link: "#" },
+        { name: "Cyber Archer", cat: "ACTION", img: "archery", link: "#" },
+        { name: "Jewel Match", cat: "PUZZLE", img: "jewels", link: "#" },
+        { name: "Neon Jump", cat: "ARCADE", img: "jump", link: "#" },
+        { name: "Pool 8 Ball", cat: "SPORT", img: "billiards", link: "#" },
+        { name: "Piano Tiles", cat: "MUSIC", img: "piano", link: "#" },
+        { name: "Angry Bird", cat: "ACTION", img: "bird", link: "#" },
+        { name: "Solitaire", cat: "CARD", img: "cards", link: "#" },
+        { name: "Ludo King", cat: "BOARD", img: "dice", link: "#" },
+        { name: "Fruit Ninja", cat: "ACTION", img: "fruit", link: "#" },
+        { name: "Chess Pro", cat: "STRATEGY", img: "chess", link: "#" },
+        { name: "Subway Neon", cat: "RUNNER", img: "running", link: "#" },
+        { name: "Bubble Pop", cat: "PUZZLE", img: "bubbles", link: "#" },
+        { name: "Pinball Glow", cat: "ARCADE", img: "pinball", link: "#" },
+        { name: "Air Hockey", cat: "SPORT", img: "hockey", link: "#" },
+        { name: "Doodle Jump", cat: "CASUAL", img: "doodle", link: "#" },
+        { name: "Car Parking", cat: "SIMULATOR", img: "parking", link: "#" },
+        { name: "Tower Stack", cat: "LOGIC", img: "tower", link: "#" },
+        { name: "Zombie Smash", cat: "HORROR", img: "zombie", link: "#" },
+        { name: "Fishing Hook", cat: "CASUAL", img: "fishing", link: "#" },
+        { name: "Knife Hit", cat: "ACTION", img: "knife", link: "#" },
+        { name: "Bowling Glow", cat: "SPORT", img: "bowling", link: "#" }
     ];
 
     const grid = document.getElementById("gameGrid");
 
-    gameList.forEach(game => {
+    games.forEach((g, i) => {
         const card = document.createElement("div");
         card.className = "game-card";
+        // Menggunakan Source Unsplash untuk gambar yang relevan secara dinamis
+        const imgUrl = `https://source.unsplash.com/400x300/?gaming,${g.img},neon`;
+        
         card.onclick = () => {
-            if(game.link !== "#") window.location.href = game.link;
-            else alert(game.name + " segera hadir di update berikutnya!");
+            if(g.link !== "#") window.location.href = g.link;
+            else alert("Game " + g.name + " akan tersedia di update versi 2.0!");
         };
 
         card.innerHTML = `
-            ${game.hot ? '<span class="badge-hot orbitron">HOT GAME</span>' : ''}
-            <div class="game-icon">${game.icon}</div>
-            <div class="p-3 border-t border-white/5 bg-slate-900/50">
-                <p class="text-[8px] text-cyan-400 font-bold orbitron mb-0.5">${game.cat}</p>
-                <h4 class="font-bold text-xs truncate uppercase">${game.name}</h4>
+            ${g.hot ? '<span class="badge-hot orbitron">HOT</span>' : ''}
+            <img src="${imgUrl}" class="game-img" alt="${g.name}" onerror="this.src='https://via.placeholder.com/400x300/020617/00f2ff?text=${g.name}'">
+            <div class="game-overlay"></div>
+            <div class="p-4 relative">
+                <p class="text-[9px] text-cyan-400 font-bold orbitron mb-1 tracking-widest">${g.cat}</p>
+                <h4 class="font-bold text-sm truncate uppercase orbitron">${g.name}</h4>
+                <div class="mt-3 flex justify-between items-center">
+                    <span class="text-[10px] text-gray-500"><i class="fas fa-star text-yellow-500 mr-1"></i> 4.9</span>
+                    <i class="fas fa-play-circle text-white/20 text-xl hover:text-cyan-400 transition"></i>
+                </div>
             </div>
         `;
         grid.appendChild(card);
     });
-</script>
 
+    // AUTH LOGIC
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const loggedUser = localStorage.getItem("loginUser");
+
+    if(loggedUser) {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("lobbySection").classList.remove("hidden");
+        document.getElementById("userNama").innerText = loggedUser.toUpperCase();
+    }
+
+    function toggleAuth() {
+        document.getElementById("loginForm").classList.toggle("hidden");
+        document.getElementById("regForm").classList.toggle("hidden");
+    }
+
+    function doRegister() {
+        const u = document.getElementById("rUser").value;
+        const p = document.getElementById("rPass").value;
+        if(!u || !p) return alert("Lengkapi data!");
+        if(users.find(x => x.user === u)) return alert("Username sudah ada!");
+        users.push({user: u, pass: p});
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Pendaftaran Berhasil!");
+        toggleAuth();
+    }
+
+    function doLogin() {
+        const u = document.getElementById("lUser").value;
+        const p = document.getElementById("lPass").value;
+        const found = users.find(x => x.user === u && x.pass === p);
+        if(found) {
+            localStorage.setItem("loginUser", u);
+            location.reload();
+        } else {
+            alert("Username/Password Salah!");
+        }
+    }
+
+    function doLogout() {
+        localStorage.removeItem("loginUser");
+        location.reload();
+    }
+</script>
 </body>
 </html>
