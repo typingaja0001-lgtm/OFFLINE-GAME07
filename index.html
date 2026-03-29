@@ -3,161 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - NEON ARCADE HUB</title>
+    <title>YOKBISAYOK - 100+ NEON ARCADE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        
-        body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        body { background: #020617; color: white; font-family: 'Rajdhani', sans-serif; }
         .orbitron { font-family: 'Orbitron', sans-serif; }
-        
-        /* EFFECT NEON */
-        .neon-purple { border: 1px solid #bc13fe; box-shadow: 0 0 15px rgba(188, 19, 254, 0.4); }
-        .neon-cyan { border: 1px solid #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
         .text-neon { text-shadow: 0 0 10px #00f2ff; color: #00f2ff; }
         
-        /* FORM LOGIN */
-        .glass-box { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-radius: 20px; }
-        input { background: rgba(0,0,0,0.5) !important; border: 1px solid #334155 !important; color: white !important; }
-        input:focus { border-color: #00f2ff !important; box-shadow: 0 0 10px #00f2ff; outline: none; }
-
-        /* GAME CARD */
+        /* CARD STYLE: Lebih Kecil & Padat */
         .game-card {
-            background: #0f172a; border-radius: 20px; overflow: hidden; transition: 0.3s;
+            background: #0f172a; border-radius: 15px; overflow: hidden; transition: 0.3s;
             border: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer;
+            position: relative; height: 180px;
         }
-        .game-card:hover { transform: translateY(-10px); border-color: #bc13fe; box-shadow: 0 0 25px #bc13fe; }
-        .game-icon { font-size: 50px; height: 120px; display: flex; align-items: center; justify-content: center; background: #020617; }
+        .game-card:hover { transform: scale(1.05); border-color: #00f2ff; box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); z-index: 10; }
+        .game-icon { font-size: 40px; height: 100px; display: flex; align-items: center; justify-content: center; background: #020617; }
+        .badge-hot { position: absolute; top: 8px; left: 8px; background: red; color: white; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-    <div id="authSection" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-5xl font-black orbitron italic text-neon mb-10 tracking-tighter">YOKBISAYOK</h1>
-        
-        <div class="glass-box p-8 w-full max-w-md neon-purple">
-            <div id="loginForm">
-                <h2 class="text-xl font-bold orbitron mb-6 text-center">PLAYER LOGIN</h2>
-                <input type="text" id="loginUser" placeholder="Username" class="w-full p-3 rounded-lg mb-4">
-                <input type="password" id="loginPass" placeholder="Password" class="w-full p-3 rounded-lg mb-6">
-                <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-lg font-bold orbitron hover:brightness-125 transition">MASUK GAME</button>
-                <p class="text-center mt-4 text-sm text-gray-400">Belum punya akun? <span onclick="toggleAuth()" class="text-cyan-400 cursor-pointer hover:underline">Daftar Sini</span></p>
-            </div>
-
-            <div id="registerForm" class="hidden">
-                <h2 class="text-xl font-bold orbitron mb-6 text-center text-cyan-400">DAFTAR BARU</h2>
-                <input type="text" id="regUser" placeholder="Username Baru" class="w-full p-3 rounded-lg mb-4">
-                <input type="password" id="regPass" placeholder="Password Baru" class="w-full p-3 rounded-lg mb-6">
-                <button onclick="handleRegister()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 p-3 rounded-lg font-bold orbitron hover:brightness-125 transition">BUAT AKUN</button>
-                <p class="text-center mt-4 text-sm text-gray-400">Sudah ada akun? <span onclick="toggleAuth()" class="text-purple-400 cursor-pointer hover:underline">Login Sini</span></p>
-            </div>
+<div id="lobbySection">
+    <header class="p-4 flex justify-between items-center border-b border-white/10 sticky top-0 bg-slate-950/90 backdrop-blur-md z-50">
+        <h1 class="text-xl font-black orbitron text-neon italic">YOKBISAYOK</h1>
+        <div class="flex gap-4 items-center">
+            <span class="text-xs orbitron text-gray-400">STATUS: <span class="text-green-400">ONLINE</span></span>
+            <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold">M</div>
         </div>
-    </div>
+    </header>
 
-    <div id="lobbySection" class="hidden">
-        <header class="p-6 flex justify-between items-center border-b border-white/10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-50">
-            <h1 class="text-2xl font-black orbitron text-neon">YOKBISAYOK</h1>
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p id="displayUser" class="font-bold orbitron text-purple-400">PLAYER</p>
-                    <p class="text-[10px] text-cyan-400 font-bold">LVL 1 - NOVICE</p>
-                </div>
-                <button onclick="handleLogout()" class="bg-red-500/20 text-red-500 p-2 rounded-lg hover:bg-red-500 hover:text-white transition">
-                    <i class="fas fa-power-off"></i>
-                </button>
+    <main class="p-4 max-w-7xl mx-auto">
+        <div class="mb-8 p-8 rounded-3xl border border-cyan-500/30 bg-gradient-to-r from-blue-900/20 to-transparent">
+            <h2 class="text-3xl font-black orbitron">OFFLINE MEGA STORE</h2>
+            <p class="text-cyan-400 text-sm tracking-[3px]">COLLECTION: 100+ GAMES AVAILABLE</p>
+        </div>
+
+        <div class="flex gap-3 mb-8 overflow-x-auto pb-2">
+            <button class="bg-cyan-500 text-black px-4 py-1 rounded-full text-xs font-bold orbitron">ALL</button>
+            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">ACTION</button>
+            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">RACING</button>
+            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">PUZZLE</button>
+            <button class="bg-slate-800 px-4 py-1 rounded-full text-xs font-bold orbitron">SPORT</button>
+        </div>
+
+        <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             </div>
-        </header>
+    </main>
+</div>
 
-        <main class="p-8 max-w-6xl mx-auto">
-            <div class="mb-10 p-10 rounded-3xl neon-cyan bg-gradient-to-br from-slate-900 to-slate-950 flex flex-col items-center text-center">
-                <h2 class="text-4xl font-black orbitron mb-2">NEON OFFLINE ARCADE</h2>
-                <p class="text-gray-400 tracking-[4px]">PILIH GAME DAN CETAK SKOR TERTINGGI</p>
-            </div>
+<script>
+    // DATA GAME (Bisa ditambah sampai ratusan)
+    const gameList = [
+        { name: "Neon Snake", icon: "🐍", cat: "ARCADE", link: "snake.html", hot: true },
+        { name: "Cyber Moto", icon: "🏍️", cat: "RACING", link: "#" },
+        { name: "Brick Break", icon: "🧱", cat: "ACTION", link: "#" },
+        { name: "Space Invader", icon: "🚀", cat: "SHOOTER", link: "#" },
+        { name: "Memory Pro", icon: "🧠", cat: "BRAIN", link: "#" },
+        { name: "Tetris Neo", icon: "🕹️", cat: "PUZZLE", link: "#" },
+        { name: "Boxing Glow", icon: "🥊", cat: "FIGHT", link: "#" },
+        { name: "Penalty Kick", icon: "⚽", cat: "SPORT", link: "#" },
+        { name: "Dino Run", icon: "🦖", cat: "ARCADE", link: "#" },
+        { name: "Neon Tank", icon: "🛡️", cat: "WAR", link: "#" },
+        { name: "Sudoku Lite", icon: "🧩", cat: "MATH", link: "#" },
+        { name: "Fast Drift", icon: "🏎️", cat: "RACING", link: "#" },
+        { name: "Ping Pong", icon: "🏓", cat: "SPORT", link: "#" },
+        { name: "Tic Tac Toe", icon: "❌", cat: "LOGIC", link: "#" },
+        { name: "Gold Miner", icon: "⛏️", cat: "CASUAL", link: "#" },
+        { name: "Cyber Archer", icon: "🏹", cat: "ACTION", link: "#" },
+        { name: "Jewel Match", icon: "💎", cat: "PUZZLE", link: "#" },
+        { name: "Neon Jump", icon: "🦘", cat: "ARCADE", link: "#" },
+        { name: "Pool 8 Ball", icon: "🎱", cat: "SPORT", link: "#" },
+        { name: "Piano Tiles", icon: "🎹", cat: "MUSIC", link: "#" },
+        { name: "Angry Bird", icon: "🐦", cat: "ACTION", link: "#" },
+        { name: "Solitaire", icon: "🃏", cat: "CARD", link: "#" },
+        { name: "Ludo King", icon: "🎲", cat: "BOARD", link: "#" },
+        { name: "Fruit Ninja", icon: "🍉", cat: "ACTION", link: "#" },
+        { name: "Chess Pro", icon: "♟️", cat: "STRATEGY", link: "#" },
+        { name: "Subway Neon", icon: "🏃", cat: "RUNNER", link: "#" },
+        { name: "Bubble Pop", icon: "🫧", cat: "PUZZLE", link: "#" },
+        { name: "Pinball Glow", icon: "🕹️", cat: "ARCADE", link: "#" },
+        { name: "Air Hockey", icon: "🏒", cat: "SPORT", link: "#" },
+        { name: "Doodle Jump", icon: "🖍️", cat: "CASUAL", link: "#" },
+        { name: "Car Parking", icon: "🅿️", cat: "SIMULATOR", link: "#" },
+        { name: "Tower Stack", icon: "🏢", cat: "LOGIC", link: "#" },
+        { name: "Zombie Smasher", icon: "🧟", cat: "HORROR", link: "#" },
+        { name: "Fishing Hook", icon: "🎣", cat: "CASUAL", link: "#" },
+        { name: "Knife Hit", icon: "🔪", cat: "ACTION", link: "#" },
+        { name: "Bowling Glow", icon: "🎳", cat: "SPORT", link: "#" }
+    ];
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="game-card" onclick="location.href='snake.html'">
-                    <div class="game-icon">🐍</div>
-                    <div class="p-4 border-t border-white/5">
-                        <p class="text-[10px] text-purple-400 font-bold orbitron">ARCADE</p>
-                        <h3 class="font-bold text-lg">Neon Snake</h3>
-                    </div>
-                </div>
+    const grid = document.getElementById("gameGrid");
 
-                <div class="game-card" onclick="alert('Game segera hadir!')">
-                    <div class="game-icon">🃏</div>
-                    <div class="p-4 border-t border-white/5">
-                        <p class="text-[10px] text-purple-400 font-bold orbitron">PUZZLE</p>
-                        <h3 class="font-bold text-lg">Memory Match</h3>
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="alert('Game segera hadir!')">
-                    <div class="game-icon">🎾</div>
-                    <div class="p-4 border-t border-white/5">
-                        <p class="text-[10px] text-purple-400 font-bold orbitron">ACTION</p>
-                        <h3 class="font-bold text-lg">Brick Neon</h3>
-                    </div>
-                </div>
-
-                <div class="game-card" onclick="alert('Game segera hadir!')">
-                    <div class="game-icon">❓</div>
-                    <div class="p-4 border-t border-white/5">
-                        <p class="text-[10px] text-purple-400 font-bold orbitron">LOGIC</p>
-                        <h3 class="font-bold text-lg">Magic Number</h3>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
-        const currentUser = localStorage.getItem("loginUser");
-
-        // CEK STATUS LOGIN SAAT BUKA HALAMAN
-        window.onload = () => {
-            if (currentUser) {
-                document.getElementById("authSection").classList.add("hidden");
-                document.getElementById("lobbySection").classList.remove("hidden");
-                document.getElementById("displayUser").innerText = currentUser.toUpperCase();
-            }
+    gameList.forEach(game => {
+        const card = document.createElement("div");
+        card.className = "game-card";
+        card.onclick = () => {
+            if(game.link !== "#") window.location.href = game.link;
+            else alert(game.name + " segera hadir di update berikutnya!");
         };
 
-        function toggleAuth() {
-            document.getElementById("loginForm").classList.toggle("hidden");
-            document.getElementById("registerForm").classList.toggle("hidden");
-        }
+        card.innerHTML = `
+            ${game.hot ? '<span class="badge-hot orbitron">HOT GAME</span>' : ''}
+            <div class="game-icon">${game.icon}</div>
+            <div class="p-3 border-t border-white/5 bg-slate-900/50">
+                <p class="text-[8px] text-cyan-400 font-bold orbitron mb-0.5">${game.cat}</p>
+                <h4 class="font-bold text-xs truncate uppercase">${game.name}</h4>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+</script>
 
-        function handleRegister() {
-            const u = document.getElementById("regUser").value;
-            const p = document.getElementById("regPass").value;
-            if(!u || !p) return alert("Isi username & password!");
-            if(users.find(x => x.user === u)) return alert("Username sudah terdaftar!");
-
-            users.push({user: u, pass: p, xp: 0});
-            localStorage.setItem("users", JSON.stringify(users));
-            alert("Pendaftaran Berhasil! Silakan Login.");
-            toggleAuth();
-        }
-
-        function handleLogin() {
-            const u = document.getElementById("loginUser").value;
-            const p = document.getElementById("loginPass").value;
-            const found = users.find(x => x.user === u && x.pass === p);
-
-            if(found) {
-                localStorage.setItem("loginUser", u);
-                location.reload();
-            } else {
-                alert("Username atau Password salah!");
-            }
-        }
-
-        function handleLogout() {
-            localStorage.removeItem("loginUser");
-            location.reload();
-        }
-    </script>
 </body>
 </html>
