@@ -16,18 +16,15 @@
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* NEON GLOWS (TEBAL SEPERTI GAMBAR) */
         .neon-text-purple { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
         .neon-text-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
         
-        /* SIDEBAR NAV (MIRIP GAMBAR) */
         .sidebar-nav {
             background: rgba(0, 0, 0, 0.6);
             border-right: 2px solid #00f2ff;
             box-shadow: 5px 0 15px rgba(0, 242, 255, 0.2);
         }
 
-        /* ARCADE CARD SYSTEM */
         .arcade-card {
             background: #000; border: 2px solid #ff00ff; border-radius: 8px;
             transition: 0.3s; position: relative; overflow: hidden;
@@ -42,17 +39,59 @@
             display: block; text-align: center;
         }
 
-        /* BANNER */
         .main-banner {
             background: linear-gradient(to right, #000, rgba(255, 0, 255, 0.1), #000);
             border: 2px solid #00f2ff55;
             position: relative;
         }
+
+        /* MODAL / POP-UP STYLING */
+        #gameModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: #0d0221;
+            border: 3px solid #ff00ff;
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.5);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: modalZoom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalZoom {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <header class="p-4 px-8 flex justify-between items-center bg-black border-b-2 border-cyan-500">
+    <div id="gameModal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <i class="fas fa-trophy text-5xl text-yellow-500 mb-4 shadow-lg"></i>
+            <h2 id="modalGameTitle" class="orbitron text-2xl neon-text-cyan mb-2 uppercase">GAME TITLE</h2>
+            <p class="text-gray-400 text-xs tracking-widest mb-6">ALL TIME HIGH SCORE</p>
+            
+            <div class="bg-black/50 border border-purple-500/50 p-6 rounded-xl mb-8">
+                <p id="topPlayerName" class="orbitron text-xl neon-text-purple">---</p>
+                <p id="topPlayerScore" class="text-3xl font-black text-white mt-2">0</p>
+                <p class="text-[10px] text-cyan-400 font-bold">POINTS</p>
+            </div>
+
+            <button onclick="closeModal()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-lg orbitron font-bold hover:scale-105 transition shadow-lg">LANJUT BERMAIN</button>
+        </div>
+    </div>
+
+    <header class="p-4 px-8 flex justify-between items-center bg-black border-b-2 border-cyan-500 sticky top-0 z-50">
         <h1 class="text-3xl font-black orbitron italic neon-text-cyan">YOKBISAYOK</h1>
         <div class="flex items-center gap-4">
             <div class="text-right">
@@ -84,7 +123,6 @@
         </aside>
 
         <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
-            
             <div class="main-banner p-8 rounded-2xl mb-10 flex items-center justify-between border-2 border-purple-500/50 shadow-[inset_0_0_30px_rgba(255,0,255,0.2)]">
                 <div>
                     <h2 class="text-5xl font-black orbitron italic text-white leading-none">
@@ -101,14 +139,12 @@
                 <span class="h-[2px] w-10 bg-cyan-400"></span> NEW RELEASES <span class="h-[2px] w-full bg-gray-800"></span>
             </h3>
 
-            <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-16">
-                </div>
+            <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 mb-16"></div>
 
             <h3 class="orbitron text-purple-400 text-sm font-bold mb-6 flex items-center gap-3 italic">
                 <span class="h-[2px] w-10 bg-purple-400"></span> TOP PLAYERS <span class="h-[2px] w-full bg-gray-800"></span>
             </h3>
-            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                </div>
+            <div id="leaderList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </main>
     </div>
 
@@ -120,7 +156,14 @@
             { n: "PIXEL PUNCHER", i: "https://wallpapercave.com/wp/wp7429107.jpg" }
         ];
 
-        // RENDER 48 CARDS
+        // Data Skor Real (Simulasi setiap game punya record sendiri)
+        const records = {
+            "CYBER-RACER X": { player: "AAN", score: "145,000" },
+            "GALACTIC DEFENDER": { player: "BUDI", score: "92,400" },
+            "PUZZLE MASTER": { player: "SAKTI", score: "88,100" },
+            "PIXEL PUNCHER": { player: "ZIDAN", score: "75,000" }
+        };
+
         const grid = document.getElementById('arcadeGrid');
         for(let i=0; i<48; i++) {
             const g = gameData[i % gameData.length];
@@ -135,7 +178,6 @@
             `;
         }
 
-        // LEADERBOARD RENDER
         const scores = [
             { name: "AAN", game: "Cyber Racer X", score: "145,000" },
             { name: "BUDI", game: "Galactic Def", score: "92,400" },
@@ -158,7 +200,22 @@
             `;
         });
 
-        function playGame(n) { alert("Memuat Game: " + n); }
+        // FUNGSI POP-UP
+        function playGame(gameName) {
+            const modal = document.getElementById('gameModal');
+            const record = records[gameName] || { player: "NO RECORD", score: "0" };
+
+            document.getElementById('modalGameTitle').innerText = gameName;
+            document.getElementById('topPlayerName').innerText = record.player;
+            document.getElementById('topPlayerScore').innerText = record.score;
+
+            modal.style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById('gameModal').style.display = "none";
+        }
+
         function logout() { window.location.href = "index.html"; }
     </script>
 </body>
