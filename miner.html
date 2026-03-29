@@ -3,169 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - NEON MINER</title>
+    <title>NEON MINER - BREAKOUT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
-
-        body {
-            margin: 0; background: #02010a; color: white;
-            font-family: 'Share Tech Mono', monospace; overflow: hidden;
-            height: 100vh; display: flex; flex-direction: column;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
+        
+        body { 
+            margin: 0; background: #05010d; overflow: hidden; 
+            font-family: 'Orbitron', sans-serif; cursor: none; 
         }
 
-        /* CORE CRYSTAL ANIMATION */
-        #core {
-            width: 200px; height: 200px;
-            background: radial-gradient(circle, #bc13fe 0%, transparent 70%);
-            border: 4px solid #00f2ff; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            box-shadow: 0 0 50px #00f2ff, inset 0 0 20px #bc13fe;
-            cursor: pointer; transition: 0.1s;
-            animation: morph 5s linear infinite alternate;
-        }
+        #game-canvas { display: block; }
 
-        #core:active { transform: scale(0.9); filter: brightness(1.5); }
-
-        @keyframes morph {
-            0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(10deg); }
+        /* HUD */
+        .ui-layer {
+            position: fixed; top: 20px; width: 100%;
+            display: flex; justify-content: space-between; padding: 0 30px;
+            pointer-events: none; z-index: 100;
         }
-
-        .particle {
-            position: absolute; pointer-events: none;
-            width: 5px; height: 5px; background: #00f2ff;
-            box-shadow: 0 0 10px #00f2ff; border-radius: 50%;
-        }
-
-        .btn-upgrade {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            transition: 0.3s;
-        }
-        .btn-upgrade:hover:not([disabled]) {
-            background: rgba(0, 242, 255, 0.1);
-            border-color: #00f2ff; transform: translateX(5px);
-        }
-        .btn-upgrade[disabled] { opacity: 0.3; cursor: not-allowed; }
 
         .btn-back {
-            position: fixed; top: 20px; left: 20px;
-            padding: 10px 20px; border: 1px solid #ff0055;
-            color: #ff0055; text-decoration: none; font-weight: bold;
+            position: fixed; bottom: 20px; left: 20px;
+            padding: 10px 20px; border: 2px solid #ff0055;
+            color: #ff0055; text-decoration: none; font-size: 12px;
+            background: rgba(255,0,85,0.1); pointer-events: auto;
+        }
+
+        .combo-text {
+            position: absolute; color: #00f2ff; font-size: 40px;
+            pointer-events: none; animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
         }
     </style>
 </head>
-<body class="p-8">
+<body>
 
-    <a href="menu.html" class="btn-back"><i class="fas fa-home mr-2"></i> EXIT_MINES</a>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
-        
-        <div class="flex flex-col justify-center space-y-6 order-2 lg:order-1">
-            <div class="p-6 bg-white/5 border-l-4 border-cyan-400">
-                <p class="text-xs text-cyan-400 uppercase tracking-widest">Total_Crystals</p>
-                <h1 id="crystal-count" class="text-5xl font-black orbitron text-white">0</h1>
-            </div>
-            <div class="p-6 bg-white/5 border-l-4 border-purple-500">
-                <p class="text-xs text-purple-400 uppercase tracking-widest">Auto_Rate</p>
-                <h2 id="auto-rate" class="text-2xl font-bold">0 <span class="text-xs">/sec</span></h2>
-            </div>
+    <div class="ui-layer">
+        <div class="text-cyan-400">
+            <p class="text-[10px] tracking-widest opacity-50">CRYSTALS_SHATTERED</p>
+            <h1 id="score" class="text-4xl">0</h1>
         </div>
-
-        <div class="flex flex-col items-center justify-center order-1 lg:order-2 relative">
-            <div id="core" onclick="mine(event)"></div>
-            <p class="mt-8 text-gray-500 animate-pulse text-xs tracking-[5px]">TAP_THE_CORE_TO_EXTRACT</p>
-        </div>
-
-        <div class="flex flex-col justify-center space-y-4 order-3">
-            <h3 class="orbitron text-sm mb-2 text-cyan-400 border-b border-cyan-400/20 pb-2">UPGRADE_TERMINAL</h3>
-            
-            <button onclick="buyUpgrade('drone', 15, 1)" id="btn-drone" class="btn-upgrade p-4 rounded-lg flex justify-between items-center group">
-                <div>
-                    <p class="font-bold group-hover:text-cyan-400">MINING_DRONE</p>
-                    <p class="text-[10px] text-gray-400">+1 crystal/sec</p>
-                </div>
-                <span class="text-cyan-400 font-bold">15 💎</span>
-            </button>
-
-            <button onclick="buyUpgrade('drill', 100, 8)" id="btn-drill" class="btn-upgrade p-4 rounded-lg flex justify-between items-center group">
-                <div>
-                    <p class="font-bold group-hover:text-cyan-400">PLASMA_DRILL</p>
-                    <p class="text-[10px] text-gray-400">+8 crystals/sec</p>
-                </div>
-                <span class="text-cyan-400 font-bold">100 💎</span>
-            </button>
-
-            <button onclick="buyUpgrade('extractor', 500, 45)" id="btn-extractor" class="btn-upgrade p-4 rounded-lg flex justify-between items-center group">
-                <div>
-                    <p class="font-bold group-hover:text-cyan-400">VOID_EXTRACTOR</p>
-                    <p class="text-[10px] text-gray-400">+45 crystals/sec</p>
-                </div>
-                <span class="text-cyan-400 font-bold">500 💎</span>
-            </button>
+        <div class="text-right text-pink-500">
+            <p class="text-[10px] tracking-widest opacity-50">DRONE_STATUS</p>
+            <h1 class="text-xl">ONLINE</h1>
         </div>
     </div>
 
+    <a href="menu.html" class="btn-back">EXIT MINES</a>
+    <canvas id="game-canvas"></canvas>
+
     <script>
-        let crystals = 0;
-        let perSecond = 0;
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
 
-        function updateUI() {
-            document.getElementById('crystal-count').innerText = Math.floor(crystals);
-            document.getElementById('auto-rate').innerText = perSecond;
-            
-            // Disable/Enable buttons
-            checkButton('btn-drone', 15);
-            checkButton('btn-drill', 100);
-            checkButton('btn-extractor', 500);
-        }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        function checkButton(id, cost) {
-            const btn = document.getElementById(id);
-            btn.disabled = crystals < cost;
-        }
+        let score = 0;
+        let particles = [];
+        let crystals = [];
+        const mouse = { x: canvas.width/2, y: canvas.height/2 };
 
-        function mine(e) {
-            crystals += 1;
-            createParticle(e.clientX, e.clientY);
-            updateUI();
-        }
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
 
-        function createParticle(x, y) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            document.body.appendChild(p);
-            
-            const destinationX = x + (Math.random() - 0.5) * 200;
-            const destinationY = y + (Math.random() - 0.5) * 200;
-
-            p.style.left = x + 'px';
-            p.style.top = y + 'px';
-
-            p.animate([
-                { opacity: 1, transform: 'translate(0, 0) scale(1)' },
-                { opacity: 0, transform: `translate(${destinationX - x}px, ${destinationY - y}px) scale(0)` }
-            ], { duration: 1000, easing: 'ease-out' }).onfinish = () => p.remove();
-        }
-
-        function buyUpgrade(type, cost, power) {
-            if (crystals >= cost) {
-                crystals -= cost;
-                perSecond += power;
-                updateUI();
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y;
+                this.color = color;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 10;
+                this.speedY = (Math.random() - 0.5) * 10;
+                this.opacity = 1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
-        // Game Loop for Auto-Mining
-        setInterval(() => {
-            if (perSecond > 0) {
-                crystals += (perSecond / 10);
-                updateUI();
+        class Crystal {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 15;
+                this.color = Math.random() > 0.5 ? '#00f2ff' : '#bc13fe';
+                this.pulse = 0;
             }
-        }, 100);
+            update() {
+                this.pulse += 0.1;
+                // Collision check with "Drone" (mouse)
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if(distance < this.size + 20) {
+                    this.shatter();
+                    return true;
+                }
+                return false;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.pulse * 0.2);
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color;
+                ctx.strokeRect(-this.size/2, -this.size/2, this.size, this.size);
+                ctx.restore();
+            }
+            shatter() {
+                score++;
+                scoreEl.innerText = score;
+                for(let i=0; i<15; i++) {
+                    particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+        }
 
-        updateUI();
+        function init() {
+            if(crystals.length < 10) crystals.push(new Crystal());
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(5, 1, 13, 0.2)'; // Trail effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Drone (Mouse Pointer)
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#fff';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 15, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Update & Draw Crystals
+            for(let i = crystals.length - 1; i >= 0; i--) {
+                crystals[i].draw();
+                if(crystals[i].update()) {
+                    crystals.splice(i, 1);
+                }
+            }
+
+            // Update & Draw Particles
+            for(let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if(particles[i].opacity <= 0) particles.splice(i, 1);
+            }
+
+            init();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
