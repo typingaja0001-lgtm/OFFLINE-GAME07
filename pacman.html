@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>YOKBISAYOK - PAC-MAN INFINITE NEON</title>
+    <title>YOKBISAYOK - PAC-MAN REVISED NEON</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
@@ -16,7 +16,7 @@
         
         #game-container { 
             position: relative; border: 4px solid #ff00ff; 
-            box-shadow: 0 0 40px rgba(255, 0, 255, 0.5); 
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.4); 
             background: #000; border-radius: 15px; overflow: hidden;
         }
 
@@ -40,7 +40,7 @@
         .how-to-play { 
             margin-top: 25px; background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(255, 0, 255, 0.3); padding: 20px; 
-            border-radius: 15px; width: 380px; 
+            border-radius: 15px; width: 400px; 
         }
         .key-badge { 
             background: #1a1a1a; border: 1px solid #ff00ff; color: #ff00ff; 
@@ -53,21 +53,21 @@
     <div id="gameOverModal">
         <div class="modal-content">
             <h2 class="orbitron text-4xl neon-pink mb-2 italic">WASTED</h2>
-            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest">Instant Death by Ghost</p>
+            <p class="text-[10px] text-gray-400 uppercase orbitron mb-6 tracking-widest">Eliminated by Ghost</p>
             <div class="mb-10">
-                <p class="text-gray-500 text-[10px] uppercase orbitron">Session Score</p>
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Final Score</p>
                 <p id="finalScoreDisplay" class="text-6xl neon-cyan orbitron">0</p>
             </div>
             <div class="flex flex-col gap-4">
-                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic">COBA LAGI</button>
+                <button onclick="location.reload()" class="w-full bg-white text-black py-4 rounded-xl font-black orbitron hover:bg-cyan-400 transition uppercase italic text-lg">MAIN LAGI</button>
                 <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-xl hover:text-white hover:border-white transition uppercase text-[10px] orbitron">MENU UTAMA</button>
             </div>
         </div>
     </div>
 
     <div class="mb-6 text-center">
-        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Global Score</p>
-        <p id="pScore" class="text-5xl neon-pink orbitron">0</p>
+        <p class="text-[10px] text-gray-500 uppercase orbitron tracking-[0.3em]">Accumulated Score</p>
+        <p id="pScore" class="text-5xl neon-cyan orbitron">0</p>
     </div>
 
     <div id="game-container">
@@ -76,28 +76,20 @@
 
     <div class="how-to-play">
         <h3 class="orbitron text-[10px] neon-cyan mb-4 italic uppercase tracking-widest text-center">
-            ⚡ MISSION PROTOCOL: INFINITE NEON ⚡
+            🕹️ NEON MAZE PROTOCOL 🕹️
         </h3>
-        <ul class="text-[13px] space-y-4 text-gray-300">
-            <li class="flex justify-between items-center">
-                <span class="font-bold">Navigasi:</span>
-                <span class="key-badge">↑ ↓ ← →</span>
-            </li>
-            <li class="flex justify-between items-center">
-                <span>Makan Titik Pink:</span>
-                <span class="text-white font-bold">+10 SCORE</span>
-            </li>
-            <li class="flex justify-between items-center">
-                <span>Auto-Respawn:</span>
-                <span class="text-cyan-400 italic">MAKANAN MUNCUL KEMBALI TIAP 5 DETIK</span>
-            </li>
-            <li class="flex justify-between items-center text-red-500 font-black italic">
-                <span>SISTEM HARDCORE:</span>
-                <span class="key-badge border-red-500 text-red-500">ONE TOUCH = MATI</span>
-            </li>
-        </ul>
-        <p class="mt-4 pt-4 border-t border-white/5 text-[10px] leading-relaxed text-center text-gray-500 uppercase">
-            *Waspada! Hantu bergerak sangat agresif dan cepat.
+        <div class="grid grid-cols-2 gap-4 text-[13px] text-gray-300">
+            <div class="space-y-2">
+                <p class="flex justify-between"><span>Gerak:</span> <span class="key-badge">↑ ↓ ← →</span></p>
+                <p class="flex justify-between"><span>Misi:</span> <span class="text-white italic">HABISKAN DOT</span></p>
+            </div>
+            <div class="space-y-2 border-l border-white/10 pl-4">
+                <p class="flex justify-between"><span>Skor:</span> <span class="neon-pink font-bold">+10 pts</span></p>
+                <p class="flex justify-between text-red-500 italic font-bold"><span>Status:</span> <span>1-HIT KILL</span></p>
+            </div>
+        </div>
+        <p class="mt-4 pt-4 border-t border-white/5 text-[9px] text-center text-cyan-500 uppercase font-bold">
+            💡 INFO: Makanan muncul kembali tiap 5 detik. Hantu mengikuti jalur & TIDAK BISA tembus tembok!
         </p>
     </div>
 
@@ -111,7 +103,7 @@
         let score = 0;
         let gameActive = true;
 
-        // Map Layout Sederhana untuk Kecepatan Tinggi
+        // 1=Wall, 0=Dot, 2=Empty
         const map = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
             [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
@@ -120,7 +112,9 @@
             [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
             [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
             [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
-            [2,2,2,2,0,2,2,1,2,2,2,1,2,2,0,2,2,2,2],
+            [1,2,2,2,0,2,2,2,2,2,2,2,2,2,0,2,2,2,1],
+            [1,1,1,1,0,1,2,1,1,2,1,1,2,1,0,1,1,1,1],
+            [1,0,0,0,0,2,2,1,2,2,2,1,2,2,0,0,0,0,1],
             [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
             [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
             [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
@@ -128,20 +122,23 @@
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
 
-        let pac = { x: 9 * size, y: 11 * size, dir: 0 };
+        let pac = { x: 9 * size, y: 13 * size, dir: 0 };
+        
         let ghosts = [
-            { x: 9 * size, y: 7 * size, color: '#ff00ff', dir: 1, speed: 2.8 },
-            { x: 2 * size, y: 1 * size, color: '#00f2ff', dir: 2, speed: 3.2 },
-            { x: 16 * size, y: 1 * size, color: '#ff0000', dir: 3, speed: 3.5 }
+            { x: 9 * size, y: 7 * size, color: '#ff00ff', dir: 1, speed: 2 },
+            { x: 2 * size, y: 1 * size, color: '#00f2ff', dir: 2, speed: 2 },
+            { x: 16 * size, y: 1 * size, color: '#ff0000', dir: 3, speed: 2 }
         ];
 
-        // --- SISTEM REGENERASI MAKANAN ---
         function respawnFood(y, x) {
-            setTimeout(() => {
-                if(gameActive) {
-                    map[y][x] = 0; // Kembalikan jadi titik pink
-                }
-            }, 5000); 
+            setTimeout(() => { if(gameActive) map[y][x] = 0; }, 5000);
+        }
+
+        function isWall(nx, ny) {
+            let gx = Math.floor(nx / size);
+            let gy = Math.floor(ny / size);
+            if (gy < 0 || gy >= map.length || gx < 0 || gx >= map[0].length) return true;
+            return map[gy][gx] === 1;
         }
 
         function draw() {
@@ -151,8 +148,8 @@
             for(let y=0; y<map.length; y++) {
                 for(let x=0; x<map[y].length; x++) {
                     if(map[y][x] === 1) {
-                        ctx.strokeStyle = '#00f2ff';
-                        ctx.strokeRect(x*size+4, y*size+4, size-8, size-8);
+                        ctx.strokeStyle = '#331166';
+                        ctx.strokeRect(x*size+2, y*size+2, size-4, size-4);
                     } else if(map[y][x] === 0) {
                         ctx.fillStyle = '#ff00ff';
                         ctx.beginPath();
@@ -162,17 +159,17 @@
                 }
             }
 
-            // Draw Pacman
+            // Pacman
             ctx.fillStyle = '#ffff00';
             ctx.beginPath();
             ctx.arc(pac.x+size/2, pac.y+size/2, size/2-1, 0.2*Math.PI, 1.8*Math.PI);
             ctx.lineTo(pac.x+size/2, pac.y+size/2);
             ctx.fill();
 
-            // Draw Ghosts
+            // Ghosts
             ghosts.forEach(g => {
                 ctx.fillStyle = g.color;
-                ctx.shadowBlur = 15; ctx.shadowColor = g.color;
+                ctx.shadowBlur = 10; ctx.shadowColor = g.color;
                 ctx.fillRect(g.x+2, g.y+2, size-4, size-4);
                 ctx.shadowBlur = 0;
             });
@@ -181,43 +178,44 @@
         function move() {
             if(!gameActive) return;
             
-            let speed = 3;
-            if(pac.dir === 1) pac.x -= speed;
-            if(pac.dir === 2) pac.x += speed;
-            if(pac.dir === 3) pac.y -= speed;
-            if(pac.dir === 4) pac.y += speed;
+            // Pacman Movement
+            let pNextX = pac.x, pNextY = pac.y;
+            if(pac.dir === 1) pNextX -= 2;
+            if(pac.dir === 2) pNextX += 2;
+            if(pac.dir === 3) pNextY -= 2;
+            if(pac.dir === 4) pNextY += 2;
 
+            if(!isWall(pNextX, pNextY) && !isWall(pNextX + size - 1, pNextY + size - 1)) {
+                pac.x = pNextX;
+                pac.y = pNextY;
+            }
+
+            // Eat Dot
             let gx = Math.floor((pac.x+size/2)/size);
             let gy = Math.floor((pac.y+size/2)/size);
-            
             if(map[gy] && map[gy][gx] === 0) {
-                map[gy][gx] = 2; 
+                map[gy][gx] = 2;
                 score += 10;
                 document.getElementById('pScore').innerText = score;
-                respawnFood(gy, gx); 
+                respawnFood(gy, gx);
             }
 
-            if(map[gy] && map[gy][gx] === 1) {
-                if(pac.dir === 1) pac.x += speed;
-                if(pac.dir === 2) pac.x -= speed;
-                if(pac.dir === 3) pac.y += speed;
-                if(pac.dir === 4) pac.y -= speed;
-                pac.dir = 0;
-            }
-
-            // Pergerakan Hantu yang Mematikan
+            // Ghost Movement (Pathfinding)
             ghosts.forEach(g => {
-                if(Math.random() < 0.05) g.dir = Math.floor(Math.random()*4)+1;
-                if(g.dir === 1) g.x -= g.speed;
-                if(g.dir === 2) g.x += g.speed;
-                if(g.dir === 3) g.y -= g.speed;
-                if(g.dir === 4) g.y += g.speed;
+                let gNextX = g.x, gNextY = g.y;
+                if(g.dir === 1) gNextX -= g.speed;
+                if(g.dir === 2) gNextX += g.speed;
+                if(g.dir === 3) gNextY -= g.speed;
+                if(g.dir === 4) gNextY += g.speed;
 
-                if(g.x < 0 || g.x > canvas.width-size) g.dir = (g.dir === 1) ? 2 : 1;
-                if(g.y < 0 || g.y > canvas.height-size) g.dir = (g.dir === 3) ? 4 : 3;
+                if(isWall(gNextX, gNextY) || isWall(gNextX + size - 1, gNextY + size - 1) || Math.random() < 0.05) {
+                    g.dir = Math.floor(Math.random() * 4) + 1;
+                } else {
+                    g.x = gNextX;
+                    g.y = gNextY;
+                }
 
-                // --- DETEKSI TABRAKAN (INSTA-KILL) ---
-                if(Math.abs(pac.x - g.x) < 17 && Math.abs(pac.y - g.y) < 17) {
+                if(Math.abs(pac.x - g.x) < 15 && Math.abs(pac.y - g.y) < 15) {
                     gameActive = false;
                 }
             });
@@ -254,6 +252,7 @@
             if(e.keyCode === 39) pac.dir = 2;
             if(e.keyCode === 38) pac.dir = 3;
             if(e.keyCode === 40) pac.dir = 4;
+            if([37,38,39,40].includes(e.keyCode)) e.preventDefault();
         });
 
         gameLoop();
