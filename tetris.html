@@ -5,54 +5,75 @@
     <title>YOKBISAYOK - TETRIS ULTRA NEON</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
-        body { background: #050112; color: white; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #game-container { position: relative; border: 4px solid #ff00ff; box-shadow: 0 0 30px #ff00ff; background: #000; }
-        .stats-panel { border: 2px solid #00f2ff; padding: 15px; border-radius: 10px; background: rgba(0, 242, 255, 0.05); text-align: center; min-width: 140px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@500;700&display=swap');
+        body { background: #050112; color: white; font-family: 'Rajdhani', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        #game-container { position: relative; border: 4px solid #ff00ff; box-shadow: 0 0 30px rgba(255, 0, 255, 0.5); background: #000; }
+        .stats-panel { border: 2px solid #00f2ff; padding: 10px 20px; border-radius: 12px; background: rgba(0, 242, 255, 0.05); text-align: center; min-width: 120px; }
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
         .neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        
+        /* Panduan Style */
+        .how-to-play { margin-top: 30px; background: rgba(255, 255, 255, 0.03); border: 1px border-gray-800; padding: 20px; border-radius: 15px; width: 320px; }
+        .key-badge { background: #1a1a1a; border: 1px solid #00f2ff; color: #00f2ff; padding: 2px 8px; border-radius: 5px; font-size: 12px; font-family: 'Orbitron'; }
 
-        /* MODAL STYLE */
-        #gameOverModal { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-            z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(8px);
-        }
-        .modal-content { 
-            background: #0d0221; border: 3px solid #ff00ff; padding: 40px; 
-            border-radius: 20px; text-align: center; box-shadow: 0 0 50px #ff00ff;
-        }
+        /* MODAL GAME OVER */
+        #gameOverModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-content { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 0 50px #ff00ff; width: 300px; }
     </style>
 </head>
-<body>
+<body class="py-10">
 
     <div id="gameOverModal">
         <div class="modal-content">
-            <h2 class="text-4xl neon-pink mb-2 italic">GAME OVER</h2>
-            <p class="text-gray-400 text-xs mb-6 tracking-widest uppercase">Arena Telah Penuh</p>
+            <h2 class="orbitron text-3xl neon-pink mb-2 italic uppercase">KO</h2>
             <div class="mb-8">
-                <p class="text-gray-500 text-[10px] uppercase">Final Score</p>
-                <p id="finalScoreDisplay" class="text-5xl neon-cyan">0</p>
+                <p class="text-gray-500 text-[10px] uppercase orbitron">Final Score</p>
+                <p id="finalScoreDisplay" class="text-5xl neon-cyan orbitron">0</p>
             </div>
             <div class="flex flex-col gap-3">
-                <button onclick="restartGame()" class="w-full bg-white text-black py-3 rounded-lg font-black hover:bg-cyan-400 transition uppercase italic">Main Lagi</button>
-                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-lg hover:text-white hover:border-white transition uppercase text-xs">Menu Utama</button>
+                <button onclick="restartGame()" class="w-full bg-white text-black py-3 rounded-lg font-black orbitron hover:bg-cyan-400 transition uppercase italic">MAIN LAGI</button>
+                <button onclick="saveAndExit()" class="w-full border border-gray-600 text-gray-500 py-3 rounded-lg hover:text-white hover:border-white transition uppercase text-[10px] orbitron">MENU UTAMA</button>
             </div>
         </div>
     </div>
 
-    <div class="mb-6 flex gap-6">
+    <div class="mb-6 flex gap-4">
         <div class="stats-panel">
-            <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Player</p>
+            <p class="text-[10px] text-gray-400 uppercase tracking-tighter orbitron">Player</p>
             <p id="pName" class="text-sm neon-cyan uppercase">---</p>
         </div>
         <div class="stats-panel">
-            <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Score</p>
-            <p id="pScore" class="text-2xl neon-pink">0</p>
+            <p class="text-[10px] text-gray-400 uppercase tracking-tighter orbitron">Score</p>
+            <p id="pScore" class="text-2xl neon-pink orbitron">0</p>
         </div>
     </div>
 
     <div id="game-container">
         <canvas id="tetris" width="240" height="400"></canvas>
+    </div>
+
+    <div class="how-to-play border border-white/10">
+        <h3 class="orbitron text-xs neon-cyan mb-4 italic uppercase flex items-center gap-2">
+            <i class="fas fa-info-circle"></i> Cara Bermain
+        </h3>
+        <ul class="text-[13px] space-y-3 text-gray-300">
+            <li class="flex justify-between items-center">
+                <span>Gerak Kiri / Kanan</span>
+                <span class="key-badge">← →</span>
+            </li>
+            <li class="flex justify-between items-center">
+                <span>Turun Cepat</span>
+                <span class="key-badge">↓</span>
+            </li>
+            <li class="flex justify-between items-center text-white font-bold">
+                <span class="neon-pink">Ganti Arah (Rotate)</span>
+                <span class="key-badge">SPASI</span>
+            </li>
+            <li class="mt-4 pt-4 border-t border-white/5 text-[11px] italic text-gray-500">
+                *Susun blok hingga penuh satu baris untuk mendapatkan skor. Jika tumpukan menyentuh atap, game berakhir.
+            </li>
+        </ul>
     </div>
 
     <script>
@@ -63,6 +84,32 @@
         document.getElementById('pName').innerText = player;
 
         context.scale(20, 20);
+
+        // LOGIKA ROTATE (PENTING!)
+        function rotate(matrix, dir) {
+            for (let y = 0; y < matrix.length; ++y) {
+                for (let x = 0; x < y; ++x) {
+                    [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+                }
+            }
+            if (dir > 0) matrix.forEach(row => row.reverse());
+            else matrix.reverse();
+        }
+
+        function playerRotate(dir) {
+            const pos = playerStats.pos.x;
+            let offset = 1;
+            rotate(playerStats.matrix, dir);
+            while (collide(arena, playerStats)) {
+                playerStats.pos.x += offset;
+                offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > playerStats.matrix[0].length) {
+                    rotate(playerStats.matrix, -dir);
+                    playerStats.pos.x = pos;
+                    return;
+                }
+            }
+        }
 
         function arenaSweep() {
             let rowCount = 1;
@@ -96,17 +143,11 @@
             if (type === 'L') return [[0, 2, 0], [0, 2, 0], [0, 2, 2]];
             if (type === 'O') return [[4, 4], [4, 4]];
             if (type === 'T') return [[0, 7, 0], [7, 7, 7], [0, 0, 0]];
-            return [[0, 5, 0], [5, 5, 0], [0, 5, 0]];
+            if (type === 'S') return [[0, 5, 5], [5, 5, 0], [0, 0, 0]];
+            return [[6, 6, 0], [0, 6, 6], [0, 0, 0]];
         }
 
-        function draw() {
-            context.fillStyle = '#000';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            drawMatrix(arena, {x: 0, y: 0});
-            drawMatrix(playerStats.matrix, playerStats.pos);
-        }
-
-        const colors = [null, '#00f2ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0000', '#0000ff', '#ffa500'];
+        const colors = [null, '#00f2ff', '#ff00ff', '#00ff00', '#ffff00', '#ff0000', '#3b82f6', '#f59e0b'];
 
         function drawMatrix(matrix, offset) {
             matrix.forEach((row, y) => {
@@ -114,9 +155,19 @@
                     if (value !== 0) {
                         context.fillStyle = colors[value];
                         context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                        context.lineWidth = 0.05;
+                        context.strokeStyle = 'white';
+                        context.strokeRect(x + offset.x, y + offset.y, 1, 1);
                     }
                 });
             });
+        }
+
+        function draw() {
+            context.fillStyle = '#000';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            drawMatrix(arena, {x: 0, y: 0});
+            drawMatrix(playerStats.matrix, playerStats.pos);
         }
 
         function merge(arena, player) {
@@ -139,7 +190,7 @@
         }
 
         function playerReset() {
-            const pieces = 'ILJOTSZ';
+            const pieces = 'ILOTSZ';
             playerStats.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
             playerStats.pos.y = 0;
             playerStats.pos.x = (arena[0].length / 2 | 0) - (playerStats.matrix[0].length / 2 | 0);
@@ -166,7 +217,6 @@
             requestAnimationFrame(update);
         }
 
-        // --- NAVIGASI MODAL ---
         function restartGame() {
             arena.forEach(row => row.fill(0));
             playerStats.score = 0;
@@ -200,6 +250,8 @@
             if (e.keyCode === 37) { playerStats.pos.x--; if(collide(arena, playerStats)) playerStats.pos.x++; }
             if (e.keyCode === 39) { playerStats.pos.x++; if(collide(arena, playerStats)) playerStats.pos.x--; }
             if (e.keyCode === 40) playerDrop();
+            // TOMBOL SPASI UNTUK GANTI ARAH
+            if (e.keyCode === 32) { e.preventDefault(); playerRotate(1); }
         });
 
         playerReset();
