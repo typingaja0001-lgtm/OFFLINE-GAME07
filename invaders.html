@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>YOKBISAYOK - SPACE INVADERS NEON</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap');
         
@@ -14,6 +15,17 @@
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
         
+        /* BACK BUTTON STYLE */
+        .btn-back {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            padding: 10px 20px; border-radius: 12px;
+            font-size: 0.8rem; color: #00f2ff; transition: 0.3s;
+            z-index: 1000;
+        }
+        .btn-back:hover { background: #00f2ff; color: #020617; box-shadow: 0 0 20px #00f2ff; }
+
         #game-container { 
             position: relative; border: 4px solid #00f2ff; 
             box-shadow: 0 0 40px rgba(0, 242, 255, 0.3); 
@@ -25,7 +37,6 @@
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
         .neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
 
-        /* MODAL GAME OVER */
         #gameOverModal { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.95); z-index: 100; 
@@ -36,7 +47,6 @@
             border-radius: 20px; text-align: center; box-shadow: 0 0 60px #ff00ff; width: 340px; 
         }
 
-        /* PANDUAN STYLE */
         .how-to-play { 
             margin-top: 25px; background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(0, 242, 255, 0.3); padding: 20px; 
@@ -49,6 +59,10 @@
     </style>
 </head>
 <body>
+
+    <a href="menu.html" class="btn-back orbitron uppercase font-bold">
+        <i class="fas fa-arrow-left mr-2"></i> Abort Mission
+    </a>
 
     <div id="gameOverModal">
         <div class="modal-content">
@@ -136,7 +150,6 @@
             }
 
             alienMoveTimer++;
-            // Kecepatan alien menyesuaikan sisa jumlah alien
             let speedThreshold = Math.max(5, 40 - (score/100));
             if(alienMoveTimer > speedThreshold) {
                 let hitWall = false;
@@ -187,13 +200,11 @@
             ctx.fillStyle = '#050112';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Ship (Cyan Neon)
             ctx.fillStyle = '#00f2ff';
             ctx.shadowBlur = 15; ctx.shadowColor = '#00f2ff';
             ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
             ctx.fillRect(ship.x + 10, ship.y - 5, 10, 5);
 
-            // Aliens (Pink Neon)
             ctx.fillStyle = '#ff00ff';
             ctx.shadowColor = '#ff00ff';
             aliens.forEach(a => {
@@ -202,7 +213,6 @@
                 ctx.clearRect(a.x+16, a.y+5, 4, 4);
             });
 
-            // Bullets (Yellow & Red)
             ctx.fillStyle = '#ffff00';
             bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
             
