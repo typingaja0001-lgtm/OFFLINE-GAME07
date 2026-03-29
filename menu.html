@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - FIX NEON LOBBY</title>
+    <title>YOKBISAYOK - MEGA NEON ARCADE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -15,115 +15,116 @@
         }
         .orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* NEON TEXT SUPER TERANG */
-        .neon-text-cyan {
-            color: #00f2ff;
-            text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff, 0 0 40px #00f2ff;
-        }
+        /* NEON GLOW EFFECTS */
+        .neon-text-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff; }
+        .neon-text-purple { color: #bc13fe; text-shadow: 0 0 10px #bc13fe, 0 0 20px #bc13fe; }
 
-        /* CARD SYSTEM FIX - AGAR MIRIP GAMBAR CONTOH */
+        /* KARTU GAME ARCADE */
         .game-card {
-            background: #0b1120; border-radius: 12px; overflow: hidden; 
-            transition: 0.3s; border: 2px solid #1e293b; 
-            cursor: pointer; position: relative;
-        }
-        
-        /* HOVER: NEON KARTU MENYALA GAHAR */
-        .game-card:hover { 
-            transform: translateY(-8px); 
-            border-color: #00f2ff; 
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.7); 
+            background: #000; border-radius: 12px; overflow: hidden; 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #1e293b; cursor: pointer; position: relative;
         }
 
-        /* IMAGE STYLING - FIX GAMBAR KOSONG */
-        .game-img { 
-            width: 100%; height: 140px; object-fit: cover; 
-            border-bottom: 2px solid #1e293b;
+        /* EFEK HOVER UNGU (Ganjil) */
+        .card-purple:hover { 
+            transform: scale(1.08); border-color: #bc13fe; 
+            box-shadow: 0 0 25px rgba(188, 19, 254, 0.6); 
         }
-        .game-card:hover .game-img { border-bottom-color: #00f2ff; }
+        /* EFEK HOVER BIRU (Genap) */
+        .card-blue:hover { 
+            transform: scale(1.08); border-color: #00f2ff; 
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.6); 
+        }
 
-        /* BANNER HEADER MIRIP CONTOH */
-        .neon-banner {
-            background: linear-gradient(90deg, #0f172a 0%, #000 50%, #0f172a 100%);
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.1);
-        }
+        .game-img { width: 100%; height: 120px; object-fit: cover; filter: brightness(0.8); transition: 0.3s; }
+        .game-card:hover .game-img { filter: brightness(1.1); }
+
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #bc13fe; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
 
-    <nav class="p-4 px-8 flex justify-between items-center border-b border-cyan-500/30 bg-black/80 sticky top-0 z-50">
+    <nav class="p-4 px-10 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-cyan-500/20 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <h1 class="text-2xl font-black orbitron italic neon-text-cyan">YOKBISAYOK</h1>
+            <h1 class="text-2xl font-black orbitron italic neon-text-blue">YOKBISAYOK</h1>
         </div>
-        <div class="flex items-center gap-4 text-xs orbitron">
+        <div class="flex items-center gap-6">
             <div class="text-right">
-                <p class="text-white">AAN</p>
-                <p class="text-cyan-400 text-[10px]">RANK: ELITE</p>
+                <p id="userName" class="text-xs font-black orbitron text-white">PLAYER_ONE</p>
+                <p class="text-[9px] text-purple-400 tracking-widest uppercase">Member Elite</p>
             </div>
-            <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition text-xl">
-                <i class="fas fa-power-off"></i>
-            </button>
+            <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition text-xl"><i class="fas fa-power-off"></i></button>
         </div>
     </nav>
 
-    <main class="p-6 max-w-7xl mx-auto">
+    <main class="p-8 max-w-[1600px] mx-auto">
         
-        <div class="neon-banner p-10 rounded-2xl mb-10 text-center md:text-left relative overflow-hidden">
+        <div class="mb-12 p-12 rounded-[2rem] bg-slate-900 border border-white/5 relative overflow-hidden shadow-2xl">
             <div class="relative z-10">
-                <h2 class="text-4xl md:text-5xl font-black orbitron italic mb-2 tracking-tighter uppercase">
-                    PC <span class="text-cyan-400">ULTRA</span> LIBRARY
-                </h2>
-                <p class="text-gray-400 text-sm max-w-lg mb-6">Library game PC terbaik tanpa internet. Optimasi performa sistem v8.0 untuk grafis 4K.</p>
-                <button class="bg-cyan-500 text-black px-10 py-2.5 rounded-full text-xs font-black orbitron shadow-[0_0_15px_#00f2ff] hover:bg-white transition">EXPLORE ALL</button>
+                <h2 class="text-5xl font-black orbitron italic mb-3">PC <span class="neon-text-purple">ULTRA</span> LIBRARY</h2>
+                <p class="text-gray-400 text-sm max-w-lg uppercase tracking-wider">Tersedia 48+ Game Offline High Performance v10.0</p>
             </div>
+            <i class="fas fa-gamepad absolute -right-10 -bottom-10 text-[250px] text-white/5 rotate-12"></i>
         </div>
 
-        <div class="relative mb-12 max-w-2xl mx-auto">
-            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-cyan-500"></i>
-            <input type="text" placeholder="Cari Game PC OFFLINE..." class="w-full bg-black border border-cyan-500/30 p-4 pl-14 rounded-full focus:border-cyan-400 outline-none transition text-sm orbitron text-white">
+        <div class="relative mb-16 max-w-2xl mx-auto">
+            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-cyan-400"></i>
+            <input type="text" placeholder="Cari Game di Database..." class="w-full bg-black border-2 border-purple-500/30 p-4 pl-14 rounded-2xl focus:border-purple-500 outline-none transition text-sm orbitron text-white">
         </div>
 
-        <div id="menuGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
             </div>
 
     </main>
 
     <script>
-        // Pakai URL gambar dari Source yang lebih stabil
-        const games = [
-            { id: 1, name: "CYBER SNAKE", cat: "Arcade", img: "https://images.pexels.com/photos/163036/mario-luigi-yoshi-figures-163036.jpeg?auto=compress&w=400" },
-            { id: 2, name: "MOTO RACER", cat: "Racing", img: "https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&w=400" },
-            { id: 3, name: "STARFIELD WAR", cat: "Shooter", img: "https://images.pexels.com/photos/1205301/pexels-photo-1205301.jpeg?auto=compress&w=400" },
-            { id: 4, name: "DEAD TARGET", cat: "Action", img: "https://images.pexels.com/photos/15174526/pexels-photo-15174526/free-photo-of-zombie-in-forest.jpeg?auto=compress&w=400" },
-            { id: 5, name: "NIGHT DRIFT", cat: "Racing", img: "https://images.pexels.com/photos/3136673/pexels-photo-3136673.jpeg?auto=compress&w=400" },
-            { id: 6, name: "WAR TANK", cat: "War", img: "https://images.pexels.com/photos/7010344/pexels-photo-7010344.jpeg?auto=compress&w=400" },
-            { id: 7, name: "PRO CHESS", cat: "Strategy", img: "https://images.pexels.com/photos/1015568/pexels-photo-1015568.jpeg?auto=compress&w=400" },
-            { id: 8, name: "UFC FIGHT", cat: "Fighting", img: "https://images.pexels.com/photos/4761779/pexels-photo-4761779.jpeg?auto=compress&w=400" },
-            { id: 9, name: "8 BALL POOL", cat: "Sport", img: "https://images.pexels.com/photos/1573352/pexels-photo-1573352.jpeg?auto=compress&w=400" },
-            { id: 10, name: "NEON JUMPER", cat: "Arcade", img: "https://images.pexels.com/photos/131616/pexels-photo-131616.jpeg?auto=compress&w=400" }
+        // Data Game Dasar
+        const baseGames = [
+            { name: "Cyber Snake", cat: "Arcade", img: "https://images.pexels.com/photos/163036/mario-luigi-yoshi-figures-163036.jpeg?auto=compress&w=300" },
+            { name: "Moto Racer", cat: "Racing", img: "https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&w=300" },
+            { name: "Starfield", cat: "Shooter", img: "https://images.pexels.com/photos/1205301/pexels-photo-1205301.jpeg?auto=compress&w=300" },
+            { name: "Dead Zone", cat: "Action", img: "https://images.pexels.com/photos/15174526/pexels-photo-15174526/free-photo-of-zombie-in-forest.jpeg?auto=compress&w=300" },
+            { name: "Night Drift", cat: "Racing", img: "https://images.pexels.com/photos/3136673/pexels-photo-3136673.jpeg?auto=compress&w=300" },
+            { name: "War Tank", cat: "War", img: "https://images.pexels.com/photos/7010344/pexels-photo-7010344.jpeg?auto=compress&w=300" },
+            { name: "Pro Chess", cat: "Strategy", img: "https://images.pexels.com/photos/1015568/pexels-photo-1015568.jpeg?auto=compress&w=300" },
+            { name: "UFC Fight", cat: "Fighting", img: "https://images.pexels.com/photos/4761779/pexels-photo-4761779.jpeg?auto=compress&w=300" }
         ];
 
+        // Loop untuk membuat 48 Game (8 dasar x 6 kali)
+        let totalGames = [];
+        for (let i = 0; i < 6; i++) {
+            baseGames.forEach(g => totalGames.push({...g}));
+        }
+
         const grid = document.getElementById("menuGrid");
-        games.forEach(g => {
+        totalGames.forEach((g, index) => {
+            const isEven = index % 2 === 0;
+            const colorClass = isEven ? "card-blue" : "card-purple";
+            const textColor = isEven ? "text-cyan-400" : "text-purple-400";
+
             grid.innerHTML += `
-                <div class="game-card" onclick="alert('Playing ${g.name}')">
-                    <img src="${g.img}" class="game-img" onerror="this.src='https://via.placeholder.com/300x150/000000/00f2ff?text=IMAGE+ERROR'">
-                    <div class="p-4 bg-black/60">
-                        <p class="text-[10px] text-cyan-400 font-bold orbitron mb-1 tracking-tighter">${g.cat.toUpperCase()}</p>
-                        <h4 class="font-bold text-xs orbitron text-white truncate">${g.name}</h4>
-                        <div class="mt-3 flex items-center gap-2">
-                             <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-cyan-500 shadow-[0_0_10px_#00f2ff]" style="width: 80%"></div>
-                             </div>
-                             <span class="text-[9px] text-yellow-500 font-bold italic">4.9</span>
+                <div class="game-card ${colorClass}" onclick="location.href='loading.html'">
+                    <img src="${g.img}" class="game-img" loading="lazy">
+                    <div class="p-3 text-center bg-black/40">
+                        <p class="text-[8px] ${textColor} font-bold orbitron mb-0.5">${g.cat}</p>
+                        <h4 class="font-bold text-[10px] truncate uppercase orbitron text-white">${g.name} ${index + 1}</h4>
+                        <div class="mt-2 flex justify-center items-center gap-1">
+                            <div class="h-0.5 w-8 bg-slate-700"></div>
+                            <span class="text-[7px] text-yellow-500 font-bold italic">V10.0</span>
+                            <div class="h-0.5 w-8 bg-slate-700"></div>
                         </div>
                     </div>
                 </div>
             `;
         });
 
-        function logout() { window.location.href = "index.html"; }
+        const user = localStorage.getItem("loginUser") || "AAN";
+        document.getElementById("userName").innerText = user.toUpperCase();
+
+        function logout() { localStorage.removeItem("loginUser"); window.location.href = "index.html"; }
     </script>
 </body>
 </html>
