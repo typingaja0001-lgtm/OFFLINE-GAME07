@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOKBISAYOK - LOBBY REPOSITORY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
+        
+        body { background: #020617; color: #a1a1aa; font-family: 'Rajdhani', sans-serif; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* GAYA NEON UTAMA */
+        .neon-border-blue { border: 2px solid #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
+        .neon-border-purple { border: 2px solid #bc13fe; box-shadow: 0 0 15px rgba(188, 19, 254, 0.4); }
+        .neon-text-blue { color: #00f2ff; text-shadow: 0 0 5px #00f2ff; }
+        .neon-text-purple { color: #bc13fe; text-shadow: 0 0 5px #bc13fe; }
+        .neon-text-green { color: #4ade80; text-shadow: 0 0 5px #4ade80; }
+
+        /* HEADER & TOMBOL */
+        .header-btn { background: rgba(0, 242, 255, 0.1); border: 1px solid #00f2ff; color: #00f2ff; transition: 0.3s; }
+        .header-btn:hover { background: #00f2ff; color: black; box-shadow: 0 0 10px #00f2ff; }
+        
+        .code-btn { background: #4ade80; color: black; border-radius: 6px; font-weight: bold; }
+        .code-btn:hover { background: #22c55e; }
+
+        /* TABEL FILE */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: #71717a; padding: 12px; font-size: 12px; text-transform: uppercase; }
+        td { padding: 12px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* SIDEBAR PANEL */
+        .side-panel { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .side-link { color: #bc13fe; cursor: pointer; transition: 0.2s; }
+        .side-link:hover { color: white; text-shadow: 0 0 5px white; }
+        
+        /* GAYA LINK KHUSUS */
+        .file-link { color: #bc13fe; text-decoration: none; font-weight: 500; }
+        .file-link:hover { color: #00f2ff; text-shadow: 0 0 2px #00f2ff; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        
+        <div class="lg:w-3/4 flex flex-col gap-6">
+            
+            <div class="flex items-center justify-between neon-border-blue p-4 rounded-xl bg-slate-950">
+                <div class="flex items-center gap-3">
+                    <button class="header-btn px-4 py-2 rounded-lg font-medium orbitron text-xs flex items-center gap-2">
+                        <i class="fas fa-code-branch text-sm"></i> main
+                    </button>
+                    <span class="text-sm font-medium"><i class="fas fa-code-branch mr-1 text-gray-600"></i> 1 Branch</span>
+                    <span class="text-sm font-medium"><i class="fas fa-tag mr-1 text-gray-600"></i> 0 Tags</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600"></i>
+                        <input type="text" placeholder="Go to file" class="bg-slate-900 border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-cyan-400">
+                    </div>
+                    <button class="bg-slate-800 px-3 py-2 rounded-lg"><i class="fas fa-plus"></i></button>
+                    <button class="code-btn px-4 py-2 text-sm flex items-center gap-2">
+                        <i class="fas fa-code"></i> Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="neon-border-blue rounded-xl bg-slate-950 overflow-hidden">
+                <div class="flex items-center gap-2 p-4 bg-slate-900 border-b border-gray-800">
+                    <i class="fas fa-folder text-cyan-400"></i>
+                    <span class="neon-text-blue font-semibold">marketingday2121-ctrl</span>
+                    <span class="neon-text-green text-sm">Update snake.html</span>
+                    <span class="text-gray-600 text-xs ml-auto">2d21cc2 • 12 hours ago</span>
+                    <span class="text-gray-400 text-sm ml-2 orbitron"><i class="fas fa-history mr-1"></i> 181 Commits</span>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="w-2/5">Name</th>
+                            <th class="w-2/5">Last Commit</th>
+                            <th class="w-1/5">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="baccarat.html" class="file-link">baccarat.html</a></td><td class="neon-text-green">Update baccarat.html</td><td>14 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="daftar.html" class="file-link">daftar.html</a></td><td class="neon-text-green">Update daftar.html</td><td>16 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="deposit.html" class="file-link">deposit.html</a></td><td class="neon-text-green">Add files via upload</td><td>2 days ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="history.html" class="file-link">history.html</a></td><td class="neon-text-green">Create history.html</td><td>15 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="index.html" class="file-link">index.html</a></td><td class="neon-text-green">Update index.html</td><td>16 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="loading.html" class="file-link">loading.html</a></td><td class="neon-text-green">Update loading.html</td><td>17 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="menu.html" class="file-link">menu.html</a></td><td class="neon-text-green">Update menu.html</td><td>12 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="roulette.html" class="file-link">roulette.html</a></td><td class="neon-text-green">Update roulette.html</td><td>13 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="slot.html" class="file-link">slot.html</a></td><td class="neon-text-green">Update slot.html</td><td>13 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="snake.html" class="file-link">snake.html</a></td><td class="neon-text-green">Update snake.html</td><td>12 hours ago</td></tr>
+                        <tr><td><i class="fas fa-file-code mr-2 text-gray-500"></i><a href="withdraw.html" class="file-link">withdraw.html</a></td><td class="neon-text-green">Add files via upload</td><td>2 days ago</td></tr>
+                        <tr><td><i class="fas fa-file-alt mr-2 text-gray-500"></i><a href="README.md" class="file-link">README.md</a></td><td class="neon-text-green">Initial commit</td><td>3 days ago</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="neon-border-blue rounded-xl bg-slate-950 p-6 flex flex-col gap-4">
+                <div class="flex items-center gap-2 border-b border-gray-800 pb-3">
+                    <i class="fas fa-book neon-text-blue"></i>
+                    <span class="font-bold text-white orbitron">README</span>
+                    <i class="fas fa-pencil-alt ml-auto text-xs text-gray-600"></i>
+                </div>
+                <div class="p-20 text-center text-gray-700 italic text-sm">
+                    README content will be rendered here.
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:w-1/4">
+            
+            <div class="side-panel neon-border-purple flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-white orbitron">About</h3>
+                    <i class="fas fa-cog text-gray-600 hover:text-white cursor-pointer"></i>
+                </div>
+                <p class="text-sm italic text-gray-600">No description, website, or topics provided.</p>
+                <div class="flex flex-col gap-2 pt-2 border-t border-gray-800 text-sm">
+                    <span class="side-link"><i class="fas fa-book mr-2"></i> Readme</span>
+                    <span class="side-link"><i class="fas fa-chart-line mr-2"></i> Activity</span>
+                    <span class="text-gray-500"><i class="fas fa-star mr-2"></i> 0 stars</span>
+                    <span class="text-gray-500"><i class="fas fa-eye mr-2"></i> 0 watching</span>
+                    <span class="text-gray-500"><i class="fas fa-code-branch mr-2"></i> 0 forks</span>
+                </div>
+            </div>
+
+            <div class="side-panel neon-border-purple flex flex-col gap-3">
+                <h3 class="font-bold text-white orbitron">Releases</h3>
+                <p class="text-sm italic text-gray-600">No releases published.</p>
+                <span class="neon-text-purple text-xs font-semibold cursor-pointer hover:underline">Create a new release</span>
+            </div>
+
+            <div class="side-panel neon-border-purple flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-bold text-white orbitron">Deployments</h3>
+                    <span class="bg-slate-700 px-2 py-0.5 rounded text-xs orbitron">176</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <i class="fas fa-check-circle text-green-500 text-lg"></i>
+                    <span class="neon-text-blue font-medium">github-pages</span>
+                    <span class="text-gray-600 text-xs ml-auto">12 hours ago</span>
+                </div>
+                <span class="neon-text-purple text-xs font-semibold cursor-pointer hover:underline">+ 175 deployments</span>
+            </div>
+
+            <div class="side-panel neon-border-purple flex flex-col gap-3">
+                <h3 class="font-bold text-white orbitron">Packages</h3>
+                <p class="text-sm italic text-gray-600">No packages published.</p>
+                <span class="neon-text-purple text-xs font-semibold cursor-pointer hover:underline">Publish your first package</span>
+            </div>
+
+            <div class="side-panel neon-border-purple flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-bold text-white orbitron">Contributors</h3>
+                    <span class="bg-slate-700 px-2 py-0.5 rounded text-xs orbitron">1</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm pt-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-800 border border-gray-700 flex items-center justify-center font-bold text-xs">M</div>
+                    <span class="text-gray-300">marketingday2121-ctrl</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
