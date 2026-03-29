@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKBISAYOK - CYBER CRASH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@500;700&display=swap');
+        
+        body { 
+            background: #020617; color: white; font-family: 'Rajdhani', sans-serif; 
+            min-height: 100vh; margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+        .neon-blue { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+        .neon-purple { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+
+        /* GAME VISUAL CONTAINER */
+        #game-area {
+            width: 100%; max-width: 900px; height: 450px;
+            background: radial-gradient(circle at bottom left, #0f172a 0%, #020617 100%);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 30px; position: relative; overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* GRID BACKGROUND */
+        .grid-bg {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* ROCKET */
+        #rocket {
+            position: absolute; bottom: 40px; left: 40px;
+            font-size: 3.5rem; z-index: 20;
+            filter: drop-shadow(0 0 15px #ff00ff);
+            transform-origin: center;
+        }
+
+        /* MULTIPLIER CENTER */
+        #multiplier {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 7rem; font-weight: 900; z-index: 10;
+            letter-spacing: -2px; pointer-events: none;
+        }
+
+        /* BUTTONS */
+        .btn-main {
+            background: linear-gradient(45deg, #ff00ff, #bc13fe);
+            color: white; border-radius: 20px;
+            padding: 25px 60px; font-size: 1.8rem; font-weight: 900;
+            box-shadow: 0 6px 0 #7e22ce; transition: 0.1s;
+        }
+        .btn-main:active { transform: translateY(3px); box-shadow: 0 3px 0 #7e22ce; }
+        .btn-main.cashout { background: linear-gradient(45deg, #00f2ff, #0ea5e9); box-shadow: 0 6px 0 #0369a1; }
+        .btn-main:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; }
+
+        /* HOW TO PLAY BOX */
+        .guide-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid #00f2ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="w-full max-w-[900px] flex justify-between items-end mb-6 px-4">
+        <div>
+            <h1 class="orbitron text-4xl neon-purple italic italic">CYBER CRASH</h1>
+            <p class="text-[10px] tracking-[4px] text-gray-500 font-bold uppercase">Multiplayer Flight Simulator</p>
+        </div>
+        <div class="text-right">
+            <p class="text-xs text-cyan-400 orbitron uppercase">Current Balance</p>
+            <h2 class="text-3xl orbitron neon-blue">IDR <span id="balanceDisplay">0</span></h2>
+        </div>
+    </div>
+
+    <div id="game-area">
+        <div class="grid-bg"></div>
+        <div id="multiplier" class="orbitron text-white/20">1.00x</div>
+        <div id="rocket">🚀</div>
+        
+        <div id="status-msg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center orbitron text-4xl font-black z-30 hidden"></div>
+    </div>
+
+    <div class="w-full max-w-[900px] mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white/5 p-6 rounded-3xl border border-white/10 flex flex-col justify-center">
+            <label class="text-xs text-gray-400 uppercase font-bold mb-2">Bet Amount (IDR)</label>
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 orbitron font-bold">IDR</span>
+                <input id="betInput" type="number" value="1000" min="100" step="500" class="w-full bg-black/40 border border-white/10 p-4 pl-14 rounded-xl orbitron text-xl focus:border-purple-500 outline-none">
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center">
+            <button id="mainBtn" onclick="handleButtonClick()" class="btn-main w-full orbitron italic uppercase">FLY NOW</button>
+        </div>
+
+        <div class="bg-white/5 p-6 rounded-3xl border border-white/10 flex flex-col justify-center text-center">
+            <p class="text-xs text-gray-400 uppercase font-bold mb-1">Potential Win</p>
+            <p id="potentialWin" class="text-2xl orbitron text-green-400">IDR 0</p>
+        </div>
+    </div>
+
+    <div class="w-full max-w-[900px] mt-12 mb-20">
+        <h3 class="orbitron text-xl neon-blue mb-4 uppercase italic">
+            <i class="fas fa-info-circle mr-2"></i> Cara Bermain
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="guide-box p-4 rounded-xl">
+                <h4 class="font-bold text-cyan-400 mb-2 uppercase">1. Pasang Taruhan</h4>
+                <p class="text-sm text-gray-400">Tentukan jumlah IDR yang ingin ditaruhkan, lalu klik <span class="text-white font-bold">FLY NOW</span> untuk meluncur.</p>
+            </div>
+            <div class="guide-box p-4 rounded-xl" style="border-color: #ff00ff;">
+                <h4 class="font-bold text-purple-400 mb-2 uppercase">2. Pantau Multiplier</h4>
+                <p class="text-sm text-gray-400">Setelah roket terbang, angka perkalian hadiah (x) akan naik. Semakin lama roket terbang, hadiah makin besar!</p>
+            </div>
+            <div class="guide-box p-4 rounded-xl" style="border-color: #facc15;">
+                <h4 class="font-bold text-yellow-400 mb-2 uppercase">3. Cash Out Cepat</h4>
+                <p class="text-sm text-gray-400">Klik <span class="text-white font-bold">CASH OUT</span> sebelum roket meledak (CRASH). Jika meledak duluan, taruhan hangus!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SESSION & BALANCE CHECK ---
+        const activeUser = localStorage.getItem("loginUser");
+        let users = JSON.parse(localStorage.getItem("users") || "[]");
+        let myData = users.find(x => x.user === activeUser);
+        let balance = myData ? myData.saldo : 0;
+        document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+
+        let gameActive = false;
+        let multiplier = 1.00;
+        let crashPoint = 0;
+        let bet = 0;
+        let animationId;
+        let startTime;
+
+        const rocket = document.getElementById("rocket");
+        const multiTxt = document.getElementById("multiplier");
+        const mainBtn = document.getElementById("mainBtn");
+        const statusMsg = document.getElementById("status-msg");
+        const potentialDisplay = document.getElementById("potentialWin");
+
+        function handleButtonClick() {
+            if (!gameActive) startFlight();
+            else cashOut();
+        }
+
+        function startFlight() {
+            bet = parseInt(document.getElementById("betInput").value);
+            if (balance < bet) return alert("Saldo tidak cukup!");
+            if (bet < 100) return alert("Minimal bet IDR 100!");
+
+            balance -= bet;
+            saveBalance();
+            
+            gameActive = true;
+            multiplier = 1.00;
+            crashPoint = generateCrashPoint();
+            startTime = Date.now();
+
+            mainBtn.innerText = "CASH OUT";
+            mainBtn.classList.add("cashout");
+            statusMsg.classList.add("hidden");
+            document.getElementById("betInput").disabled = true;
+            
+            animate();
+        }
+
+        function generateCrashPoint() {
+            let r = Math.random();
+            if (r < 0.05) return 1.00; // 5% kemungkinan langsung meledak (House edge)
+            return (0.98 / (1 - Math.random())).toFixed(2);
+        }
+
+        function animate() {
+            if (!gameActive) return;
+
+            let elapsed = (Date.now() - startTime) / 1000;
+            multiplier = Math.pow(1.09, elapsed * 5); 
+            
+            multiTxt.innerText = multiplier.toFixed(2) + "x";
+            multiTxt.style.color = `rgba(255, 255, 255, ${Math.min(0.2 + (multiplier/10), 0.8)})`;
+            
+            // Potential Win Update
+            potentialDisplay.innerText = "IDR " + Math.floor(bet * multiplier).toLocaleString();
+
+            // Rocket Movement
+            let x = 40 + (elapsed * 45);
+            let y = 40 + (Math.pow(elapsed, 1.4) * 25);
+            rocket.style.left = x + "px";
+            rocket.style.bottom = y + "px";
+            rocket.style.transform = `rotate(${-elapsed * 5}deg)`;
+
+            // Out of bounds reset (visual only)
+            if (x > 800 || y > 350) {
+                rocket.style.opacity = "0";
+            }
+
+            if (multiplier >= crashPoint) {
+                doCrash();
+                return;
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function doCrash() {
+            gameActive = false;
+            cancelAnimationFrame(animationId);
+            
+            rocket.innerHTML = "💥";
+            multiTxt.classList.add("text-red-500");
+            multiTxt.style.opacity = "1";
+            
+            statusMsg.innerHTML = `<span class="text-red-500 italic">CRASHED!</span><br><span class="text-2xl">@ ${multiplier.toFixed(2)}x</span>`;
+            statusMsg.classList.remove("hidden");
+
+            mainBtn.disabled = true;
+            setTimeout(() => {
+                resetGame();
+                mainBtn.disabled = false;
+            }, 3000);
+        }
+
+        function cashOut() {
+            if (!gameActive) return;
+            gameActive = false;
+            cancelAnimationFrame(animationId);
+
+            let win = Math.floor(bet * multiplier);
+            balance += win;
+            saveBalance();
+
+            statusMsg.innerHTML = `<span class="text-cyan-400 italic">CASHED OUT!</span><br><span class="text-2xl text-white">WIN IDR ${win.toLocaleString()}</span>`;
+            statusMsg.classList.remove("hidden");
+            
+            mainBtn.disabled = true;
+            setTimeout(() => {
+                resetGame();
+                mainBtn.disabled = false;
+            }, 3000);
+        }
+
+        function resetGame() {
+            rocket.innerHTML = "🚀";
+            rocket.style.left = "40px";
+            rocket.style.bottom = "40px";
+            rocket.style.opacity = "1";
+            rocket.style.transform = "rotate(0deg)";
+            multiTxt.innerText = "1.00x";
+            multiTxt.classList.remove("text-red-500");
+            multiTxt.style.color = "rgba(255,255,255,0.2)";
+            
+            mainBtn.innerText = "FLY NOW";
+            mainBtn.classList.remove("cashout");
+            potentialDisplay.innerText = "IDR 0";
+            document.getElementById("betInput").disabled = false;
+            statusMsg.classList.add("hidden");
+        }
+
+        function saveBalance() {
+            myData.saldo = balance;
+            localStorage.setItem("users", JSON.stringify(users));
+            document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+        }
+    </script>
+</body>
+</html>
