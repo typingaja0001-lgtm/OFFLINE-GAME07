@@ -12,7 +12,6 @@
         .neon-purple { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
         .neon-cyan { color: #00f2ff; text-shadow: 0 0 15px #00f2ff; }
         
-        /* THEMATIC CARDS WITH RICH SVGS */
         .arcade-card { 
             background: rgba(255, 255, 255, 0.03); 
             border: 2px solid rgba(255, 0, 255, 0.3); 
@@ -21,8 +20,6 @@
             position: relative; overflow: hidden;
         }
         .arcade-card.ready { border-color: #ff00ff; cursor: pointer; }
-        
-        /* Ready card hover state */
         .arcade-card.ready:hover { 
             border-color: #00f2ff; 
             transform: scale(1.08) translateY(-10px); 
@@ -30,23 +27,17 @@
             background: rgba(0, 0, 0, 0.8);
         }
 
-        /* Thumbnails placeholder for SVGs */
         .h-28 { 
             height: 112px;
             display: flex; align-items: center; justify-content: center; 
-            background: rgba(0, 0, 0, 0.6); rounded-xl mb-4 border border-white/5;
+            background: rgba(0, 0, 0, 0.6); border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.05);
             box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05);
         }
         
-        /* Locked card style */
         .arcade-card.locked { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
-        .locked-graphic { font-size: 32px; color: #555; }
-        
-        /* MODAL POPUP */
         #gameModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-box { background: #0d0221; border: 3px solid #ff00ff; padding: 40px; border-radius: 25px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 60px rgba(255, 0, 255, 0.4); }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #050112; }
         ::-webkit-scrollbar-thumb { background: #ff00ff; border-radius: 10px; }
@@ -75,14 +66,14 @@
                 <p id="userNameDisplay" class="text-[10px] orbitron font-bold neon-purple uppercase tracking-widest">---</p>
                 <p id="myTotalScore" class="text-2xl orbitron font-bold neon-cyan">0</p>
             </div>
-            <button onclick="localStorage.clear(); window.location.href='index.html'" class="text-red-500 text-2xl hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
+            <button onclick="localStorage.removeItem('loginUser'); window.location.href='index.html'" class="text-red-500 text-2xl hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
         </div>
     </header>
 
     <main class="p-12">
         <div class="mb-12">
             <h2 class="text-5xl font-black orbitron italic text-white uppercase italic">PC <span class="neon-purple">ULTRA</span> LIBRARY</h2>
-            <p class="text-[10px] text-gray-500 tracking-[5px] mt-2 font-bold uppercase">DATABASE REALTIME AKTIF • 9 READY GAMES</p>
+            <p class="text-[10px] text-gray-500 tracking-[5px] mt-2 font-bold uppercase">DATABASE REALTIME AKTIF • 10 READY GAMES</p>
         </div>
         
         <div id="arcadeGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-24"></div>
@@ -98,28 +89,26 @@
         const activeUser = (localStorage.getItem('loginUser') || "USER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = activeUser;
 
-        // DAFTAR GAME YANG SUDAH JADI
+        // DAFTAR GAME (TAMBAH NEON MINER DI SINI)
         const readyGames = [
-            "SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", 
+            "NEON MINER", "SNAKE RETRO", "TETRIS ULTRA", "PAC-MAN NEO", "SPACE INVADERS", 
             "GALAXY SHOOTER", "BRICK BREAKER", "NEON RACER", "FLAPPY CYBER", "CYBER STRIKE"
         ];
         
-        // THEMATIC ILLUSTRATIVE SVGS FOR EACH READY GAME
         const thematicSvgs = {
-            "SNAKE RETRO": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M10 10 h10 v10 h10 v10 h-10 v10 h10 v10 h20 v-10 h10 v-10 h-10 v-10 h10 v-10 h-20 Z" fill="#ff00ff"/><path d="M10 10 h10 v10 h10 v10 h-10 v10 h10 v10 h20 v-10 h10 v-10 h-10 v-10 h10 v-10 h-20 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "TETRIS ULTRA": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><rect x="10" y="10" width="15" height="15" fill="#ff0000"/><rect x="10" y="25" width="15" height="15" fill="#00ff00"/><rect x="10" y="40" width="15" height="15" fill="#0000ff"/><rect x="25" y="10" width="15" height="15" fill="#ffff00"/><path d="M10 10 h30 v45 h-30 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "PAC-MAN NEO": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M10 50 A40 40 0 1 1 90 50 A40 40 0 1 1 10 50 Z" fill="#ff00ff"/><circle cx="50" cy="30" r="5" fill="#000"/><path d="M10 50 A40 40 0 1 1 90 50 A40 40 0 1 1 10 50 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "SPACE INVADERS": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M20 20 h10 v10 h-10 Z M40 20 h10 v10 h-10 Z M60 20 h10 v10 h-10 Z M80 20 h10 v10 h-10 Z" fill="#ff00ff"/><path d="M10 50 h80 v10 h-10 v10 h-10 v10 h-10 v-10 h-10 v-10 h-10 Z" fill="#ff00ff"/><path d="M10 50 h80 v10 h-10 v10 h-10 v10 h-10 v-10 h-10 v-10 h-10 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "GALAXY SHOOTER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M50 10 L60 40 L90 40 L70 60 L80 90 L50 70 L20 90 L30 60 L10 40 L40 40 Z" fill="#ff00ff"/><path d="M50 10 L60 40 L90 40 L70 60 L80 90 L50 70 L20 90 L30 60 L10 40 L40 40 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "BRICK BREAKER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><rect x="10" y="10" width="10" height="10" fill="#ff0000"/><rect x="20" y="10" width="10" height="10" fill="#00ff00"/><rect x="30" y="10" width="10" height="10" fill="#0000ff"/><rect x="10" y="20" width="10" height="10" fill="#ffff00"/><rect x="10" y="80" width="30" height="5" fill="#fff"/><circle cx="20" cy="70" r="3" fill="#ff00ff"/><path d="M10 10 h30 v75 h-30 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "NEON RACER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><path d="M10 80 h80 L70 40 L30 40 Z" fill="#00f2ff"/><circle cx="30" cy="70" r="8" fill="#ff00ff"/><circle cx="70" cy="70" r="8" fill="#ff00ff"/><path d="M10 80 h80 L70 40 L30 40 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
-            "FLAPPY CYBER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><path d="M10 50 L30 30 L50 50 L30 70 Z" fill="#ff00ff"/><path d="M60 10 A40 40 0 1 1 90 50" fill="none" stroke="#00f2ff" stroke-width="3" stroke-linecap="round"/></svg>`,
-            "CYBER STRIKE": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><circle cx="50" cy="50" r="40" fill="none" stroke="#ff00ff" stroke-width="3"/><path d="M50 10 v80 M10 50 h80" fill="none" stroke="#00f2ff" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="#fff"/></svg>`
+            "NEON MINER": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #00f2ff)"><path d="M20 80 L50 50 L80 80 Z" fill="#00f2ff" opacity="0.5"/><path d="M50 20 L80 50 L50 80 L20 50 Z" fill="#ff00ff"/><path d="M50 20 L80 50 L50 80 L20 50 Z" fill="none" stroke="#fff" stroke-width="2"/></svg>`,
+            "SNAKE RETRO": `<svg viewBox="0 0 100 100" class="h-16 w-16" style="filter:drop-shadow(0 0 8px #ff00ff)"><path d="M10 10 h10 v10 h10 v10 h-10 v10 h10 v10 h20 v-10 h10 v-10 h-10 v-10 h10 v-10 h-20 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
+            "TETRIS ULTRA": `<svg viewBox="0 0 100 100" class="h-16 w-16"><rect x="10" y="10" width="15" height="15" fill="#ff0000"/><rect x="10" y="25" width="15" height="15" fill="#00ff00"/><path d="M10 10 h30 v45 h-30 Z" fill="none" stroke="#fff" stroke-width="2"/></svg>`,
+            "PAC-MAN NEO": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 50 A40 40 0 1 1 90 50 A40 40 0 1 1 10 50 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
+            "SPACE INVADERS": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 50 h80 v10 h-10 v10 h-10 v10 h-10 v-10 h-10 v-10 h-10 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
+            "GALAXY SHOOTER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M50 10 L60 40 L90 40 L70 60 L80 90 L50 70 L20 90 L30 60 L10 40 L40 40 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
+            "BRICK BREAKER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><rect x="10" y="80" width="30" height="5" fill="#fff"/><circle cx="20" cy="70" r="3" fill="#ff00ff"/></svg>`,
+            "NEON RACER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 80 h80 L70 40 L30 40 Z" fill="#00f2ff" stroke="#fff" stroke-width="2"/></svg>`,
+            "FLAPPY CYBER": `<svg viewBox="0 0 100 100" class="h-16 w-16"><path d="M10 50 L30 30 L50 50 L30 70 Z" fill="#ff00ff" stroke="#fff" stroke-width="2"/></svg>`,
+            "CYBER STRIKE": `<svg viewBox="0 0 100 100" class="h-16 w-16"><circle cx="50" cy="50" r="40" fill="none" stroke="#ff00ff" stroke-width="3"/></svg>`
         };
 
         const grid = document.getElementById('arcadeGrid');
-        
-        // Gabungkan Game Ready dengan Slot Kosong (Total 48)
         let allGames = [...readyGames];
         for(let i=allGames.length + 1; i<=48; i++) { allGames.push("LOCKED GAME #" + i); }
 
@@ -128,7 +117,7 @@
             grid.innerHTML += `
                 <div class="arcade-card ${isReady ? 'ready' : 'locked'}">
                     <div class="h-28 flex items-center justify-center rounded-xl mb-4 border border-white/5 bg-black/40">
-                        ${isReady ? thematicSvgs[name] : '<i class="fas fa-lock text-3xl text-gray-700 locked-graphic"></i>'}
+                        ${isReady ? thematicSvgs[name] : '<i class="fas fa-lock text-3xl text-gray-700"></i>'}
                     </div>
                     <p class="text-[10px] font-black orbitron text-white uppercase mb-4 truncate italic">${name}</p>
                     <button onclick="${isReady ? `showPopup('${name}')` : ''}" 
@@ -138,60 +127,35 @@
                 </div>`;
         });
 
+        // --- DATABASE LOGIC ---
         async function getDatabase() {
             try {
                 const res = await fetch(dbURL + "?nocache=" + Date.now());
                 const data = await res.json();
-                if (!data) return [];
-                return Object.values(data).sort((a, b) => b.score - a.score);
+                return data ? Object.values(data).sort((a, b) => b.score - a.score) : [];
             } catch (e) { return []; }
         }
 
         let currentGameTarget = "";
-
         async function showPopup(name) {
             currentGameTarget = name;
             document.getElementById('modalTitle').innerText = name;
-            const popupRankList = document.getElementById('popupRankList');
             document.getElementById('gameModal').style.display = 'flex';
-            popupRankList.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse italic'>SYNCING GLOBAL DATA...</p>";
-
+            const list = document.getElementById('popupRankList');
+            list.innerHTML = "<p class='text-[10px] text-cyan-500 animate-pulse'>SYNCING...</p>";
             const players = await getDatabase();
-            popupRankList.innerHTML = "";
-            if (players.length > 0) {
-                players.slice(0, 3).forEach((p, idx) => {
-                    let color = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : "#cd7f32");
-                    popupRankList.innerHTML += `
-                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid ${color}44;">
-                            <span style="color:${color}; font-size:11px; font-weight:bold;">${idx+1}. ${p.name.toUpperCase()}</span>
-                            <span class="orbitron" style="color:white; font-size:13px;">${p.score.toLocaleString()}</span>
-                        </div>`;
-                });
-            }
-        }
-
-        async function syncAll() {
-            const players = await getDatabase();
-            const list = document.getElementById('leaderList');
-            const myHeaderScore = document.getElementById('myTotalScore');
-
-            const me = players.find(p => p.name.trim().toUpperCase() === activeUser.trim());
-            myHeaderScore.innerText = me ? me.score.toLocaleString() : "0";
-
-            if(list) {
-                list.innerHTML = "";
-                players.slice(0, 12).forEach((p, idx) => {
-                    list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center transition hover:border-cyan-500/50"><span class="orbitron font-bold text-purple-500">${idx+1}</span><p class="text-xs orbitron uppercase text-white">${p.name}</p><p class="text-xs orbitron neon-cyan">${p.score.toLocaleString()}</p></div>`;
-                });
-            }
+            list.innerHTML = "";
+            players.slice(0, 3).forEach((p, i) => {
+                list.innerHTML += `<div class="bg-white/5 p-2 rounded border border-white/10 flex justify-between text-[11px]"><span>${p.name}</span><span class="neon-cyan">${p.score}</span></div>`;
+            });
         }
 
         function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
 
-        // --- SISTEM NAVIGASI ARENA ---
         function startGameAction() { 
             const target = currentGameTarget.toUpperCase().trim();
             const routes = {
+                "NEON MINER": "miner.html", // Rute ke game baru
                 "SNAKE RETRO": "snake.html",
                 "TETRIS ULTRA": "tetris.html",
                 "PAC-MAN NEO": "pacman.html",
@@ -202,9 +166,19 @@
                 "FLAPPY CYBER": "flappy.html",
                 "CYBER STRIKE": "strike.html"
             };
+            if(routes[target]) window.location.href = routes[target];
+        }
 
-            if(routes[target]) {
-                window.location.href = routes[target];
+        async function syncAll() {
+            const players = await getDatabase();
+            const me = players.find(p => p.name.toUpperCase() === activeUser);
+            document.getElementById('myTotalScore').innerText = me ? me.score.toLocaleString() : "0";
+            const list = document.getElementById('leaderList');
+            if(list) {
+                list.innerHTML = "";
+                players.slice(0, 12).forEach((p, idx) => {
+                    list.innerHTML += `<div class="bg-black/40 border border-purple-500/20 p-4 rounded-xl flex justify-between items-center"><span class="orbitron text-purple-500">${idx+1}</span><p class="text-xs orbitron">${p.name}</p><p class="text-xs neon-cyan">${p.score}</p></div>`;
+                });
             }
         }
 
