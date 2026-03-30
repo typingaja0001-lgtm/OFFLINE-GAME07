@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOKBISAYOK - MEGA NEON ARENA</title>
+    <title>YOKBISAYOK - ULTIMATE NEON ARENA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
         
         :root {
             --cyan: #00f2ff;
             --purple: #bc13fe;
             --pink: #ff0055;
-            --yellow: #ffee00;
+            --dark: #050112;
         }
 
         body { 
@@ -23,108 +23,160 @@
 
         .orbitron { font-family: 'Orbitron', sans-serif; }
 
+        /* Animasi Background Bergerak */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.1) 0%, transparent 80%);
-            z-index: -2;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(188, 19, 254, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 242, 255, 0.15) 0%, transparent 40%);
+            z-index: -1;
         }
 
-        /* CARD STYLE & HOVER */
+        /* GRID ANIMATION */
         .arcade-card {
-            background: linear-gradient(145deg, rgba(20, 10, 40, 0.9), rgba(0, 0, 0, 1));
-            border-radius: 12px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(188, 19, 254, 0.3);
-            display: flex; flex-direction: column; justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .arcade-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--cyan);
+            transform: translateY(-10px) scale(1.02);
             border-color: var(--cyan);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3), inset 0 0 15px rgba(0, 242, 255, 0.1);
         }
 
-        .text-neon { text-shadow: 0 0 10px var(--cyan); }
-        .text-neon-purple { text-shadow: 0 0 10px var(--purple); }
+        .arcade-card::after {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0; transition: 0.5s;
+        }
+        .arcade-card:hover::after { opacity: 1; }
 
-        .btn-play-ultra {
-            background: linear-gradient(45deg, var(--cyan), #008891);
+        /* TOMBOL PLAY MENYALA */
+        .btn-play {
+            background: linear-gradient(90deg, #00f2ff, #0066ff);
             color: #000; font-family: 'Orbitron'; font-weight: 900;
-            padding: 8px; border-radius: 6px; font-size: 10px;
-            box-shadow: 0 0 15px var(--cyan); transition: 0.3s;
+            padding: 10px; border-radius: 12px; font-size: 11px;
+            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.4);
+            transition: 0.3s; width: 100%; position: relative; overflow: hidden;
         }
 
-        .btn-play-ultra:hover { background: #fff; box-shadow: 0 0 25px #fff; }
+        .btn-play:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--cyan);
+            background: white;
+        }
+
+        .score-badge {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--purple);
+            padding: 2px 8px; border-radius: 20px;
+            font-size: 10px; color: var(--cyan);
+            box-shadow: 0 0 10px var(--purple);
+        }
+
+        /* SCROLLBAR CUSTOM */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #02010a; }
+        ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
 
         #gameModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(20px);
         }
-
-        .modal-box {
-            background: #050112; border: 3px solid var(--purple);
-            padding: 40px; border-radius: 30px; text-align: center;
-            width: 95%; max-width: 500px; box-shadow: 0 0 60px var(--purple);
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 10px; }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="p-6 px-10 bg-black/80 backdrop-blur-md border-b-2 border-purple-600 sticky top-0 z-50 flex justify-between items-center">
-        <div>
-            <h1 class="text-4xl font-black orbitron italic text-neon tracking-tighter uppercase">YOKBI<span class="text-white">SAYOK</span></h1>
-            <p class="text-[9px] orbitron text-purple-400 tracking-[6px] animate-pulse">MEGA ARENA SYSTEM v.4.0</p>
-        </div>
-        
-        <div class="flex items-center gap-8">
-            <div class="text-right">
-                <p id="userNameDisplay" class="text-xs orbitron font-bold text-gray-400 uppercase tracking-widest">---</p>
-                <div class="flex items-center gap-2 justify-end">
-                    <i class="fas fa-bolt text-cyan-500"></i>
-                    <p class="text-2xl font-black orbitron text-neon" id="myTotalScore">0</p>
+    <header class="p-6 px-10 bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center shadow-[0_0_20px_#00f2ff] animate-pulse">
+                <i class="fas fa-bolt text-black text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-black orbitron italic text-white tracking-tighter">YOKBI<span class="text-cyan-400">SAYOK</span></h1>
+                <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-green-500 animate-ping"></span>
+                    <p class="text-[8px] orbitron text-gray-400 tracking-[4px] uppercase">System Online: v4.0.2</p>
                 </div>
             </div>
-            <button onclick="logout()" class="w-12 h-12 rounded-xl bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center border border-red-600/50">
-                <i class="fas fa-power-off"></i>
+        </div>
+        
+        <div class="flex items-center gap-10">
+            <div class="hidden md:block">
+                <p id="userNameDisplay" class="text-[10px] orbitron font-bold text-gray-500 text-right mb-1">UNAUTHORIZED AGENT</p>
+                <div class="bg-white/5 px-4 py-1 rounded-full border border-white/10 flex items-center gap-3">
+                    <span class="text-[10px] orbitron text-purple-400">GLOBAL_XP:</span>
+                    <span id="myTotalScore" class="text-xl font-black orbitron text-cyan-400">0</span>
+                </div>
+            </div>
+            <button onclick="logout()" class="group relative">
+                <div class="absolute -inset-1 bg-red-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-200"></div>
+                <div class="relative w-12 h-12 bg-black rounded-lg border border-red-600/50 flex items-center justify-center text-red-500">
+                    <i class="fas fa-power-off"></i>
+                </div>
             </button>
         </div>
     </header>
 
-    <main class="p-8 lg:p-12 max-w-[1900px] mx-auto">
-        <div class="mb-12 border-l-8 border-cyan-500 pl-6">
-            <h2 class="text-6xl font-black orbitron italic uppercase tracking-tighter">MISSION <span class="text-neon-purple">SELECT</span></h2>
-            <p class="text-cyan-400 font-bold tracking-[3px] mt-2 italic">DATABASE MODUL AKTIF: 24 SYSTEMS READY</p>
+    <main class="p-8 lg:p-12 max-w-[1800px] mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div class="border-l-4 border-cyan-500 pl-6">
+                <h2 class="text-5xl font-black orbitron italic uppercase tracking-tighter leading-none mb-2">
+                    BATTLE <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">STATION</span>
+                </h2>
+                <p class="text-cyan-400 text-xs font-bold tracking-[5px] uppercase opacity-80">Pilih modul untuk memulai simulasi</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-center min-w-[120px]">
+                    <p class="text-[9px] text-gray-500 orbitron">GAMES</p>
+                    <p class="text-2xl font-black text-white">24</p>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 text-center min-w-[120px]">
+                    <p class="text-[9px] text-gray-500 orbitron">SERVERS</p>
+                    <p class="text-2xl font-black text-green-500">ACTIVE</p>
+                </div>
+            </div>
         </div>
 
-        <div id="arcadeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
+        <div id="arcadeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-6">
             </div>
 
-        <div class="mt-24">
-            <h3 class="text-3xl font-black orbitron italic mb-10 text-neon-purple flex items-center gap-4">
-                <i class="fas fa-crown"></i> TOP ARENA SURVIVORS
-            </h3>
+        <div class="mt-32">
+            <div class="flex items-center gap-4 mb-10">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+                <h3 class="text-2xl font-black orbitron italic text-white flex items-center gap-3">
+                    <i class="fas fa-trophy text-yellow-500"></i> HALL OF FAME
+                </h3>
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+            </div>
             <div id="leaderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 </div>
         </div>
     </main>
 
     <div id="gameModal">
-        <div class="modal-box relative">
-            <div class="bg-purple-600/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-purple-500">
-                <i id="modalIcon" class="fas fa-gamepad text-3xl text-white"></i>
+        <div class="modal-box relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500"></div>
+            <div class="bg-cyan-500/10 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-cyan-500/50 rotate-12">
+                <i id="modalIcon" class="fas fa-gamepad text-4xl text-cyan-400 -rotate-12"></i>
             </div>
-            <h2 id="modalTitle" class="text-3xl font-black orbitron italic mb-2 text-neon-purple uppercase">GAME NAME</h2>
-            <p class="text-[10px] orbitron text-cyan-400 tracking-[5px] mb-8">RETRIEVING AGENT RECORDS...</p>
+            <h2 id="modalTitle" class="text-4xl font-black orbitron italic mb-1 text-white uppercase">GAME NAME</h2>
+            <p class="text-[9px] orbitron text-cyan-400 tracking-[6px] mb-10">INITIALIZING NEON PROTOCOL...</p>
             
-            <div id="popupRankList" class="space-y-3 mb-10 text-left">
+            <div id="popupRankList" class="space-y-3 mb-10">
                 </div>
 
-            <button onclick="confirmStart()" class="w-full btn-play-ultra py-4 text-xl italic tracking-tighter">
-                LAUNCH MODUL
-            </button>
-            <button onclick="closeModal()" class="mt-6 text-gray-600 text-xs orbitron hover:text-white transition">ABORT</button>
+            <div class="flex gap-4">
+                <button onclick="closeModal()" class="flex-1 px-4 py-4 rounded-xl border border-white/10 text-xs orbitron font-bold hover:bg-white/5 transition">ABORT</button>
+                <button onclick="confirmStart()" class="flex-[2] btn-play text-lg italic tracking-tighter">
+                    LAUNCH <i class="fas fa-rocket ml-2 text-sm"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -133,74 +185,35 @@
         const activeUser = (localStorage.getItem('loginUser') || "PLAYER").toUpperCase();
         document.getElementById('userNameDisplay').innerText = "AGENT ID: " + activeUser;
 
-        // DAFTAR 24 GAME - GAHAR & LENGKAP
         const games = [
-            { name: "VOID SURVIVOR", file: "survivor", icon: "fa-skull-crossbones" },
-            { name: "NEON DRIFT", file: "drift", icon: "fa-car-side" },
-            { name: "CYBER STRIKE", file: "strike", icon: "fa-crosshairs" },
-            { name: "HEXA JUMP", file: "jump", icon: "fa-up-long" },
-            { name: "MATRIX BREAKER", file: "breaker", icon: "fa-burst" },
-            { name: "GALAXY WAR", file: "war", icon: "fa-jet-fighter" },
-            { name: "SNAKE NEON", file: "snake", icon: "fa-worm" },
-            { name: "TETRIS ULTRA", file: "tetris", icon: "fa-cubes" },
-            { name: "PAC-MAN NEO", file: "pacman", icon: "fa-ghost" },
-            { name: "SPACE INVADER", file: "invaders", icon: "fa-shuttle-space" },
-            { name: "BRICK MASTER", file: "brick", icon: "fa-border-all" },
-            { name: "FLAPPY CYBER", file: "flappy", icon: "fa-dove" },
-            { name: "DRAGON SLAYER", file: "dragon", icon: "fa-dragon" },
-            { name: "VOID RUNNER", file: "void", icon: "fa-running" },
-            { name: "CYBER PUNCH", file: "punch", icon: "fa-fist-raised" },
-            { name: "HEXA PUZZLE", file: "hexa", icon: "fa-vial" },
-            { name: "NEON HOOPS", file: "hoops", icon: "fa-basketball" },
-            { name: "BLADE STORM", file: "blade", icon: "fa-khanda" },
-            { name: "CYBER FISH", file: "fish", icon: "fa-fish" },
-            { name: "ROBOT WARS", file: "robot", icon: "fa-robot" },
-            { name: "METEOR SHOWER", file: "meteor", icon: "fa-meteor" },
-            { name: "CYBER TENNIS", file: "tennis", icon: "fa-table-tennis-paddle-ball" },
-            { name: "PORTAL DASH", file: "portal", icon: "fa-door-open" },
-            { name: "LASER TAG", file: "tag", icon: "fa-raygun" }
+            { name: "VOID SURVIVOR", file: "survivor.html", icon: "fa-skull-crossbones" },
+            { name: "NEON DRIFT", file: "drift.html", icon: "fa-car-side" },
+            { name: "SNAKE NEON", file: "snake.html", icon: "fa-worm" },
+            { name: "CYBER STRIKE", file: "strike.html", icon: "fa-crosshairs" },
+            { name: "HEXA JUMP", file: "jump.html", icon: "fa-up-long" },
+            { name: "MATRIX BREAKER", file: "breaker.html", icon: "fa-burst" },
+            { name: "GALAXY WAR", file: "war.html", icon: "fa-jet-fighter" },
+            { name: "TETRIS ULTRA", file: "tetris.html", icon: "fa-cubes" },
+            { name: "PAC-MAN NEO", file: "pacman.html", icon: "fa-ghost" },
+            { name: "SPACE INVADER", file: "invaders.html", icon: "fa-shuttle-space" },
+            { name: "BRICK MASTER", file: "brick.html", icon: "fa-border-all" },
+            { name: "FLAPPY CYBER", file: "flappy.html", icon: "fa-dove" },
+            { name: "DRAGON SLAYER", file: "dragon.html", icon: "fa-dragon" },
+            { name: "VOID RUNNER", file: "void.html", icon: "fa-running" },
+            { name: "CYBER PUNCH", file: "punch.html", icon: "fa-fist-raised" },
+            { name: "HEXA PUZZLE", file: "hexa.html", icon: "fa-vial" },
+            { name: "NEON HOOPS", file: "hoops.html", icon: "fa-basketball" },
+            { name: "BLADE STORM", file: "blade.html", icon: "fa-khanda" },
+            { name: "CYBER FISH", file: "fish.html", icon: "fa-fish" },
+            { name: "ROBOT WARS", file: "robot.html", icon: "fa-robot" },
+            { name: "METEOR SHOWER", file: "meteor.html", icon: "fa-meteor" },
+            { name: "CYBER TENNIS", file: "tennis.html", icon: "fa-table-tennis-paddle-ball" },
+            { name: "PORTAL DASH", file: "portal.html", icon: "fa-door-open" },
+            { name: "LASER TAG", file: "tag.html", icon: "fa-raygun" }
         ];
 
         let selectedFile = "";
-
-        function renderGrid() {
-            const grid = document.getElementById('arcadeGrid');
-            grid.innerHTML = "";
-            games.forEach((g, i) => {
-                grid.innerHTML += `
-                    <div class="arcade-card p-4 group">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-[8px] orbitron text-gray-500">M_${100+i}</span>
-                            <i class="fas ${g.icon} text-lg text-white group-hover:text-cyan-400 transition"></i>
-                        </div>
-                        <h3 class="text-[11px] font-black orbitron mb-4 h-6 flex items-center leading-none group-hover:text-cyan-400 uppercase">${g.name}</h3>
-                        <button onclick="showPopup('${g.name}', '${g.file}', '${g.icon}')" class="btn-play-ultra">SELECT</button>
-                    </div>`;
-            });
-        }
-
-        async function showPopup(name, file, icon) {
-            selectedFile = file;
-            document.getElementById('modalTitle').innerText = name;
-            document.getElementById('modalIcon').className = `fas ${icon} text-3xl text-white`;
-            document.getElementById('gameModal').style.display = 'flex';
-            
-            const list = document.getElementById('popupRankList');
-            list.innerHTML = "<p class='text-center animate-pulse text-cyan-400 orbitron text-[10px]'>UPLINKING...</p>";
-            
-            const data = await getDB();
-            list.innerHTML = "";
-            data.slice(0, 3).forEach((p, i) => {
-                list.innerHTML += `
-                <div class="flex justify-between items-center bg-white/5 p-2 rounded border-l-2 border-cyan-500">
-                    <span class="text-xs font-bold">#${i+1} ${p.name}</span>
-                    <span class="text-cyan-400 orbitron font-bold text-xs">${p.score.toLocaleString()}</span>
-                </div>`;
-            });
-        }
-
-        function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
-        function confirmStart() { window.location.href = `loading.html?game=${selectedFile}`; }
+        let globalData = [];
 
         async function getDB() {
             try {
@@ -209,6 +222,64 @@
                 return data ? Object.values(data).sort((a,b) => b.score - a.score) : [];
             } catch(e) { return []; }
         }
+
+        async function renderGrid() {
+            const grid = document.getElementById('arcadeGrid');
+            globalData = await getDB();
+            grid.innerHTML = "";
+            
+            games.forEach((g, i) => {
+                // Mencari skor spesifik pemain ini jika ada di data global
+                const userEntry = globalData.find(p => p.name.toUpperCase() === activeUser);
+                const scoreDisplay = userEntry ? userEntry.score.toLocaleString() : "0";
+
+                grid.innerHTML += `
+                    <div class="arcade-card p-5 group flex flex-col justify-between min-h-[180px]">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="text-[9px] orbitron text-cyan-500/50 font-bold tracking-widest">MOD_${100+i}</span>
+                                <div class="score-badge orbitron font-black text-[9px]">
+                                    <i class="fas fa-star mr-1"></i> ${scoreDisplay}
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <i class="fas ${g.icon} text-3xl text-white group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_10px_#00f2ff] transition-all duration-500"></i>
+                            </div>
+                            <h3 class="text-xs font-bold orbitron text-gray-300 group-hover:text-white uppercase leading-tight tracking-tighter mb-4">${g.name}</h3>
+                        </div>
+                        <button onclick="showPopup('${g.name}', '${g.file}', '${g.icon}')" class="btn-play group-hover:animate-pulse">
+                            <i class="fas fa-play mr-2"></i> PLAY
+                        </button>
+                    </div>`;
+            });
+        }
+
+        async function showPopup(name, file, icon) {
+            selectedFile = file;
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalIcon').className = `fas ${icon} text-4xl text-cyan-400 -rotate-12`;
+            document.getElementById('gameModal').style.display = 'flex';
+            
+            const list = document.getElementById('popupRankList');
+            list.innerHTML = "<p class='text-center animate-pulse text-cyan-400 orbitron text-[10px]'>UPLINKING DATABASE...</p>";
+            
+            const data = await getDB();
+            list.innerHTML = "";
+            data.slice(0, 3).forEach((p, i) => {
+                const colors = ['border-yellow-500', 'border-gray-400', 'border-orange-500'];
+                list.innerHTML += `
+                <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border-l-4 ${colors[i] || 'border-cyan-500'}">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs orbitron font-black text-gray-500">0${i+1}</span>
+                        <span class="text-xs font-bold uppercase tracking-widest">${p.name}</span>
+                    </div>
+                    <span class="text-cyan-400 orbitron font-black text-xs">${p.score.toLocaleString()}</span>
+                </div>`;
+            });
+        }
+
+        function closeModal() { document.getElementById('gameModal').style.display = 'none'; }
+        function confirmStart() { window.location.href = `loading.html?game=${selectedFile}`; }
 
         async function sync() {
             const players = await getDB();
@@ -219,21 +290,28 @@
             list.innerHTML = "";
             players.slice(0, 12).forEach((p, idx) => {
                 list.innerHTML += `
-                <div class="bg-black/50 border border-purple-900/50 p-3 rounded-xl flex justify-between items-center hover:border-cyan-500 transition shadow-lg">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl font-black orbitron text-gray-800 italic">#${idx+1}</span>
-                        <span class="font-bold text-xs uppercase">${p.name}</span>
+                <div class="bg-white/5 border border-white/5 p-4 rounded-2xl flex justify-between items-center hover:border-cyan-500/50 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl font-black orbitron text-white/10 group-hover:text-cyan-500/20 italic">#${idx+1}</span>
+                        <div>
+                            <p class="text-[10px] text-gray-500 orbitron font-bold mb-1">AGENT_RECORD</p>
+                            <p class="font-bold text-sm uppercase tracking-tighter">${p.name}</p>
+                        </div>
                     </div>
-                    <span class="text-cyan-400 orbitron font-bold text-sm">${p.score.toLocaleString()}</span>
+                    <div class="text-right">
+                        <p class="text-cyan-400 orbitron font-black text-lg">${p.score.toLocaleString()}</p>
+                        <p class="text-[8px] text-purple-500 font-bold uppercase">XP_LEVEL</p>
+                    </div>
                 </div>`;
             });
         }
 
         function logout() { if(confirm("DISCONNECT AGENT?")) { localStorage.clear(); window.location.href='index.html'; } }
 
+        // Initialize
         renderGrid();
         sync();
-        setInterval(sync, 15000);
+        setInterval(sync, 15000); // Auto-sync data setiap 15 detik
     </script>
 </body>
 </html>
